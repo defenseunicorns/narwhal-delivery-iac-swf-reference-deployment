@@ -94,21 +94,21 @@ locals {
 module "eks" {
   source = "git::https://github.com/defenseunicorns/terraform-aws-eks.git?ref=v0.0.12"
 
-  name                                    = local.cluster_name
-  aws_region                              = var.region
-  azs                                     = module.vpc.azs
-  vpc_id                                  = module.vpc.vpc_id
-  private_subnet_ids                      = module.vpc.private_subnets
-  control_plane_subnet_ids                = module.vpc.private_subnets
-  iam_role_permissions_boundary           = var.iam_role_permissions_boundary
+  name                          = local.cluster_name
+  aws_region                    = var.region
+  azs                           = module.vpc.azs
+  vpc_id                        = module.vpc.vpc_id
+  private_subnet_ids            = module.vpc.private_subnets
+  control_plane_subnet_ids      = module.vpc.private_subnets
+  iam_role_permissions_boundary = var.iam_role_permissions_boundary
   #cluster_security_group_additional_rules = local.cluster_security_group_additional_rules
-  cluster_endpoint_public_access          = false
-  cluster_endpoint_private_access         = true
-  vpc_cni_custom_subnet                   = module.vpc.intra_subnets
-  aws_admin_usernames                     = var.aws_admin_usernames
-  cluster_version                         = var.cluster_version
-  cidr_blocks                             = module.vpc.private_subnets_cidr_blocks
-  eks_use_mfa                             = var.eks_use_mfa
+  cluster_endpoint_public_access  = false
+  cluster_endpoint_private_access = true
+  vpc_cni_custom_subnet           = module.vpc.intra_subnets
+  aws_admin_usernames             = var.aws_admin_usernames
+  cluster_version                 = var.cluster_version
+  cidr_blocks                     = module.vpc.private_subnets_cidr_blocks
+  eks_use_mfa                     = var.eks_use_mfa
   #aws_auth_roles                          = local.bastion_aws_auth_entry
 
   ######################## Self Managed Node Group Only ###################################

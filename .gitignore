@@ -24,6 +24,8 @@ crash.*.log
 *.tfvars
 *.tfvars.json
 
+terraform/builds
+
 # Except ones that we do want to commit because they are used for automated tests
 !terraform/tfvars/dev/s.tfvars
 !terraform/tfvars/staging/s.tfvars

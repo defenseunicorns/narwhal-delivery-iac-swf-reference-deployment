@@ -144,4 +144,3 @@ plan-dev-environment: ## Build the dev environment docker image
 .PHONY: build-dev-environment
 build-dev-environment: ## Build the dev environment docker image
 	cd terraform && terraform init && terraform apply -var-file="tfvars/dev/s.tfvars"
-

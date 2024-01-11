@@ -1,4 +1,4 @@
-region="us-gov-west-1"
+region = "us-gov-west-1"
 
 enable_eks_managed_nodegroups  = false
 enable_self_managed_nodegroups = true

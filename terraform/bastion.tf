@@ -25,7 +25,7 @@ locals {
 }
 
 data "aws_ami" "amazonlinux2" {
-  count = 1
+  count       = 1
   most_recent = true
 
   filter {
