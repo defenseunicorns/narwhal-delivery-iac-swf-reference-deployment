@@ -101,7 +101,7 @@ module "eks" {
   private_subnet_ids            = module.vpc.private_subnets
   control_plane_subnet_ids      = module.vpc.private_subnets
   iam_role_permissions_boundary = var.iam_role_permissions_boundary
-  #cluster_security_group_additional_rules = local.cluster_security_group_additional_rules
+  cluster_security_group_additional_rules = local.cluster_security_group_additional_rules
   cluster_endpoint_public_access  = false
   cluster_endpoint_private_access = true
   vpc_cni_custom_subnet           = module.vpc.intra_subnets
@@ -109,7 +109,10 @@ module "eks" {
   cluster_version                 = var.cluster_version
   cidr_blocks                     = module.vpc.private_subnets_cidr_blocks
   eks_use_mfa                     = var.eks_use_mfa
-  #aws_auth_roles                          = local.bastion_aws_auth_entry
+  aws_auth_roles                  = local.bastion_aws_auth_entry
+
+  create_aws_auth_configmap = true
+  manage_aws_auth_configmap = false
 
   ######################## Self Managed Node Group Only ###################################
   self_managed_node_group_defaults = local.self_managed_node_group_defaults
