@@ -1,0 +1,110 @@
+region="us-gov-west-1"
+
+enable_eks_managed_nodegroups  = false
+enable_self_managed_nodegroups = true
+bastion_tenancy                = "dedicated"
+eks_worker_tenancy             = "dedicated"
+cluster_endpoint_public_access = false
+
+create_aws_auth_configmap = true #secure example assumes enable_eks_managed_nodegroups = false, need to creaste the configmap ourselves
+
+tags = {
+  Environment = "dev"
+  Project     = "du-iac-cicd"
+}
+
+name_prefix               = "dev-iac-swf"
+manage_aws_auth_configmap = true
+
+###########################################################
+#################### VPC Config ###########################
+vpc_cidr              = "10.200.0.0/16"
+secondary_cidr_blocks = ["100.64.0.0/16"] #https://aws.amazon.com/blogs/containers/optimize-ip-addresses-usage-by-pods-in-your-amazon-eks-cluster/
+
+###########################################################
+#################### EKS Config ###########################
+# renovate: datasource=endoflife-date depName=amazon-eks versioning=loose extractVersion=^(?<version>.*)-eks.+$
+cluster_version = "1.27"
+eks_use_mfa     = false
+
+keycloak_enabled = true # provisions keycloak dedicated nodegroup
+
+# #################### EKS Addons #########################
+# add other "eks native" marketplace addons and configs to this list
+cluster_addons = {
+  vpc-cni = {
+    most_recent          = true
+    before_compute       = true
+    configuration_values = <<-JSON
+      {
+        "env": {
+          "AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG": "true",
+          "ENABLE_PREFIX_DELEGATION": "true",
+          "ENI_CONFIG_LABEL_DEF": "topology.kubernetes.io/zone",
+          "WARM_PREFIX_TARGET": "1",
+          "ANNOTATE_POD_IP": "true",
+          "POD_SECURITY_GROUP_ENFORCING_MODE": "standard"
+        },
+        "enableNetworkPolicy": "true"
+      }
+    JSON
+  }
+  coredns = {
+    preserve    = true
+    most_recent = true
+
+    timeouts = {
+      create = "2m"
+      delete = "10m"
+    }
+  }
+  kube-proxy = {
+    most_recent = true
+  }
+  aws-ebs-csi-driver = {
+    most_recent = true
+
+    timeouts = {
+      create = "4m"
+      delete = "10m"
+    }
+  }
+}
+
+enable_amazon_eks_aws_ebs_csi_driver = true
+enable_gp3_default_storage_class     = true
+storageclass_reclaim_policy          = "Delete" # set to `Retain` for non-dev use
+
+#################### Blueprints addons ###################
+#wait false for all addons, as it times out on teardown in the test pipeline
+
+enable_amazon_eks_aws_efs_csi_driver = true
+#todo - move from blueprints to marketplace addons in terraform-aws-eks
+aws_efs_csi_driver = {
+  wait          = false
+  chart_version = "2.4.8"
+}
+
+enable_aws_node_termination_handler = true
+aws_node_termination_handler = {
+  wait = false
+
+  # renovate: datasource=docker depName=public.ecr.aws/aws-ec2/helm/aws-node-termination-handler
+  chart_version = "0.22.0"
+  chart         = "aws-node-termination-handler"
+  repository    = "oci://public.ecr.aws/aws-ec2/helm"
+}
+
+enable_cluster_autoscaler = true
+cluster_autoscaler = {
+  wait = false
+  # renovate: datasource=github-tags depName=kubernetes/autoscaler extractVersion=^cluster-autoscaler-chart-(?<version>.*)$
+  chart_version = "v9.29.3"
+}
+
+enable_metrics_server = true
+metrics_server = {
+  wait = false
+  # renovate: datasource=github-tags depName=kubernetes-sigs/metrics-server extractVersion=^metrics-server-helm-chart-(?<version>.*)$
+  chart_version = "v3.11.0"
+}
