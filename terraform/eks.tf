@@ -92,7 +92,7 @@ locals {
 }
 
 module "eks" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-eks.git?ref=v0.0.12"
+  source = "git::https://github.com/defenseunicorns/terraform-aws-eks.git?ref=v0.0.13"
 
   name                                    = local.cluster_name
   aws_region                              = var.region
@@ -131,6 +131,7 @@ module "eks" {
   #---------------------------------------------------------------
   # EKS Blueprints - blueprints curated helm charts
   #---------------------------------------------------------------
+  create_kubernetes_resources = false
 
   # AWS EKS EBS CSI Driver
   enable_amazon_eks_aws_ebs_csi_driver = var.enable_amazon_eks_aws_ebs_csi_driver
