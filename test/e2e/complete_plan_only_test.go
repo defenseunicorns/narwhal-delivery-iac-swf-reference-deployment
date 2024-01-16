@@ -7,15 +7,14 @@ import (
 	teststructure "github.com/gruntwork-io/terratest/modules/test-structure"
 )
 
-func TestExamplesCompletePlanOnly(t *testing.T) {
+func TestCompletePlanOnly(t *testing.T) {
 	t.Parallel()
-	tempFolder := teststructure.CopyTerraformFolderToTemp(t, "../..", "examples/complete")
+	tempFolder := teststructure.CopyTerraformFolderToTemp(t, "../..", "terraform")
 	terraformOptionsPlan := &terraform.Options{
 		TerraformDir: tempFolder,
 		Upgrade:      false,
 		VarFiles: []string{
-			"fixtures.common.tfvars",
-			"fixtures.insecure.tfvars",
+			"tfvars/dev/s.tfvars",
 		},
 		// Set any overrides for variables you would like to validate
 		Vars: map[string]interface{}{

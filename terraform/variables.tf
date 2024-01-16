@@ -189,7 +189,7 @@ variable "reclaim_policy" {
 variable "bastion_tenancy" {
   description = "The tenancy of the bastion"
   type        = string
-  default     = "default"
+  default     = "dedicated"
 }
 
 variable "bastion_instance_type" {

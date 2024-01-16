@@ -34,7 +34,7 @@ locals {
     var.tags,
     {
       RootTFModule = replace(basename(path.cwd), "_", "-") # tag names based on the directory name
-      GithubRepo   = "github.com/defenseunicorns/delivery-aws-iac"
+      GithubRepo   = "github.com/defenseunicorns/aws-narwhal-iac-swf-reference-deployment"
     }
   )
 }

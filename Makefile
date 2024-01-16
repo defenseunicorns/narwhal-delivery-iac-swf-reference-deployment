@@ -65,21 +65,12 @@ _test-all: _create-folders
 		-e SKIP_TEARDOWN \
 		$${TF_VARS} \
 		${BUILD_HARNESS_REPO}:${BUILD_HARNESS_VERSION} \
-		bash -c 'git config --global --add safe.directory /app && cd examples/complete && terraform init -upgrade=true && cd ../../test/e2e && go test -count 1 -v $(EXTRA_TEST_ARGS) .'
+		bash -c 'git config --global --add safe.directory /app && cd terraform && terraform init -upgrade=true && cd ../test/e2e && go test -count 1 -v $(EXTRA_TEST_ARGS) .'
 
 .PHONY: test
 test: ## Run all automated tests. Requires access to an AWS account. Costs real money.
 	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 3h"
 
-.PHONY: test-ci-complete
-test-ci-complete: ## Run one test (TestExamplesCompleteCommon). Requires access to an AWS account. Costs real money.
-	$(eval export TF_VAR_region := $(or $(REGION),$(TF_VAR_region),us-east-2))
-	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 3h -run TestExamplesCompleteCommon"
-
-.PHONY: test-complete-plan-only
-test-complete-plan-only: ## Run one test (TestExamplesCompletePlanOnly). Requires access to an AWS account. It will not cost money or create any resources since it is just running `terraform plan`.
-	$(eval export TF_VAR_region := $(or $(REGION),$(TF_VAR_region),us-east-2))
-	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 2h -run TestExamplesCompletePlanOnly"
 
 .PHONY: docker-save-build-harness
 docker-save-build-harness: _create-folders ## Pulls the build harness docker image and saves it to a tarball
@@ -148,3 +139,14 @@ build-dev-environment: ## Build the dev environment docker image
 .PHONY: destroy-dev-environment
 destroy-dev-environment: ## Build the dev environment docker image
 	cd terraform && terraform destroy -var-file="tfvars/dev/s.tfvars"
+
+.PHONY: test-complete-secure
+test-complete-secure: ## Run one test (TestCompleteSecure). Requires access to an AWS account. Costs real money.
+	$(eval export TF_VAR_region := $(or $(REGION),$(TF_VAR_region),us-gov-west-1))
+	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 3h -run TestCompleteSecure"
+
+.PHONY: test-complete-plan-only
+test-complete-plan-only: ## Run one test (TestCompletePlanOnly). Requires access to an AWS account. It will not cost money or create any resources since it is just running `terraform plan`.
+	$(eval export TF_VAR_region := $(or $(REGION),$(TF_VAR_region),us-gov-west-1))
+	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 3h -run TestCompletePlanOnly"
+
