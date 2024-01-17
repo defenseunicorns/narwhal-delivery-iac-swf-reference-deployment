@@ -1,4 +1,4 @@
-module github.com/defenseunicorns/aws-narwhal-iac-swf-reference-deployment
+module github.com/defenseunicorns/narwhal-delivery-iac-swf-reference-deployment
 
 go 1.21.5
 

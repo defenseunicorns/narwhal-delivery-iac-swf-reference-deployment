@@ -1,18 +1,11 @@
 region = "us-gov-west-1"
 
-bastion_tenancy                = "dedicated"
-eks_worker_tenancy             = "dedicated"
-cluster_endpoint_public_access = false
-
-create_aws_auth_configmap = true #for self managed node groups need to create the configmap ourselves
-
 tags = {
   Environment = "dev"
   Project     = "du-iac-cicd"
 }
 
-name_prefix               = "dev-iac-swf"
-manage_aws_auth_configmap = true
+name_prefix = "dev-iac-swf"
 
 ###########################################################
 #################### VPC Config ###########################
@@ -22,8 +15,7 @@ secondary_cidr_blocks = ["100.64.0.0/16"] #https://aws.amazon.com/blogs/containe
 ###########################################################
 #################### EKS Config ###########################
 # renovate: datasource=endoflife-date depName=amazon-eks versioning=loose extractVersion=^(?<version>.*)-eks.+$
-cluster_version = "1.27"
-eks_use_mfa     = false
+eks_use_mfa = false
 
 keycloak_enabled = true # provisions keycloak dedicated nodegroup
 
@@ -106,3 +98,10 @@ metrics_server = {
   # renovate: datasource=github-tags depName=kubernetes-sigs/metrics-server extractVersion=^metrics-server-helm-chart-(?<version>.*)$
   chart_version = "v3.11.0"
 }
+
+######################################################
+################## Lambda Config #####################
+
+################# Password Rotation ##################
+# Add users that will be on your ec2 instances.
+users = ["ec2-user", "Administrator"]
