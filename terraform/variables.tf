@@ -28,17 +28,17 @@ variable "aws_admin_usernames" {
   default     = []
 }
 
-variable "create_aws_auth_configmap" {
-  description = "Determines whether to create the aws-auth configmap. NOTE - this is only intended for scenarios where the configmap does not exist (i.e. - when using only self-managed node groups). Most users should use `manage_aws_auth_configmap`"
-  type        = bool
-  default     = true
-}
+# variable "create_aws_auth_configmap" {
+#   description = "Determines whether to create the aws-auth configmap. NOTE - this is only intended for scenarios where the configmap does not exist (i.e. - when using only self-managed node groups). Most users should use `manage_aws_auth_configmap`"
+#   type        = bool
+#   default     = true
+# }
 
-variable "manage_aws_auth_configmap" {
-  description = "Determines whether to manage the aws-auth configmap"
-  type        = bool
-  default     = false
-}
+# variable "manage_aws_auth_configmap" {
+#   description = "Determines whether to manage the aws-auth configmap"
+#   type        = bool
+#   default     = false
+# }
 
 variable "tags" {
   description = "A map of tags to apply to all resources"
@@ -109,16 +109,11 @@ variable "cluster_endpoint_public_access" {
   default     = false
 }
 
-variable "enable_eks_managed_nodegroups" {
-  description = "Enable managed node groups"
-  type        = bool
-  default     = false
-}
 
-variable "enable_self_managed_nodegroups" {
-  description = "Enable self managed node groups"
-  type        = bool
-  default     = true
+variable "dataplane_wait_duration" {
+  description = "The duration to wait for the EKS cluster to be ready before creating the node groups"
+  type        = string
+  default     = "30s"
 }
 
 ###########################################################
@@ -135,6 +130,18 @@ variable "cluster_addons" {
 EOD
   type        = any
   default     = {}
+}
+
+variable "create_kubernetes_resources" {
+  description = "If true, kubernetes resources related to non-marketplace addons to will be created"
+  type        = bool
+  default     = true
+}
+
+variable "create_ssm_parameters" {
+  description = "Create SSM parameters for values from eks blueprints addons"
+  type        = bool
+  default     = true
 }
 
 #----------------AWS EBS CSI Driver-------------------------
@@ -212,6 +219,32 @@ variable "reclaim_policy" {
   description = "Reclaim policy for EFS storage class, valid options are Delete and Retain"
   type        = string
   default     = "Delete"
+}
+
+#----------------AWS Loadbalancer Controller-------------------------
+variable "enable_aws_load_balancer_controller" {
+  description = "Enable AWS Loadbalancer Controller add-on"
+  type        = bool
+  default     = false
+}
+
+variable "aws_load_balancer_controller" {
+  description = "AWS Loadbalancer Controller Helm Chart config"
+  type        = any
+  default     = {}
+}
+
+#----------------k8s Secret Store CSI Driver-------------------------
+variable "enable_secrets_store_csi_driver" {
+  description = "Enable k8s Secret Store CSI Driver add-on"
+  type        = bool
+  default     = false
+}
+
+variable "secrets_store_csi_driver" {
+  description = "k8s Secret Store CSI Driver Helm Chart config"
+  type        = any
+  default     = {}
 }
 
 ###########################################################
