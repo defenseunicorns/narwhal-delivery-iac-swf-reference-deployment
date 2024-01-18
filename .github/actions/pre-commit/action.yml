@@ -1,0 +1,20 @@
+  name: Run Pre-Commit Hooks
+
+  description: Run pre-commit hooks
+
+  inputs:
+    check-type:
+      description: The type of check to run. Valid values are "all", "common", "terraform", "golang", and "renovate"
+      required: true
+      default: all
+
+  runs:
+    using: composite
+    steps:
+      - name: Run `pre-commit run -a`
+        shell: bash -e -o pipefail {0}
+        run: script -q -e -c 'make +pre-commit-${{inputs.check-type}}' /dev/null
+
+      - name: Fix cache permissions
+        shell: bash -e -o pipefail {0}
+        run: script -q -e -c 'make +fix-cache-permissions' /dev/null
