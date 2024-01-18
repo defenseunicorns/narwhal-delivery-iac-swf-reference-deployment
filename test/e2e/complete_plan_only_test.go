@@ -14,6 +14,7 @@ func TestCompletePlanOnly(t *testing.T) {
 		TerraformDir: tempFolder,
 		Upgrade:      false,
 		VarFiles: []string{
+			"tfvars/base/s.tfvars",
 			"tfvars/dev/s.tfvars",
 		},
 		// Set any overrides for variables you would like to validate

@@ -124,15 +124,15 @@ _fix-cache-permissions: ## [Docker] Fix permissions on the .cache folder
 
 .PHONY: plan-dev-environment
 plan-dev-environment: ## Build the dev environment docker image
-	cd terraform && terraform init && terraform plan -var-file="tfvars/dev/s.tfvars"
+	cd terraform && terraform init && terraform plan -var-file="tfvars/base/s.tfvars" -var-file="tfvars/dev/s.tfvars"
 
 .PHONY: build-dev-environment
 build-dev-environment: ## Build the dev environment docker image
-	cd terraform && terraform init && terraform apply -var-file="tfvars/dev/s.tfvars"
+	cd terraform && terraform init && terraform apply -var-file="tfvars/base/s.tfvars" -var-file="tfvars/dev/s.tfvars"
 
 .PHONY: destroy-dev-environment
 destroy-dev-environment: ## Build the dev environment docker image
-	cd terraform && terraform destroy -var-file="tfvars/dev/s.tfvars"
+	cd terraform && terraform destroy -var-file="tfvars/base/s.tfvars" -var-file="tfvars/dev/s.tfvars"
 
 .PHONY: test-complete-secure
 test-complete-secure: ## Run one test (TestCompleteSecure). Requires access to an AWS account. Costs real money.

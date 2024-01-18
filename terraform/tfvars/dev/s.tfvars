@@ -1,5 +1,3 @@
-region = "us-gov-west-1"
-
 tags = {
   Environment = "dev"
   Project     = "du-iac-cicd"
@@ -14,8 +12,6 @@ secondary_cidr_blocks = ["100.64.0.0/16"] #https://aws.amazon.com/blogs/containe
 
 ###########################################################
 #################### EKS Config ###########################
-# renovate: datasource=endoflife-date depName=amazon-eks versioning=loose extractVersion=^(?<version>.*)-eks.+$
-eks_use_mfa = false
 
 keycloak_enabled = true # provisions keycloak dedicated nodegroup
 
@@ -98,10 +94,3 @@ metrics_server = {
   # renovate: datasource=github-tags depName=kubernetes-sigs/metrics-server extractVersion=^metrics-server-helm-chart-(?<version>.*)$
   chart_version = "v3.11.0"
 }
-
-######################################################
-################## Lambda Config #####################
-
-################# Password Rotation ##################
-# Add users that will be on your ec2 instances.
-users = ["ec2-user", "Administrator"]

@@ -34,6 +34,7 @@ func TestCompleteSecure(t *testing.T) {
 	terraformOptionsNoTargets := &terraform.Options{
 		TerraformDir: tempFolder,
 		VarFiles: []string{
+			"tfvars/base/s.tfvars",
 			"tfvars/dev/s.tfvars",
 		},
 		RetryableTerraformErrors: map[string]string{
@@ -45,6 +46,7 @@ func TestCompleteSecure(t *testing.T) {
 	terraformOptionsWithVPCAndBastionTargets := &terraform.Options{
 		TerraformDir: tempFolder,
 		VarFiles: []string{
+			"tfvars/base/s.tfvars",
 			"tfvars/dev/s.tfvars",
 		},
 		Targets: []string{
@@ -60,6 +62,7 @@ func TestCompleteSecure(t *testing.T) {
 	terraformOptionsWithEKSTarget := &terraform.Options{
 		TerraformDir: tempFolder,
 		VarFiles: []string{
+			"tfvars/base/s.tfvars",
 			"tfvars/dev/s.tfvars",
 		},
 		Targets: []string{
