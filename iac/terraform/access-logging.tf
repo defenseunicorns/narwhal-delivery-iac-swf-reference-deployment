@@ -78,6 +78,12 @@ resource "aws_s3_bucket" "access_log_bucket" {
   force_destroy = true
   tags          = local.tags
 
+  lifecycle {
+    precondition {
+      condition     = length(local.access_logging_name_prefix) <= 37
+      error_message = "Bucket name prefixes may not be longer than 37 characters."
+    }
+  }
 }
 
 resource "aws_s3_bucket_versioning" "access_log_bucket" {

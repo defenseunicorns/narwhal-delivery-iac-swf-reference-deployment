@@ -12,6 +12,7 @@
 *.tfstate.*
 
 *.terraform.lock.hcl
+terraform-outputs.txt
 
 # Crash log files
 crash.log

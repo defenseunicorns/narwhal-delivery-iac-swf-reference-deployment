@@ -63,13 +63,6 @@ help-internal: ## Show available internal targets
 	| sed -n 's/^\(.*\): \(.*\)#\+#\(.*\)/\1:\3/p' \
 	| column -t -s ":"
 
-.PHONY: _test-all
-_test-all:
-	$(MAKE) _create-folders
-	echo "Running automated tests. This will take several minutes. At times it does not log anything to the console. If you interrupt the test run you will need to log into AWS console and manually delete any orphaned infrastructure."
-	TF_VARS=$$(env | grep '^TF_VAR_' | awk -F= '{printf "-e %s ", $$1}');
-	bash -c 'git config --global --add safe.directory /app && cd terraform && terraform init -upgrade=true && cd ../test/e2e && go test -count 1 -v $(EXTRA_TEST_ARGS) .'
-
 .PHONY: _create-folders
 _create-folders: ## Create the .cache folder structure
 	mkdir -p .cache/docker
@@ -94,7 +87,7 @@ _update-cache: _create-folders _docker-save-build-harness ## Update the cache
 	docker run ${ALL_THE_DOCKER_ARGS} \
 		bash -c 'git config --global --add safe.directory /app \
 			&& pre-commit install --install-hooks \
-			&& (cd test/iac && terraform init)'
+			&& (cd iac/terraform && terraform init)'
 
 .PHONY: _runhooks
 _runhooks: _create-folders ## Helper "function" for running pre-commits
@@ -121,22 +114,56 @@ pre-commit-common: ## [Docker] Run common pre-commit hooks
 _fix-cache-permissions: ## [Docker] Fix permissions on the .cache folder
 	docker run $(TTY_ARG) --rm -v "${PWD}:/app" --workdir "/app" -e "PRE_COMMIT_HOME=/app/.cache/pre-commit" ${BUILD_HARNESS_REPO}:${BUILD_HARNESS_VERSION} chmod -R a+rx .cache
 
-.PHONY: test-infra-up
-test-infra-up: ## Run one test (TestCompleteSecure). Requires access to an AWS account. Costs real money.
-	$(eval export TF_VAR_region := $(or $(REGION),$(TF_VAR_region),us-gov-west-1))
-	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 3h -run TestCompleteSecure"
-
-.PHONY: test-infra-plan-only
-test-infra-plan-only: ## Run one test (TestCompletePlanOnly). Requires access to an AWS account. It will not cost money or create any resources since it is just running `terraform plan`.
-	$(eval export TF_VAR_region := $(or $(REGION),$(TF_VAR_region),us-gov-west-1))
-	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 3h -run TestCompletePlanOnly"
-
-.PHONY: test-start-session
-test-start-session: _create-folders
+.PHONY: _test-targeted-infra-up
+_test-targeted-infra-up:
 	docker run ${ALL_THE_DOCKER_ARGS} \
 		bash -c 'git config --global --add safe.directory /app \
-				&& terraform init -upgrade=true \
-				&& sshuttle -D -e '"'"'sshpass -p "my-password" ssh -q -o CheckHostIP=no -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand="aws ssm --region $(shell cd examples/complete && terraform output -raw bastion_region) start-session --target %h --document-name AWS-StartSSHSession --parameters portNumber=%p"'"'"' --dns --disable-ipv6 -vr ec2-user@$(shell cd examples/complete && terraform output -raw bastion_instance_id) $(shell cd examples/complete && terraform output -raw vpc_cidr) \
-				&& aws eks --region $(shell cd examples/complete && terraform output -raw bastion_region) update-kubeconfig --name $(shell cd examples/complete && terraform output -raw eks_cluster_name) \
+			&& cd iac/terraform && terraform init && terraform apply -auto-approve -var-file="tfvars/dev/s.tfvars" -target="module.vpc" -target="module.bastion" \
+			&& echo bastion_region=$$(terraform output -raw bastion_region) > terraform-outputs.txt \
+			&& echo bastion_instance_id=$$(terraform output -raw bastion_instance_id) >> terraform-outputs.txt \
+			&& echo vpc_cidr=$$(terraform output -raw vpc_cidr) >> terraform-outputs.txt'
+
+.PHONY: _test-non-targeted-infra-up
+_test-non-targeted-infra-up:
+	docker run ${ALL_THE_DOCKER_ARGS} \
+	bash -c 'git config --global --add safe.directory /app \
+		&& cd iac/terraform \
+		&& sshuttle -D -e "sshpass -p \"my-password\" ssh -q -o CheckHostIP=no -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand=\"aws ssm --region $$(terraform output -raw bastion_region) start-session --target %h --document-name AWS-StartSSHSession --parameters portNumber=%p\"" --dns --disable-ipv6 -vr ec2-user@$$(terraform output -raw bastion_instance_id) $$(terraform output -raw vpc_cidr) \
+		&& terraform init && terraform apply -auto-approve -var-file="tfvars/dev/s.tfvars"'
+
+.PHONY: test-infra-up
+test-infra-up: _test-targeted-infra-up _test-non-targeted-infra-up
+
+.PHONY: _test-targeted-infra-down
+_test-targeted-infra-down:
+	docker run ${ALL_THE_DOCKER_ARGS} \
+		bash -c 'git config --global --add safe.directory /app \
+		&& cd iac/terraform \
+		&& sshuttle -D -e "sshpass -p \"my-password\" ssh -q -o CheckHostIP=no -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand=\"aws ssm --region $$(terraform output -raw bastion_region) start-session --target %h --document-name AWS-StartSSHSession --parameters portNumber=%p\"" --dns --disable-ipv6 -vr ec2-user@$$(terraform output -raw bastion_instance_id) $$(terraform output -raw vpc_cidr) \
+		&& terraform init && terraform destroy -auto-approve -var-file="tfvars/dev/s.tfvars" -target="module.eks"'
+
+.PHONY: _test-non-targeted-infra-down
+_test-non-targeted-infra-down:
+	docker run ${ALL_THE_DOCKER_ARGS} \
+		bash -c 'git config --global --add safe.directory /app \
+		&& cd iac/terraform && terraform init && terraform destroy -auto-approve -var-file="tfvars/dev/s.tfvars"'
+
+.PHONY: test-infra-down
+test-infra-down: _test-targeted-infra-down _test-non-targeted-infra-down
+
+.PHONY: _test-start-session
+_test-start-session: _create-folders
+	docker run ${ALL_THE_DOCKER_ARGS} \
+		bash -c 'git config --global --add safe.directory /app \
+				&& cd iac/terraform \
+				&& sshuttle -D -e "sshpass -p \"my-password\" ssh -q -o CheckHostIP=no -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand=\"aws ssm --region $$(terraform output -raw bastion_region) start-session --target %h --document-name AWS-StartSSHSession --parameters portNumber=%p\"" --dns --disable-ipv6 -vr ec2-user@$$(terraform output -raw bastion_instance_id) $$(terraform output -raw vpc_cidr) \
+				&& aws eks --region $$(terraform output -raw bastion_region) update-kubeconfig --name $$(terraform output -raw eks_cluster_name) \
 				&& echo "SShuttle is running and KUBECONFIG has been set. Try running kubectl get nodes." \
 				&& bash'
+
+.PHONY: _test-all
+_test-all:
+	docker run ${ALL_THE_DOCKER_ARGS} \
+		bash -c 'git config --global --add safe.directory /app \
+		&& chmod +x ./test/test-all.sh \
+		&& ./test/test-all.sh'
