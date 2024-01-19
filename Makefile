@@ -121,25 +121,22 @@ pre-commit-common: ## [Docker] Run common pre-commit hooks
 _fix-cache-permissions: ## [Docker] Fix permissions on the .cache folder
 	docker run $(TTY_ARG) --rm -v "${PWD}:/app" --workdir "/app" -e "PRE_COMMIT_HOME=/app/.cache/pre-commit" ${BUILD_HARNESS_REPO}:${BUILD_HARNESS_VERSION} chmod -R a+rx .cache
 
-
-.PHONY: plan-dev-environment
-plan-dev-environment: ## Build the dev environment docker image
-	cd terraform && terraform init && terraform plan -var-file="tfvars/base/s.tfvars" -var-file="tfvars/dev/s.tfvars"
-
-.PHONY: build-dev-environment
-build-dev-environment: ## Build the dev environment docker image
-	cd terraform && terraform init && terraform apply -var-file="tfvars/base/s.tfvars" -var-file="tfvars/dev/s.tfvars"
-
-.PHONY: destroy-dev-environment
-destroy-dev-environment: ## Build the dev environment docker image
-	cd terraform && terraform destroy -var-file="tfvars/base/s.tfvars" -var-file="tfvars/dev/s.tfvars"
-
-.PHONY: test-complete-secure
-test-complete-secure: ## Run one test (TestCompleteSecure). Requires access to an AWS account. Costs real money.
+.PHONY: test-infra-up
+test-infra-up: ## Run one test (TestCompleteSecure). Requires access to an AWS account. Costs real money.
 	$(eval export TF_VAR_region := $(or $(REGION),$(TF_VAR_region),us-gov-west-1))
 	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 3h -run TestCompleteSecure"
 
-.PHONY: test-complete-plan-only
-test-complete-plan-only: ## Run one test (TestCompletePlanOnly). Requires access to an AWS account. It will not cost money or create any resources since it is just running `terraform plan`.
+.PHONY: test-infra-plan-only
+test-infra-plan-only: ## Run one test (TestCompletePlanOnly). Requires access to an AWS account. It will not cost money or create any resources since it is just running `terraform plan`.
 	$(eval export TF_VAR_region := $(or $(REGION),$(TF_VAR_region),us-gov-west-1))
 	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 3h -run TestCompletePlanOnly"
+
+.PHONY: test-start-session
+test-start-session: _create-folders
+	docker run ${ALL_THE_DOCKER_ARGS} \
+		bash -c 'git config --global --add safe.directory /app \
+				&& terraform init -upgrade=true \
+				&& sshuttle -D -e '"'"'sshpass -p "my-password" ssh -q -o CheckHostIP=no -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand="aws ssm --region $(shell cd examples/complete && terraform output -raw bastion_region) start-session --target %h --document-name AWS-StartSSHSession --parameters portNumber=%p"'"'"' --dns --disable-ipv6 -vr ec2-user@$(shell cd examples/complete && terraform output -raw bastion_instance_id) $(shell cd examples/complete && terraform output -raw vpc_cidr) \
+				&& aws eks --region $(shell cd examples/complete && terraform output -raw bastion_region) update-kubeconfig --name $(shell cd examples/complete && terraform output -raw eks_cluster_name) \
+				&& echo "SShuttle is running and KUBECONFIG has been set. Try running kubectl get nodes." \
+				&& bash'

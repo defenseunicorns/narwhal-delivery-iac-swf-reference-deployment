@@ -28,17 +28,17 @@ variable "aws_admin_usernames" {
   default     = []
 }
 
-# variable "create_aws_auth_configmap" {
-#   description = "Determines whether to create the aws-auth configmap. NOTE - this is only intended for scenarios where the configmap does not exist (i.e. - when using only self-managed node groups). Most users should use `manage_aws_auth_configmap`"
-#   type        = bool
-#   default     = true
-# }
+variable "create_aws_auth_configmap" {
+  description = "Determines whether to create the aws-auth configmap. NOTE - this is only intended for scenarios where the configmap does not exist (i.e. - when using only self-managed node groups). Most users should use `manage_aws_auth_configmap`"
+  type        = bool
+  default     = true
+}
 
-# variable "manage_aws_auth_configmap" {
-#   description = "Determines whether to manage the aws-auth configmap"
-#   type        = bool
-#   default     = false
-# }
+variable "manage_aws_auth_configmap" {
+  description = "Determines whether to manage the aws-auth configmap"
+  type        = bool
+  default     = false
+}
 
 variable "tags" {
   description = "A map of tags to apply to all resources"
@@ -104,7 +104,7 @@ variable "cluster_version" {
 }
 
 variable "cluster_endpoint_public_access" {
-  description = "Whether to enable public access to the EKS cluster"
+  description = "Whether to enable private access to the EKS cluster"
   type        = bool
   default     = false
 }
@@ -249,10 +249,16 @@ variable "secrets_store_csi_driver" {
 
 ###########################################################
 ################## Bastion Config #########################
+variable "enable_bastion" {
+  description = "If true, a bastion will be created"
+  type        = bool
+  default     = true
+}
+
 variable "bastion_tenancy" {
   description = "The tenancy of the bastion"
   type        = string
-  default     = "dedicated"
+  default     = "default"
 }
 
 variable "bastion_instance_type" {
