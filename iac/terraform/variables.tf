@@ -135,7 +135,7 @@ EOD
 variable "create_kubernetes_resources" {
   description = "If true, kubernetes resources related to non-marketplace addons to will be created"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "create_ssm_parameters" {
