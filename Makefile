@@ -87,7 +87,7 @@ _update-cache: _create-folders _docker-save-build-harness ## Update the cache
 	docker run ${ALL_THE_DOCKER_ARGS} \
 		bash -c 'git config --global --add safe.directory /app \
 			&& pre-commit install --install-hooks \
-			&& (cd iac/terraform && terraform init)'
+			&& (cd iac && terraform init)'
 
 .PHONY: _runhooks
 _runhooks: _create-folders ## Helper "function" for running pre-commits
@@ -118,13 +118,13 @@ _fix-cache-permissions: ## [Docker] Fix permissions on the .cache folder
 _test-targeted-infra-up:
 	docker run ${ALL_THE_DOCKER_ARGS} \
 		bash -c 'git config --global --add safe.directory /app \
-		&& cd iac/terraform && terraform init && terraform apply -auto-approve -var-file="tfvars/dev/s.tfvars" -target="module.vpc" -target="module.bastion"'
+		&& cd iac && terraform init && terraform apply -auto-approve -var-file="tfvars/dev/s.tfvars" -target="module.vpc" -target="module.bastion"'
 
 .PHONY: _test-non-targeted-infra-up
 _test-non-targeted-infra-up:
 	docker run ${ALL_THE_DOCKER_ARGS} \
-		bash -c 'chmod +x iac/terraform/apply-over-sshuttle.sh \
-		&& iac/terraform/apply-over-sshuttle.sh'
+		bash -c 'chmod +x iac/apply-over-sshuttle.sh \
+		&& iac/apply-over-sshuttle.sh'
 
 .PHONY: test-infra-up
 test-infra-up: _test-targeted-infra-up _test-non-targeted-infra-up
@@ -132,14 +132,14 @@ test-infra-up: _test-targeted-infra-up _test-non-targeted-infra-up
 .PHONY: _test-targeted-infra-down
 _test-targeted-infra-down:
 	docker run ${ALL_THE_DOCKER_ARGS} \
-		bash -c 'chmod +x iac/terraform/destroy-over-sshuttle.sh \
-		&& iac/terraform/destroy-over-sshuttle.sh'
+		bash -c 'chmod +x iac/destroy-over-sshuttle.sh \
+		&& iac/destroy-over-sshuttle.sh'
 
 .PHONY: _test-non-targeted-infra-down
 _test-non-targeted-infra-down:
 	docker run ${ALL_THE_DOCKER_ARGS} \
 		bash -c 'git config --global --add safe.directory /app \
-		&& cd iac/terraform && terraform init && terraform destroy -auto-approve -var-file="tfvars/dev/s.tfvars"'
+		&& cd iac && terraform init && terraform destroy -auto-approve -var-file="tfvars/dev/s.tfvars"'
 
 .PHONY: test-infra-down
 test-infra-down: _test-targeted-infra-down _test-non-targeted-infra-down
@@ -147,8 +147,8 @@ test-infra-down: _test-targeted-infra-down _test-non-targeted-infra-down
 .PHONY: _test-start-session
 _test-start-session: _create-folders
 	docker run ${ALL_THE_DOCKER_ARGS} \
-		bash -c 'chmod +x iac/terraform/connect.sh \
-		&& iac/terraform/connect.sh'
+		bash -c 'chmod +x iac/connect.sh \
+		&& iac/connect.sh'
 
 .PHONY: _test-all
 _test-all:

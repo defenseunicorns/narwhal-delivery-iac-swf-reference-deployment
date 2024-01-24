@@ -30,9 +30,9 @@ crash.*.log
 terraform/builds
 
 # Except ones that we do want to commit because they are used for automated tests
-!iac/terraform/tfvars/dev/s.tfvars
-!iac/terraform/tfvars/staging/s.tfvars
-!iac/terraform/tfvars/prod/s.tfvars
+!iac/tfvars/dev/s.tfvars
+!iac/tfvars/staging/s.tfvars
+!iac/tfvars/prod/s.tfvars
 
 # Ignore override files as they are usually used to override resources locally and so
 # are not checked in

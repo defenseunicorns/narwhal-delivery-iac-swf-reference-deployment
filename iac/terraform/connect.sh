@@ -16,7 +16,7 @@ trap cleanup SIGINT
 
 echo "Starting main script..."
 git config --global --add safe.directory /app \
-    && cd iac/terraform && terraform init \
+    && cd iac && terraform init \
     && sshuttle -D -e "sshpass -p \"my-password\" ssh -q -o CheckHostIP=no -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand=\"aws ssm --region $(terraform output -raw bastion_region) start-session --target %h --document-name AWS-StartSSHSession --parameters portNumber=%p\"" --dns --disable-ipv6 -vr ec2-user@$(terraform output -raw bastion_instance_id) $(terraform output -raw vpc_cidr) \
     && aws eks --region $(terraform output -raw bastion_region) update-kubeconfig --name $(terraform output -raw eks_cluster_name) \
     && echo "SShuttle is running and KUBECONFIG has been set. Try running kubectl get nodes." \
