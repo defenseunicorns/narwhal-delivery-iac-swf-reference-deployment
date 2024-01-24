@@ -123,8 +123,8 @@ _test-targeted-infra-up:
 .PHONY: _test-non-targeted-infra-up
 _test-non-targeted-infra-up:
 	docker run ${ALL_THE_DOCKER_ARGS} \
-		bash -c 'chmod +x iac/apply-over-sshuttle.sh \
-		&& iac/apply-over-sshuttle.sh'
+		bash -c 'chmod +x ${SCRIPT_DIR}/apply-over-sshuttle.sh \
+		&& ${SCRIPT_DIR}/apply-over-sshuttle.sh'
 
 .PHONY: test-infra-up
 test-infra-up: _test-targeted-infra-up _test-non-targeted-infra-up
@@ -132,8 +132,8 @@ test-infra-up: _test-targeted-infra-up _test-non-targeted-infra-up
 .PHONY: _test-targeted-infra-down
 _test-targeted-infra-down:
 	docker run ${ALL_THE_DOCKER_ARGS} \
-		bash -c 'chmod +x iac/destroy-over-sshuttle.sh \
-		&& iac/destroy-over-sshuttle.sh'
+		bash -c 'chmod +x ${SCRIPT_DIR}/destroy-over-sshuttle.sh \
+		&& ${SCRIPT_DIR}/destroy-over-sshuttle.sh'
 
 .PHONY: _test-non-targeted-infra-down
 _test-non-targeted-infra-down:
@@ -147,8 +147,8 @@ test-infra-down: _test-targeted-infra-down _test-non-targeted-infra-down
 .PHONY: _test-start-session
 _test-start-session: _create-folders
 	docker run ${ALL_THE_DOCKER_ARGS} \
-		bash -c 'chmod +x iac/connect.sh \
-		&& iac/connect.sh'
+		bash -c 'chmod +x ${SCRIPT_DIR}/connect.sh \
+		&& ${SCRIPT_DIR}/connect.sh'
 
 .PHONY: _test-all
 _test-all:
