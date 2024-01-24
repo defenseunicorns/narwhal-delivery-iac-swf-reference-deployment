@@ -118,18 +118,13 @@ _fix-cache-permissions: ## [Docker] Fix permissions on the .cache folder
 _test-targeted-infra-up:
 	docker run ${ALL_THE_DOCKER_ARGS} \
 		bash -c 'git config --global --add safe.directory /app \
-			&& cd iac/terraform && terraform init && terraform apply -auto-approve -var-file="tfvars/dev/s.tfvars" -target="module.vpc" -target="module.bastion" \
-			&& echo bastion_region=$$(terraform output -raw bastion_region) > terraform-outputs.txt \
-			&& echo bastion_instance_id=$$(terraform output -raw bastion_instance_id) >> terraform-outputs.txt \
-			&& echo vpc_cidr=$$(terraform output -raw vpc_cidr) >> terraform-outputs.txt'
+		&& cd iac/terraform && terraform init && terraform apply -auto-approve -var-file="tfvars/dev/s.tfvars" -target="module.vpc" -target="module.bastion"'
 
 .PHONY: _test-non-targeted-infra-up
 _test-non-targeted-infra-up:
 	docker run ${ALL_THE_DOCKER_ARGS} \
-	bash -c 'git config --global --add safe.directory /app \
-		&& cd iac/terraform \
-		&& sshuttle -D -e "sshpass -p \"my-password\" ssh -q -o CheckHostIP=no -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand=\"aws ssm --region $$(terraform output -raw bastion_region) start-session --target %h --document-name AWS-StartSSHSession --parameters portNumber=%p\"" --dns --disable-ipv6 -vr ec2-user@$$(terraform output -raw bastion_instance_id) $$(terraform output -raw vpc_cidr) \
-		&& terraform init && terraform apply -auto-approve -var-file="tfvars/dev/s.tfvars"'
+		bash -c 'chmod +x iac/terraform/apply-over-sshuttle.sh \
+		&& iac/terraform/apply-over-sshuttle.sh'
 
 .PHONY: test-infra-up
 test-infra-up: _test-targeted-infra-up _test-non-targeted-infra-up
@@ -137,10 +132,8 @@ test-infra-up: _test-targeted-infra-up _test-non-targeted-infra-up
 .PHONY: _test-targeted-infra-down
 _test-targeted-infra-down:
 	docker run ${ALL_THE_DOCKER_ARGS} \
-		bash -c 'git config --global --add safe.directory /app \
-		&& cd iac/terraform \
-		&& sshuttle -D -e "sshpass -p \"my-password\" ssh -q -o CheckHostIP=no -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand=\"aws ssm --region $$(terraform output -raw bastion_region) start-session --target %h --document-name AWS-StartSSHSession --parameters portNumber=%p\"" --dns --disable-ipv6 -vr ec2-user@$$(terraform output -raw bastion_instance_id) $$(terraform output -raw vpc_cidr) \
-		&& terraform init && terraform destroy -auto-approve -var-file="tfvars/dev/s.tfvars" -target="module.eks"'
+		bash -c 'chmod +x iac/terraform/destroy-over-sshuttle.sh \
+		&& iac/terraform/destroy-over-sshuttle.sh'
 
 .PHONY: _test-non-targeted-infra-down
 _test-non-targeted-infra-down:
@@ -154,12 +147,8 @@ test-infra-down: _test-targeted-infra-down _test-non-targeted-infra-down
 .PHONY: _test-start-session
 _test-start-session: _create-folders
 	docker run ${ALL_THE_DOCKER_ARGS} \
-		bash -c 'git config --global --add safe.directory /app \
-				&& cd iac/terraform \
-				&& sshuttle -D -e "sshpass -p \"my-password\" ssh -q -o CheckHostIP=no -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand=\"aws ssm --region $$(terraform output -raw bastion_region) start-session --target %h --document-name AWS-StartSSHSession --parameters portNumber=%p\"" --dns --disable-ipv6 -vr ec2-user@$$(terraform output -raw bastion_instance_id) $$(terraform output -raw vpc_cidr) \
-				&& aws eks --region $$(terraform output -raw bastion_region) update-kubeconfig --name $$(terraform output -raw eks_cluster_name) \
-				&& echo "SShuttle is running and KUBECONFIG has been set. Try running kubectl get nodes." \
-				&& bash'
+		bash -c 'chmod +x iac/terraform/connect.sh \
+		&& iac/terraform/connect.sh'
 
 .PHONY: _test-all
 _test-all:
