@@ -2,11 +2,15 @@ include .env
 
 .DEFAULT_GOAL := help
 
-SHELL := /bin/bash
+# Optionally add the "-it" flag for docker run commands if the env var "CI" is not set (meaning we are on a local machine and not in github actions)
+# TTY_ARG :=
+# ifndef CI
+# 	TTY_ARG := -it
+# endif
 
-ZARF := zarf -l debug --no-progress --no-log-file
-
-ALL_THE_DOCKER_ARGS := -it --rm \
+BUILD_HARNESS_RUN := TF_VARS=$$(env | grep '^TF_VAR_' | awk -F= '{printf "-e %s ", $$1}'); \
+	docker run --rm \
+	--platform=linux/amd64 \
 	--cap-add=NET_ADMIN \
 	--cap-add=NET_RAW \
 	-v "${PWD}:/app" \
@@ -16,6 +20,7 @@ ALL_THE_DOCKER_ARGS := -it --rm \
 	-v "${PWD}/.cache/go-build:/root/.cache/go-build" \
 	-v "${PWD}/.cache/.terraform.d/plugin-cache:/root/.terraform.d/plugin-cache" \
 	-v "${PWD}/.cache/.zarf-cache:/root/.zarf-cache" \
+	-v "${HOME}/.uds-cache:/root/.uds-cache" \
 	--workdir "/app" \
 	-e TF_LOG_PATH \
 	-e TF_LOG \
@@ -30,14 +35,39 @@ ALL_THE_DOCKER_ARGS := -it --rm \
 	-e AWS_SESSION_TOKEN \
 	-e AWS_SECURITY_TOKEN \
 	-e AWS_SESSION_EXPIRATION \
+	$${TF_VARS} \
 	${BUILD_HARNESS_REPO}:${BUILD_HARNESS_VERSION}
 
+REGION := $(shell $(BUILD_HARNESS_RUN) bash -c 'cd iac && terraform output -raw region')
+BASTION_ID := $(shell $(BUILD_HARNESS_RUN) bash -c 'cd iac && terraform output -raw bastion_instance_id')
+
+SSM_SESSION_ARGS := \
+	aws ssm start-session \
+		--region $(REGION) \
+		--target $(BASTION_ID) \
+		--document-name AWS-StartInteractiveCommand
+
+ZARF := zarf -l debug --no-progress --no-log-file
+
+# The repo clone url
+REPO := $(shell git remote get-url origin)
 # The current branch name
 BRANCH := $(shell git symbolic-ref --short HEAD)
 # The "primary" directory
-PRIMARY_DIR := $(shell pwd)
+PRIMARY_DIR := $(shell basename $$(pwd))
 
-# Silent mode by default. Run `make <the-target> VERBOSE=1` to turn off silent mode.
+.PHONY: arbitrary-container-command
+arbitrary-container-command: ## Run an arbitrary command in a container. Example: make arbitrary-container-command COMMAND="ls -lahrt"
+	${BUILD_HARNESS_RUN} \
+		bash -c '$(COMMAND)'
+
+.PHONY: _check-env-vars
+_check-env-vars:
+	echo $(PRIMARY_DIR)
+	echo $(SSM_SESSION_ARGS)
+	echo $(REGION)
+
+# Silent mode by default. Run `make VERBOSE=1` to turn off silent mode.
 ifndef VERBOSE
 .SILENT:
 endif
@@ -64,55 +94,46 @@ help-internal: ## Show available internal targets
 	| column -t -s ":"
 
 .PHONY: _create-folders
-_create-folders: ## Create the .cache folder structure
+_create-folders:
 	mkdir -p .cache/docker
 	mkdir -p .cache/pre-commit
-	mkdir -p .cache/go
-	mkdir -p .cache/go-build
 	mkdir -p .cache/tmp
-	mkdir -p .cache/.terraform.d/plugin-cache
 	mkdir -p .cache/.zarf-cache
 
-.PHONY: _docker-save-build-harness
-_docker-save-build-harness: _create-folders ## Save the build-harness docker image to the .cache folder
+.PHONY: docker-save-build-harness
+docker-save-build-harness: _create-folders ## Pulls the build harness docker image and saves it to a tarball
 	docker pull ${BUILD_HARNESS_REPO}:${BUILD_HARNESS_VERSION}
 	docker save -o .cache/docker/build-harness.tar ${BUILD_HARNESS_REPO}:${BUILD_HARNESS_VERSION}
 
-.PHONY: _docker-load-build-harness
-_docker-load-build-harness: ## Load the build-harness docker image from the .cache folder
+.PHONY: docker-load-build-harness
+docker-load-build-harness: ## Loads the saved build harness docker image
 	docker load -i .cache/docker/build-harness.tar
 
-.PHONY: _update-cache
-_update-cache: _create-folders _docker-save-build-harness ## Update the cache
-	docker run ${ALL_THE_DOCKER_ARGS} \
-		bash -c 'git config --global --add safe.directory /app \
-			&& pre-commit install --install-hooks \
-			&& (cd iac && terraform init)'
-
 .PHONY: _runhooks
-_runhooks: _create-folders ## Helper "function" for running pre-commits
-	docker run ${ALL_THE_DOCKER_ARGS} \
-		bash -c 'git config --global --add safe.directory /app \
+_runhooks: _create-folders
+	${BUILD_HARNESS_RUN} \
+	bash -c 'git config --global --add safe.directory /app \
 		&& pre-commit run -a --show-diff-on-failure $(HOOK)'
 
 .PHONY: pre-commit-all
-pre-commit-all: ## [Docker] Run all pre-commit hooks
+pre-commit-all: ## Run all pre-commit hooks. Returns nonzero exit code if any hooks fail. Uses Docker for maximum compatibility
 	$(MAKE) _runhooks HOOK="" SKIP=""
 
-.PHONY: pre-commit-terraform
-pre-commit-terraform: ## [Docker] Run terraform pre-commit hooks
-	$(MAKE) _runhooks HOOK="" SKIP="check-added-large-files,check-merge-conflict,detect-aws-credentials,detect-private-key,end-of-file-fixer,fix-byte-order-marker,trailing-whitespace,check-yaml,fix-smartquotes,renovate-config-validator"
 .PHONY: pre-commit-renovate
-pre-commit-renovate: ## [Docker] Run renovate pre-commit hooks
+pre-commit-renovate: ## Run the renovate pre-commit hooks. Returns nonzero exit code if any hooks fail. Uses Docker for maximum compatibility
 	$(MAKE) _runhooks HOOK="renovate-config-validator" SKIP=""
 
 .PHONY: pre-commit-common
-pre-commit-common: ## [Docker] Run common pre-commit hooks
-	$(MAKE) _runhooks HOOK="" SKIP="terraform_fmt,terraform_docs,terraform_checkov,terraform_tflint,renovate-config-validator"
+pre-commit-common: ## Run the common pre-commit hooks. Returns nonzero exit code if any hooks fail. Uses Docker for maximum compatibility
+	$(MAKE) _runhooks HOOK="" SKIP="go-fmt,golangci-lint,terraform_fmt,terraform_docs,terraform_checkov,terraform_tflint,renovate-config-validator"
 
-.PHONY: _fix-cache-permissions
-_fix-cache-permissions: ## [Docker] Fix permissions on the .cache folder
+.PHONY: fix-cache-permissions
+fix-cache-permissions: ## Fixes the permissions on the pre-commit cache
 	docker run $(TTY_ARG) --rm -v "${PWD}:/app" --workdir "/app" -e "PRE_COMMIT_HOME=/app/.cache/pre-commit" ${BUILD_HARNESS_REPO}:${BUILD_HARNESS_VERSION} chmod -R a+rx .cache
+
+.PHONY: autoformat
+autoformat: ## Update files with automatic formatting tools. Uses Docker for maximum compatibility.
+	$(MAKE) _runhooks HOOK="" SKIP="check-added-large-files,check-merge-conflict,detect-aws-credentials,detect-private-key,check-yaml,golangci-lint,terraform_checkov,terraform_tflint,renovate-config-validator"
 
 .PHONY: _test-targeted-infra-up
 _test-targeted-infra-up:
