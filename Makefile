@@ -139,12 +139,12 @@ autoformat: ## Update files with automatic formatting tools. Uses Docker for max
 .PHONY: _test-targeted-terraform-apply
  _test-targeted-terraform-apply:
 	${BUILD_HARNESS_RUN} \
-		bash -c 'cd iac && terraform init && terraform apply -auto-approve -var-file="tfvars/dev/s.tfvars" -target="module.vpc" -target="module.bastion"'
+		bash -c 'cd iac && terraform init && terraform apply -auto-approve -var-file="tfvars/dev/terraform.tfvars" -target="module.vpc" -target="module.bastion"'
 
 .PHONY: _test-non-targeted-terraform-apply
 _test-non-targeted-terraform-apply:
 	${BUILD_HARNESS_RUN} \
-		bash -c 'cd iac && terraform init && terraform apply -auto-approve -var-file="tfvars/dev/s.tfvars"'
+		bash -c 'cd iac && terraform init && terraform apply -auto-approve -var-file="tfvars/dev/terraform.tfvars"'
 
 .PHONY: test-infra-up
 test-infra-up: _test-targeted-infra-up _test-non-targeted-infra-up
@@ -152,12 +152,12 @@ test-infra-up: _test-targeted-infra-up _test-non-targeted-infra-up
 .PHONY: _test-targeted-terraform-destroy
 _test-targeted-terraform-destroy:
 	${BUILD_HARNESS_RUN} \
-		bash -c 'cd iac && terraform init && terraform destroy -auto-approve -var-file="tfvars/dev/s.tfvars" -target="module.eks"'
+		bash -c 'cd iac && terraform init && terraform destroy -auto-approve -var-file="tfvars/dev/terraform.tfvars" -target="module.eks"'
 
 .PHONY: _test-non-targeted-terraform-destroy
 _test-non-targeted-terraform-destroy:
 	${BUILD_HARNESS_RUN} \
-		bash -c 'cd iac && terraform init && terraform destroy -auto-approve -var-file="tfvars/dev/s.tfvars"'
+		bash -c 'cd iac && terraform init && terraform destroy -auto-approve -var-file="tfvars/dev/terraform.tfvars"'
 
 .PHONY: test-infra-down
 test-infra-down: _test-targeted-infra-down _test-non-targeted-infra-down
