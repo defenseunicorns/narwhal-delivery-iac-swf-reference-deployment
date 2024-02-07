@@ -17,6 +17,7 @@ No providers.
 
 | Name | Source | Version |
 |------|--------|---------|
+| <a name="module_s3_bucket"></a> [s3\_bucket](#module\_s3\_bucket) | terraform-aws-modules/s3-bucket/aws | 4.1.0 |
 | <a name="module_tfstate_backend"></a> [tfstate\_backend](#module\_tfstate\_backend) | cloudposse/tfstate-backend/aws | 1.4.0 |
 
 ## Resources

@@ -22,3 +22,18 @@ module "tfstate_backend" {
   bucket_ownership_enforced_enabled = var.bucket_ownership_enforced_enabled
   force_destroy                     = var.force_destroy
 }
+
+module "s3_bucket" {
+  source  = "terraform-aws-modules/s3-bucket/aws"
+  version = "4.1.0"
+
+  bucket = "zarf-s3-driver"
+  acl    = "private"
+
+  control_object_ownership = true
+  object_ownership         = "ObjectWriter"
+
+  versioning = {
+    enabled = true
+  }
+}
