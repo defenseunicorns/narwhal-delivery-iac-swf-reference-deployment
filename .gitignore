@@ -12,6 +12,9 @@
 *.tfstate.*
 
 *.terraform.lock.hcl
+terraform-outputs.txt
+
+*.pid
 
 # Crash log files
 crash.log
@@ -24,11 +27,12 @@ crash.*.log
 *.tfvars
 *.tfvars.json
 
+terraform/builds
+
 # Except ones that we do want to commit because they are used for automated tests
-!examples/complete/fixtures.common.tfvars
-!examples/complete/fixtures.insecure.tfvars
-!examples/complete/fixtures.secure.tfvars
-!modules/cloudtrail/examples/complete/fixtures.create-bucket.tfvars
+!iac/tfvars/dev/terraform.tfvars
+!iac/tfvars/staging/terraform.tfvars
+!iac/tfvars/prod/terraform.tfvars
 
 # Ignore override files as they are usually used to override resources locally and so
 # are not checked in
@@ -49,9 +53,6 @@ terraform.rc
 
 # Ignore Terraform cache
 .terragrunt-cache*
-
-# Ignore Terraform state files
-backend.tf
 
 # Ignore Checkov external module downloads
 .external_modules
