@@ -11,7 +11,7 @@
 *.tfstate
 *.tfstate.*
 
-*.terraform.lock.hcl
+!*.terraform.lock.hcl
 terraform-outputs.txt
 
 *.pid

@@ -10,9 +10,9 @@ module "tfstate_backend" {
   arn_format                         = var.arn_format
   s3_bucket_name                     = var.s3_bucket_name
 
-  namespace  = "du"
-  stage      = "test"
-  name       = "narwhal-delivery-iac-swf"
+  namespace  = var.namespace
+  stage      = var.stage
+  name       = var.name
   attributes = ["state"]
 
   tags = var.tags
