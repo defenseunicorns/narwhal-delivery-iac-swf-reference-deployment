@@ -68,9 +68,9 @@ locals {
   mission_app_self_mg_node_group = {
     bigbang_ng = {
       subnet_ids   = module.vpc.private_subnets
-      min_size     = 2
-      max_size     = 2
-      desired_size = 2
+      min_size     = 3
+      max_size     = 5
+      desired_size = 3
 
       block_device_mappings = {
         xvda = {
@@ -172,32 +172,46 @@ module "ssm_kms_key" {
 
 locals {
   ssm_parameter_key_arn = var.create_ssm_parameters ? module.ssm_kms_key.key_arn : ""
+
+  access_entries = merge(
+    var.access_entries,
+    { bastion = {
+      principal_arn = module.bastion.bastion_role_arn
+      type          = "STANDARD"
+      policy_associations = {
+        admin = {
+          policy_arn = "arn:${data.aws_partition.current.partition}:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          access_scope = {
+            type = "cluster"
+          }
+        }
+      }
+    } },
+  )
 }
 
 module "eks" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-eks.git?ref=v0.0.13"
+  source = "git::https://github.com/defenseunicorns/terraform-aws-eks.git?ref=v0.0.14"
 
-  name                                    = local.cluster_name
-  aws_region                              = var.region
-  azs                                     = module.vpc.azs
-  vpc_id                                  = module.vpc.vpc_id
-  private_subnet_ids                      = module.vpc.private_subnets
-  control_plane_subnet_ids                = module.vpc.private_subnets
-  iam_role_permissions_boundary           = var.iam_role_permissions_boundary
-  cluster_security_group_additional_rules = local.cluster_security_group_additional_rules
-  cluster_endpoint_public_access          = var.cluster_endpoint_public_access
-  cluster_endpoint_private_access         = true
-  vpc_cni_custom_subnet                   = module.vpc.intra_subnets
-  aws_admin_usernames                     = var.aws_admin_usernames
-  cluster_version                         = var.cluster_version
-  cidr_blocks                             = module.vpc.private_subnets_cidr_blocks
-  eks_use_mfa                             = var.eks_use_mfa
-  aws_auth_roles                          = local.bastion_aws_auth_entry
-  dataplane_wait_duration                 = var.dataplane_wait_duration
-
-  # If using EKS Managed Node Groups, the aws-auth ConfigMap is created by eks itself and terraform can not create it
-  create_aws_auth_configmap = true
-  manage_aws_auth_configmap = true
+  name                                     = local.cluster_name
+  aws_region                               = var.region
+  azs                                      = module.vpc.azs
+  vpc_id                                   = module.vpc.vpc_id
+  private_subnet_ids                       = module.vpc.private_subnets
+  control_plane_subnet_ids                 = module.vpc.private_subnets
+  iam_role_permissions_boundary            = var.iam_role_permissions_boundary
+  cluster_security_group_additional_rules  = local.cluster_security_group_additional_rules
+  cluster_endpoint_public_access           = var.cluster_endpoint_public_access
+  cluster_endpoint_private_access          = true
+  vpc_cni_custom_subnet                    = module.vpc.intra_subnets
+  aws_admin_usernames                      = var.aws_admin_usernames
+  cluster_version                          = var.cluster_version
+  cidr_blocks                              = module.vpc.private_subnets_cidr_blocks
+  eks_use_mfa                              = var.eks_use_mfa
+  dataplane_wait_duration                  = var.dataplane_wait_duration
+  access_entries                           = local.access_entries
+  authentication_mode                      = var.authentication_mode
+  enable_cluster_creator_admin_permissions = var.enable_cluster_creator_admin_permissions
 
   ######################## Self Managed Node Group ###################################
   self_managed_node_group_defaults = local.self_managed_node_group_defaults

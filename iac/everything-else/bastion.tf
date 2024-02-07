@@ -1,6 +1,6 @@
 locals {
-  bastion_role_arn  = try(module.bastion[0].bastion_role_arn, "")
-  bastion_role_name = try(module.bastion[0].bastion_role_name, "")
+  bastion_role_arn  = try(module.bastion.bastion_role_arn, "")
+  bastion_role_name = try(module.bastion.bastion_role_name, "")
 
   ingress_bastion_to_cluster = {
     description              = "Bastion SG to Cluster"
@@ -9,7 +9,7 @@ locals {
     to_port                  = 443
     protocol                 = "tcp"
     type                     = "ingress"
-    source_security_group_id = try(module.bastion[0].security_group_ids[0], null)
+    source_security_group_id = try(module.bastion.security_group_ids[0], null)
   }
 
   # if bastion role vars are defined, add bastion role to aws_auth_roles list
@@ -36,8 +36,6 @@ data "aws_ami" "amazonlinux2" {
 
 module "bastion" {
   source = "git::https://github.com/defenseunicorns/terraform-aws-bastion.git?ref=v0.0.11"
-
-  count = 1
 
   enable_bastion_terraform_permissions = true
 
@@ -70,15 +68,13 @@ module "bastion" {
 
 module "password_lambda" {
 
-  count = 1
-
   source      = "git::https://github.com/defenseunicorns/terraform-aws-lambda.git//modules/password-rotation?ref=v0.0.3"
   region      = var.region
   random_id   = lower(random_id.default.hex)
   name_prefix = var.name_prefix
   users       = var.users
   # Add any additional instances you want the function to run against here
-  instance_ids                    = [try(module.bastion[0].instance_id)]
+  instance_ids                    = [module.bastion.instance_id]
   cron_schedule_password_rotation = var.cron_schedule_password_rotation
   slack_notification_enabled      = var.slack_notification_enabled
   slack_webhook_url               = var.slack_webhook_url
