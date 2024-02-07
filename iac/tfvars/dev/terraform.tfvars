@@ -3,7 +3,7 @@
 region                         = "us-gov-west-1"
 bastion_tenancy                = "dedicated"
 eks_worker_tenancy             = "dedicated"
-cluster_endpoint_public_access = false
+cluster_endpoint_public_access = true
 
 
 tags = {
@@ -58,11 +58,9 @@ cluster_addons = {
     JSON
   }
   coredns = {
-    preserve    = true
     most_recent = true
-
     timeouts = {
-      create = "2m"
+      create = "10m"
       delete = "10m"
     }
   }
@@ -71,9 +69,16 @@ cluster_addons = {
   }
   aws-ebs-csi-driver = {
     most_recent = true
-
     timeouts = {
-      create = "4m"
+      create = "10m"
+      delete = "10m"
+    }
+  }
+  # consider using '"useFIPS": "true"' under configuration_values for aws_efs_csi_driver
+  aws-efs-csi-driver = {
+    most_recent = true
+    timeouts = {
+      create = "10m"
       delete = "10m"
     }
   }
