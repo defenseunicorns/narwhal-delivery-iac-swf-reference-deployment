@@ -69,3 +69,15 @@ variable "name" {
   description = "Name, e.g. 'app' or 'jenkins'"
   default     = "narwhal-delivery-iac-swf"
 }
+
+variable "zarf_bucket_lifecycle_rules" {
+  type        = list(map(string))
+  description = "List of maps of S3 bucket lifecycle rules"
+  default     = []
+}
+
+variable "zarf_bucket_mfa_delete" {
+  type        = bool
+  description = "Enable MFA delete for the S3 bucket"
+  default     = false
+}

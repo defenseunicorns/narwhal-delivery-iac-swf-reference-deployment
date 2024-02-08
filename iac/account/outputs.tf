@@ -1,14 +1,19 @@
-output "s3_bucket_id" {
+output "tfstate_backend_s3_bucket_id" {
   value       = module.tfstate_backend.s3_bucket_id
-  description = "S3 bucket ID"
+  description = "tfstate backend S3 bucket ID"
 }
 
-output "dynamodb_table_name" {
+output "tfstate_backend_dynamodb_table_name" {
   value       = module.tfstate_backend.dynamodb_table_name
-  description = "DynamoDB table name"
+  description = "tfstate backend DynamoDB table name"
 }
 
-output "dynamodb_table_id" {
+output "tfstate_backend_dynamodb_table_id" {
   value       = module.tfstate_backend.dynamodb_table_id
-  description = "DynamoDB table ID"
+  description = "tf state backend DynamoDB table ID"
+}
+
+output "zarf_bucket_id" {
+  value       = module.zarf_s3_bucket.s3_bucket_id
+  description = "Zarf S3 bucket ID"
 }
