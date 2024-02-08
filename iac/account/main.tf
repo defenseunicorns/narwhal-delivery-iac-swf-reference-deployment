@@ -167,7 +167,7 @@ module "zarf_s3_bucket" {
 
   versioning = {
     status     = true
-    mfa_delete = false
+    mfa_delete = var.zarf_bucket_mfa_delete
   }
 
   server_side_encryption_configuration = {
@@ -179,6 +179,6 @@ module "zarf_s3_bucket" {
     }
   }
 
-  lifecycle_rule = []
+  lifecycle_rule = var.zarf_bucket_lifecycle_rules
 
 }
