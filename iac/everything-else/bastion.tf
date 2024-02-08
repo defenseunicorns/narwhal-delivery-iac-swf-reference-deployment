@@ -1,7 +1,4 @@
 locals {
-  bastion_role_arn  = try(module.bastion.bastion_role_arn, "")
-  bastion_role_name = try(module.bastion.bastion_role_name, "")
-
   ingress_bastion_to_cluster = {
     description              = "Bastion SG to Cluster"
     security_group_id        = module.eks.cluster_security_group_id
@@ -12,14 +9,6 @@ locals {
     source_security_group_id = try(module.bastion.security_group_ids[0], null)
   }
 
-  # if bastion role vars are defined, add bastion role to aws_auth_roles list
-  bastion_aws_auth_entry = [
-    {
-      rolearn  = local.bastion_role_arn
-      username = local.bastion_role_name
-      groups   = ["system:masters"]
-    }
-  ]
 }
 
 data "aws_ami" "amazonlinux2" {
