@@ -4,7 +4,7 @@ terraform {
   backend "s3" {
     region  = "us-gov-west-1"
     bucket  = "du-test-narwhal-delivery-iac-swf-state"
-    key     = "account/terraform.tfstate"
+    key     = "everything-else/terraform.tfstate"
     profile = ""
     encrypt = "true"
 

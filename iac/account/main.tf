@@ -8,17 +8,18 @@ module "tfstate_backend" {
   terraform_backend_config_file_path = var.create_local_backend_file ? "." : ""
   terraform_backend_config_file_name = var.create_local_backend_file ? "backend.tf" : ""
   arn_format                         = var.arn_format
-  s3_bucket_name                     = var.s3_bucket_name
+  #s3_bucket_name                     = var.s3_bucket_name
 
-  namespace  = var.namespace
-  stage      = var.stage
-  name       = var.name
-  attributes = ["state"]
+  namespace            = var.namespace
+  stage                = var.stage
+  name                 = var.name
+  attributes           = ["state"]
+  terraform_state_file = "account/terraform.tfstate"
 
   tags = var.tags
 
-  bucket_enabled                    = var.bucket_enabled
-  dynamodb_enabled                  = var.dynamodb_enabled
+  bucket_enabled                    = true
+  dynamodb_enabled                  = true
   bucket_ownership_enforced_enabled = var.bucket_ownership_enforced_enabled
   force_destroy                     = var.force_destroy
 }
