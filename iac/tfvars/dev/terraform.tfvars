@@ -35,7 +35,7 @@ eks_use_mfa     = false
 ###########################################################
 ############## Big Bang Dependencies ######################
 
-keycloak_enabled = true # provisions keycloak dedicated nodegroup
+keycloak_enabled = false # provisions keycloak dedicated nodegroup
 
 # #################### EKS Addons #########################
 # add other "eks native" marketplace addons and configs to this list
