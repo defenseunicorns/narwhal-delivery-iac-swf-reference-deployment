@@ -11,18 +11,26 @@ https://github.com/cloudposse/terraform-aws-tfstate-backend#usage
 
 ## Providers
 
-No providers.
+| Name | Version |
+|------|---------|
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.34 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_s3_bucket"></a> [s3\_bucket](#module\_s3\_bucket) | terraform-aws-modules/s3-bucket/aws | 4.1.0 |
 | <a name="module_tfstate_backend"></a> [tfstate\_backend](#module\_tfstate\_backend) | cloudposse/tfstate-backend/aws | 1.4.0 |
+| <a name="module_zarf_s3_bucket"></a> [zarf\_s3\_bucket](#module\_zarf\_s3\_bucket) | terraform-aws-modules/s3-bucket/aws | 4.1.0 |
 
 ## Resources
 
-No resources.
+| Name | Type |
+|------|------|
+| [aws_iam_role.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
+| [aws_kms_key.default](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_key) | resource |
+| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
+| [aws_iam_policy_document.bucket_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.kms_access](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 
 ## Inputs
 
@@ -48,4 +56,5 @@ No resources.
 | <a name="output_dynamodb_table_id"></a> [dynamodb\_table\_id](#output\_dynamodb\_table\_id) | DynamoDB table ID |
 | <a name="output_dynamodb_table_name"></a> [dynamodb\_table\_name](#output\_dynamodb\_table\_name) | DynamoDB table name |
 | <a name="output_s3_bucket_id"></a> [s3\_bucket\_id](#output\_s3\_bucket\_id) | S3 bucket ID |
+| <a name="output_zarf_bucket_id"></a> [zarf\_bucket\_id](#output\_zarf\_bucket\_id) | Zarf S3 bucket ID |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
