@@ -46,17 +46,21 @@ cluster_addons = {
   coredns = {
     most_recent = true
     timeouts = {
-      create = "10m"
+      create = "20m"
       delete = "10m"
     }
   }
   kube-proxy = {
     most_recent = true
+    timeouts = {
+      create = "20m"
+      delete = "10m"
+    }
   }
   aws-ebs-csi-driver = {
     most_recent = true
     timeouts = {
-      create = "10m"
+      create = "20m"
       delete = "10m"
     }
   }
@@ -64,7 +68,7 @@ cluster_addons = {
   aws-efs-csi-driver = {
     most_recent = true
     timeouts = {
-      create = "10m"
+      create = "20m"
       delete = "10m"
     }
   }
