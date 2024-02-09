@@ -5,7 +5,7 @@ terraform {
   backend "s3" {
     region         = "us-gov-west-1"
     bucket         = "du-test-narwhal-delivery-iac-swf-state"
-    key            = "account/terraform.tfstate"
+    key            = "swf/terraform.tfstate"
     dynamodb_table = "du-test-narwhal-delivery-iac-swf-state-lock"
     profile        = ""
     encrypt        = "true"
