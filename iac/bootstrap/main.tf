@@ -57,5 +57,5 @@ resource "local_file" "backend_config" {
     profile        = var.profile
     encrypt        = true
   })
-  filename = "${local.terraform_backend_config_file_path_prefix}/${each.key}-backend.tf"
+  filename = "${local.terraform_backend_config_file_path_prefix}/${each.key}-backend.conf"
 }
