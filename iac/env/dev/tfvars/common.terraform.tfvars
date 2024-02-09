@@ -2,7 +2,7 @@
 env       = "dev"
 namespace = "du"
 stage     = "dev"
-name      = "nwl-iac-swf"
+name      = "swf"
 
 region = "us-gov-west-1"
 

@@ -56,7 +56,7 @@ resource "aws_kms_key" "default" {
 locals {
   s3_bucket_name        = try(coalesce(var.s3_bucket_name, "${local.prefix}-${local.suffix}"), null)
   s3_bucket_name_prefix = try(coalesce(var.s3_bucket_name_prefix, "${local.prefix}-"), null)
-  # bucket_policy         = try(coalesce(var.bucket_policy, data.aws_iam_policy_document.s3_bucket[0].json), null)
+  bucket_policy         = try(coalesce(var.bucket_policy, data.aws_iam_policy_document.s3_bucket.json), null)
 
   # local.kms_master_key_id sets KMS encryption: uses custom config if provided, else defaults to module's key or specified kms_key_id, and is null if encryption is disabled.
   kms_master_key_id = aws_kms_key.default.arn
@@ -72,26 +72,26 @@ locals {
   s3_bucket_server_side_encryption_configuration = var.enable_s3_bucket_server_side_encryption_configuration ? coalesce(var.s3_bucket_server_side_encryption_configuration, local.default_encryption_configuration) : null
 }
 
-# data "aws_iam_policy_document" "s3_bucket" {
-#   statement {
-#     principals {
-#       type        = "AWS"
-#       identifiers = [aws_iam_role.this.arn]
-#     }
+data "aws_iam_policy_document" "s3_bucket" {
+  statement {
+    principals {
+      type        = "AWS"
+      identifiers = [module.zarf_irsa_role[0].iam_role_arn]
+    }
 
-#     actions = [
-#       "s3:ListBucket",
-#       "s3:GetObject",   # Allows reading objects from the bucket
-#       "s3:PutObject",   # Allows uploading objects to the bucket
-#       "s3:DeleteObject" # Allows deleting objects from the bucket
-#     ]
+    actions = [
+      "s3:ListBucket",
+      "s3:GetObject",   # Allows reading objects from the bucket
+      "s3:PutObject",   # Allows uploading objects to the bucket
+      "s3:DeleteObject" # Allows deleting objects from the bucket
+    ]
 
-#     resources = [
-#       module.s3_bucket.s3_bucket_arn,
-#       "${module.s3_bucket.s3_bucket_arn}/*"
-#     ]
-#   }
-# }
+    resources = [
+      module.s3_bucket.s3_bucket_arn,
+      "${module.s3_bucket.s3_bucket_arn}/*"
+    ]
+  }
+}
 
 module "s3_bucket" {
   source = "git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v4.1.0"
@@ -101,7 +101,7 @@ module "s3_bucket" {
   bucket        = var.s3_bucket_name_use_prefix ? null : local.s3_bucket_name
   bucket_prefix = var.s3_bucket_name_use_prefix ? local.s3_bucket_name_prefix : null
 
-  attach_policy = var.attach_bucket_policy
+  # attach_policy = var.attach_bucket_policy
   # policy        = local.bucket_policy
 
   attach_public_policy                 = var.attach_public_bucket_policy
