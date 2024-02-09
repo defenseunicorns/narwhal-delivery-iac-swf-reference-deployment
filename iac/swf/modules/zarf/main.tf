@@ -2,90 +2,77 @@
 data "aws_partition" "current" {}
 data "aws_caller_identity" "current" {}
 
+resource "random_id" "default" {
+  byte_length = 2
+}
+
+
+locals {
+  prefix = join("-", [var.namespace, var.stage, var.name])
+  suffix = var.suffix != "" ? var.suffix : lower(random_id.default.hex)
+
+  tags = merge(
+    var.tags,
+    {
+      RootTFModule = replace(basename(path.cwd), "_", "-") # tag names based on the directory name
+      GithubRepo   = "github.com/defenseunicorns/narwhal-delivery-iac-swf-reference-deployment"
+    }
+  )
+}
+
+################################################################################
+# KMS Key
+################################################################################
+# just make this to reduce complexity for now
+
+locals {
+  key_statements = {
+    sid       = "Enable IAM User Permissions"
+    effect    = "Allow"
+    actions   = ["kms:*"]
+    resources = ["*"]
+    principals = [
+      {
+        type        = "AWS"
+        identifiers = ["arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:root"]
+      }
+    ]
+  }
+}
 
 resource "aws_kms_key" "default" {
   description             = "kms key"
   deletion_window_in_days = 7
+  policy                  = local.key_statements
   enable_key_rotation     = true
-  policy                  = data.aws_iam_policy_document.kms_access.json
   tags                    = local.tags
   multi_region            = true
 }
 
-# Create custom policy for KMS
-data "aws_iam_policy_document" "kms_access" {
-  # checkov:skip=CKV_AWS_111: todo reduce perms on key
-  # checkov:skip=CKV_AWS_109: todo be more specific with resources
-  # checkov:skip=CKV_AWS_356: todo be more specific with kms resources
-  statement {
-    sid = "KMS Key Default"
-    principals {
-      type = "AWS"
-      identifiers = [
-        "arn:${data.aws_partition.current.partition}::iam::${data.aws_caller_identity.current.account_id}:root"
-      ]
-    }
+################################################################################
+# S3 Bucket
+################################################################################
 
-    actions = [
-      "kms:*",
-    ]
+locals {
+  s3_bucket_name        = try(coalesce(var.s3_bucket_name, "${local.prefix}-${local.suffix}"), null)
+  s3_bucket_name_prefix = try(coalesce(var.s3_bucket_name_prefix, "${local.prefix}-"), null)
+  bucket_policy         = try(coalesce(var.bucket_policy, data.aws_iam_policy_document.s3_bucket[0].json), null)
 
-    resources = ["*"]
-  }
-  statement {
-    sid = "CloudWatchLogsEncryption"
-    principals {
-      type        = "Service"
-      identifiers = ["logs.${var.region}.amazonaws.com"]
+  # local.kms_master_key_id sets KMS encryption: uses custom config if provided, else defaults to module's key or specified kms_key_id, and is null if encryption is disabled.
+  kms_master_key_id = aws_kms_key.default.arn
+  default_encryption_configuration = {
+    rule = {
+      apply_server_side_encryption_by_default = {
+        sse_algorithm     = "aws:kms"
+        kms_master_key_id = local.kms_master_key_id
+      }
     }
-    actions = [
-      "kms:Encrypt*",
-      "kms:Decrypt*",
-      "kms:ReEncrypt*",
-      "kms:GenerateDataKey*",
-      "kms:Describe*",
-    ]
+  }
 
-    resources = ["*"]
-  }
-  statement {
-    sid = "Cloudtrail KMS permissions"
-    principals {
-      type = "Service"
-      identifiers = [
-        "cloudtrail.amazonaws.com"
-      ]
-    }
-    actions = [
-      "kms:Encrypt*",
-      "kms:Decrypt*",
-      "kms:ReEncrypt*",
-      "kms:GenerateDataKey*",
-      "kms:Describe*",
-    ]
-    resources = ["*"]
-  }
+  s3_bucket_server_side_encryption_configuration = var.enable_s3_bucket_server_side_encryption_configuration ? coalesce(var.s3_bucket_server_side_encryption_configuration, local.default_encryption_configuration) : null
 }
 
-resource "aws_iam_role" "this" {
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": "sts:AssumeRole",
-      "Principal": {
-        "Service": "ec2.amazonaws.com"
-      },
-      "Effect": "Allow",
-      "Sid": ""
-    }
-  ]
-}
-EOF
-}
-
-data "aws_iam_policy_document" "bucket_policy" {
+data "aws_iam_policy_document" "s3_bucket" {
   statement {
     principals {
       type        = "AWS"
@@ -100,63 +87,14 @@ data "aws_iam_policy_document" "bucket_policy" {
     ]
 
     resources = [
-      "${local.arn_format}:s3:::${local.zarf_s3_bucket_name}",
-      "${local.arn_format}:s3:::${local.zarf_s3_bucket_name}/*" # objects within the bucket as well
+      module.s3_bucket.s3_bucket_arn,
+      "${module.s3_bucket.s3_bucket_arn}/*"
     ]
   }
 }
 
 module "s3_bucket" {
-  source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "4.1.0"
-
-  force_destroy = false
-  bucket        = local.s3_bucket_name
-
-  tags = {
-    Name        = var.s3_bucket
-    Environment = var.stage
-  }
-
-  # Bucket policies
-  attach_policy                            = true
-  policy                                   = data.aws_iam_policy_document.bucket_policy.json
-  attach_deny_insecure_transport_policy    = true
-  attach_require_latest_tls_policy         = true
-  attach_deny_incorrect_encryption_headers = true
-  attach_deny_incorrect_kms_key_sse        = true
-  allowed_kms_key_arn                      = aws_kms_key.default.arn
-  attach_deny_unencrypted_object_uploads   = true
-
-  # S3 Bucket Ownership Controls
-  # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_ownership_controls
-  control_object_ownership = true
-  object_ownership         = "BucketOwnerPreferred"
-
-  expected_bucket_owner = data.aws_caller_identity.current.account_id
-
-  acl = "private" # "acl" conflicts with "grant" and "owner"
-
-  versioning = {
-    status     = var.s3_bucket_versioning_enabled
-    mfa_delete = var.bucket_mfa_delete
-  }
-
-  server_side_encryption_configuration = {
-    rule = {
-      apply_server_side_encryption_by_default = {
-        kms_master_key_id = aws_kms_key.default.arn
-        sse_algorithm     = "aws:kms"
-      }
-    }
-  }
-
-  lifecycle_rule = var.bucket_lifecycle_rule
-}
-
-
-module "s3_bucket" {
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v3.8.2"
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v4.1.0"
 
   create_bucket = var.create_s3_bucket
 
@@ -177,4 +115,55 @@ module "s3_bucket" {
   force_destroy                        = var.s3_bucket_force_destroy
 
   tags = var.tags
+}
+
+################################################################################
+# IRSA
+################################################################################
+
+locals {
+  create_zarf_irsa_policy_name = "${local.prefix}-irsa-policy-${local.suffix}"
+  create_zarf_irsa_role_name   = "${local.prefix}-irsa-role-${local.suffix}"
+}
+module "zarf_irsa_policy" {
+  count = var.create_irsa_role ? 1 : 0
+
+  source = "git::https://terraform-aws-modules/iam/aws//modules/iam-policy?ref=v5.34.0"
+
+  name        = local.zarf_irsa_policy_name
+  path        = "/"
+  description = "Access to s3"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:*",
+        ]
+        Resource = module.s3_bucket.s3_bucket_arn
+      }
+    ]
+  })
+
+}
+
+module "zarf_irsa_role" {
+  count = var.create_irsa_role ? 1 : 0
+
+  source = "git::https://terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks?ref=v5.34.0"
+
+  role_name = local.zarf_irsa_role_name
+
+  role_policy_arns = {
+    policy = module.zarf_irsa_policy.arn
+  }
+
+  oidc_providers = {
+    one = {
+      provider_arn               = var.oidc_provider_arn
+      namespace_service_accounts = ["zarf:docker-registry-sa"]
+    }
+  }
 }

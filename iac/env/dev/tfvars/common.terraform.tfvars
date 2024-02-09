@@ -10,5 +10,3 @@ tags = {
   Environment = "dev"
   Project     = "du-iac-swf"
 }
-
-name_prefix = "nwl-iac-swf"

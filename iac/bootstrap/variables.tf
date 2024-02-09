@@ -80,12 +80,6 @@ variable "terraform_backend_config_template_file" {
   default     = "../templates/backend.tf.tpl"
 }
 
-variable "account_backend_config_file_name" {
-  type        = string
-  description = "The name of the backend config file"
-  default     = "account-backend.tf"
-}
-
 variable "swf_backend_config_file_name" {
   type        = string
   description = "The name of the backend config file"

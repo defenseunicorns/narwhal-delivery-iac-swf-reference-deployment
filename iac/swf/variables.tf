@@ -11,7 +11,7 @@ variable "name_prefix" {
   type        = string
   default     = "iac-swf"
   validation {
-    condition     = length(local.name_prefix) <= 20
+    condition     = length(prefix) <= 20
     error_message = "The name prefix cannot be more than 20 characters"
   }
 }

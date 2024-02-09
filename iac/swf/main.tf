@@ -45,16 +45,15 @@ resource "random_id" "default" {
 }
 
 locals {
-  name_prefix = join("-", [var.namespace, var.stage, var.name])
-  name_suffix = lower(random_id.default.hex)
+  prefix = join("-", [var.namespace, var.stage, var.name])
+  suffix = lower(random_id.default.hex)
 
-  vpc_name                   = "${local.name_prefix}-${local.name_suffix}"
-  cluster_name               = "${local.name_prefix}-${local.name_suffix}"
-  bastion_name               = "${local.name_prefix}-bastion-${local.name_suffix}"
-  access_logging_name_prefix = "${local.name_prefix}-accesslog-${local.name_suffix}"
-  kms_key_alias_name_prefix  = "alias/${local.name_prefix}-${local.name_suffix}"
-  access_log_sqs_queue_name  = "${local.name_prefix}-accesslog-access-${local.name_suffix}"
-  zarf_s3_bucket_name        = var.zarf_s3_bucket_name != "" ? var.zarf_s3_bucket_name : "${local.name_prefix}-zarf-docker-registry-${local.name_suffix}"
+  vpc_name                   = "${local.prefix}-${local.suffix}"
+  cluster_name               = "${local.prefix}-${local.suffix}"
+  bastion_name               = "${local.prefix}-bastion-${local.suffix}"
+  access_logging_name_prefix = "${local.prefix}-accesslog-${local.suffix}"
+  kms_key_alias_name_prefix  = "alias/${local.prefix}-${local.suffix}"
+  access_log_sqs_queue_name  = "${local.prefix}-accesslog-access-${local.suffix}"
   tags = merge(
     var.tags,
     {

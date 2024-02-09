@@ -15,11 +15,11 @@ locals {
   backends                                  = ["bootstrap", "swf"]
 
   # naming
-  name_prefix = join("-", [var.namespace, var.stage, var.name])
-  name_suffix = lower(random_id.default.hex)
+  prefix = join("-", [var.namespace, var.stage, var.name])
+  suffix = lower(random_id.default.hex)
   # use provided name, else use generated name
-  backend_s3_bucket_name      = var.backend_s3_bucket_name != "" ? var.backend_s3_bucket_name : "${local.name_prefix}-tfstate-${local.name_suffix}"
-  backend_dynamodb_table_name = var.backend_dynamodb_table_name != "" ? var.backend_dynamodb_table_name : "${local.name_prefix}-tfstate-${local.name_suffix}"
+  backend_s3_bucket_name      = var.backend_s3_bucket_name != "" ? var.backend_s3_bucket_name : "${local.prefix}-tfstate-${local.suffix}"
+  backend_dynamodb_table_name = var.backend_dynamodb_table_name != "" ? var.backend_dynamodb_table_name : "${local.prefix}-tfstate-${local.suffix}"
 
   tags = merge(
     var.tags,
@@ -57,5 +57,5 @@ resource "local_file" "backend_config" {
     profile        = var.profile
     encrypt        = true
   })
-  filename = "${local.terraform_backend_config_file_path_prefix}/${var.account_backend_config_file_name}"
+  filename = "${local.terraform_backend_config_file_path_prefix}/${each.key}-backend.tf"
 }
