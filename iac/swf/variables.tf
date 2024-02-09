@@ -11,10 +11,29 @@ variable "name_prefix" {
   type        = string
   default     = "iac-swf"
   validation {
-    condition     = length(var.name_prefix) <= 20
+    condition     = length(local.name_prefix) <= 20
     error_message = "The name prefix cannot be more than 20 characters"
   }
 }
+
+variable "namespace" {
+  type        = string
+  default     = "du"
+  description = "Namespace, which could be your organization name or abbreviation, e.g. 'eg' or 'cp'"
+}
+
+variable "stage" {
+  type        = string
+  default     = "test"
+  description = "Stage, e.g. 'prod', 'staging', 'dev', or 'test'"
+}
+
+variable "name" {
+  type        = string
+  description = "Name, e.g. 'app' or 'jenkins'"
+  default     = "narwhal-delivery-iac-swf"
+}
+
 
 variable "iam_role_permissions_boundary" {
   description = "ARN of the policy that is used to set the permissions boundary for IAM roles"
@@ -381,4 +400,10 @@ variable "name" {
   type        = string
   description = "Name, e.g. 'app' or 'jenkins'"
   default     = "narwhal-delivery-iac-swf"
+}
+
+variable "zarf_s3_bucket_name" {
+  type        = string
+  description = "The name of the S3 bucket to create"
+  default     = ""
 }

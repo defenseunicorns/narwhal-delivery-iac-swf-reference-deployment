@@ -45,12 +45,16 @@ resource "random_id" "default" {
 }
 
 locals {
-  vpc_name                   = "${var.name_prefix}-${lower(random_id.default.hex)}"
-  cluster_name               = "${var.name_prefix}-${lower(random_id.default.hex)}"
-  bastion_name               = "${var.name_prefix}-bastion-${lower(random_id.default.hex)}"
-  access_logging_name_prefix = "${var.name_prefix}-accesslog-${lower(random_id.default.hex)}"
-  kms_key_alias_name_prefix  = "alias/${var.name_prefix}-${lower(random_id.default.hex)}"
-  access_log_sqs_queue_name  = "${var.name_prefix}-accesslog-access-${lower(random_id.default.hex)}"
+  name_prefix = join("-", [var.namespace, var.stage, var.name])
+  name_suffix = lower(random_id.default.hex)
+
+  vpc_name                   = "${local.name_prefix}-${local.name_suffix}"
+  cluster_name               = "${local.name_prefix}-${local.name_suffix}"
+  bastion_name               = "${local.name_prefix}-bastion-${local.name_suffix}"
+  access_logging_name_prefix = "${local.name_prefix}-accesslog-${local.name_suffix}"
+  kms_key_alias_name_prefix  = "alias/${local.name_prefix}-${local.name_suffix}"
+  access_log_sqs_queue_name  = "${local.name_prefix}-accesslog-access-${local.name_suffix}"
+  zarf_s3_bucket_name        = var.zarf_s3_bucket_name != "" ? var.zarf_s3_bucket_name : "${local.name_prefix}-zarf-docker-registry-${local.name_suffix}"
   tags = merge(
     var.tags,
     {

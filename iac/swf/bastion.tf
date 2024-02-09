@@ -60,7 +60,7 @@ module "password_lambda" {
   source      = "git::https://github.com/defenseunicorns/terraform-aws-lambda.git//modules/password-rotation?ref=v0.0.3"
   region      = var.region
   random_id   = lower(random_id.default.hex)
-  name_prefix = var.name_prefix
+  name_prefix = local.name_prefix
   users       = var.users
   # Add any additional instances you want the function to run against here
   instance_ids                    = [module.bastion.instance_id]
