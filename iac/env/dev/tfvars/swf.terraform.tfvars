@@ -1,13 +1,4 @@
 ###########################################################
-################## tfstate backend ########################
-namespace            = "du"
-stage                = "test"
-name                 = "narwhal-delivery-iac-swf"
-terraform_state_file = "swf/terraform.tfstate"
-bucket_enabled       = false
-dynamodb_enabled     = false
-
-###########################################################
 #################### VPC Config ###########################
 
 vpc_cidr              = "10.200.0.0/16"
