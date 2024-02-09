@@ -62,3 +62,5 @@ examples/zarf-complete-example/build
 **/ignore
 
 iac/env/*/backends/*.conf
+
+**/builds
