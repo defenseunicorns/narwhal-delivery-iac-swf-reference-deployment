@@ -8,12 +8,6 @@ variable "env" {
   description = "The environment name, this is set via ../env/$env/common.terraform.tfvars"
 }
 
-variable "arn_format" {
-  type        = string
-  default     = "arn:aws-us-gov" # module default = "arn:aws"
-  description = "ARN format to be used. May be changed to support deployment in GovCloud regions."
-}
-
 variable "terraform_state_file" {
   type        = string
   default     = "terraform.tfstate"
@@ -62,28 +56,10 @@ variable "profile" {
   default     = ""
 }
 
-variable "zarf_bucket_lifecycle_rules" {
-  type        = list(map(string))
-  description = "List of maps of S3 bucket lifecycle rules"
-  default     = []
-}
-
-variable "zarf_bucket_mfa_delete" {
-  type        = bool
-  description = "Enable MFA delete for the S3 bucket"
-  default     = false
-}
-
 variable "terraform_backend_config_template_file" {
   type        = string
   description = "The path to the backend config template file"
   default     = "../templates/backend.tf.tpl"
-}
-
-variable "swf_backend_config_file_name" {
-  type        = string
-  description = "The name of the backend config file"
-  default     = "swf-backend.tf"
 }
 
 variable "backend_s3_bucket_name" {
@@ -95,11 +71,5 @@ variable "backend_s3_bucket_name" {
 variable "backend_dynamodb_table_name" {
   type        = string
   description = "The name of the DynamoDB table"
-  default     = ""
-}
-
-variable "zarf_s3_bucket_name" {
-  type        = string
-  description = "The name of the S3 bucket"
   default     = ""
 }

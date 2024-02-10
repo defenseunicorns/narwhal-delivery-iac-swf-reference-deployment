@@ -1,5 +1,4 @@
 # Globally shared variables
-env       = "dev"
 namespace = "du"
 stage     = "dev"
 name      = "swf"

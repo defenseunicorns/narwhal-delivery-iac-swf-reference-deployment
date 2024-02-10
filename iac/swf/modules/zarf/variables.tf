@@ -1,8 +1,3 @@
-variable "region" {
-  description = "The AWS region to deploy into"
-  type        = string
-}
-
 variable "namespace" {
   type        = string
   default     = "du"
@@ -65,18 +60,6 @@ variable "s3_bucket_force_destroy" {
   description = "A boolean that indicates all objects should be deleted from the bucket so that the bucket can be destroyed without error. These objects are not recoverable."
   type        = bool
   default     = false
-}
-
-variable "attach_bucket_policy" {
-  description = "Controls if S3 bucket should have bucket policy attached (set to `true` to use value of `policy` as bucket policy)"
-  type        = bool
-  default     = true
-}
-
-variable "bucket_policy" {
-  description = "(Optional) A valid bucket policy JSON document. Note that if the policy document is not specific enough (but still valid), Terraform may view the policy as constantly changing in a terraform plan. In this case, please make sure you use the verbose/specific version of the policy. For more information about building AWS IAM policy documents with Terraform, see the AWS IAM Policy Document Guide."
-  type        = string
-  default     = null
 }
 
 variable "attach_public_bucket_policy" {

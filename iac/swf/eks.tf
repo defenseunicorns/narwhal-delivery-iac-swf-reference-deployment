@@ -362,7 +362,6 @@ locals {
 module "zarf" {
   source = "./modules/zarf"
 
-  region    = var.region
   namespace = var.namespace
   stage     = var.stage
   name      = "zarf-registry"

@@ -3,7 +3,6 @@ provider "aws" {
 }
 
 data "aws_partition" "current" {}
-data "aws_caller_identity" "current" {}
 
 resource "random_id" "default" {
   byte_length = 2
