@@ -64,3 +64,4 @@ examples/zarf-complete-example/build
 iac/env/*/backends/*.conf
 
 **/builds
+**/.terraform.lock.hcl
