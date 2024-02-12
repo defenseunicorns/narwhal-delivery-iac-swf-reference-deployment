@@ -1,8 +1,3 @@
-variable "region" {
-  description = "The AWS region to deploy into"
-  type        = string
-}
-
 variable "namespace" {
   type        = string
   default     = "du"
@@ -27,9 +22,15 @@ variable "tags" {
   default     = {}
 }
 
-variable "suffix" {
-  description = "Suffix to append to the name of the resources, generated if not provided"
+variable "prefix" {
   type        = string
+  description = "name prefix to prepend to most resources, if not defined, created as: 'namespace-stage-name'"
+  default     = ""
+}
+
+variable "suffix" {
+  type        = string
+  description = "name suffix to append to most resources, if not defined, randomly generated"
   default     = ""
 }
 
@@ -70,7 +71,7 @@ variable "s3_bucket_force_destroy" {
 variable "attach_bucket_policy" {
   description = "Controls if S3 bucket should have bucket policy attached (set to `true` to use value of `policy` as bucket policy)"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "bucket_policy" {

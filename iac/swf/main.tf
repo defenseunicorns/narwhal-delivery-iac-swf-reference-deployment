@@ -24,9 +24,10 @@ resource "random_id" "default" {
 }
 
 locals {
-  prefix = join("-", [var.namespace, var.stage, var.name])
-  suffix = lower(random_id.default.hex)
+  prefix = var.prefix != "" ? var.prefix : join("-", [var.namespace, var.stage, var.name])
+  suffix = var.suffix != "" ? var.suffix : lower(random_id.default.hex)
 
+  # naming, be aware of character limits
   vpc_name                   = "${local.prefix}-${local.suffix}"
   cluster_name               = "${local.prefix}-${local.suffix}"
   bastion_name               = "${local.prefix}-bastion-${local.suffix}"

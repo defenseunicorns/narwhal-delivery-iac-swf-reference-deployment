@@ -8,7 +8,7 @@ resource "random_id" "default" {
 
 
 locals {
-  prefix = join("-", [var.namespace, var.stage, var.name])
+  prefix = var.prefix != "" ? var.prefix : join("-", [var.namespace, var.stage, var.name])
   suffix = var.suffix != "" ? var.suffix : lower(random_id.default.hex)
 
   tags = merge(
@@ -101,8 +101,8 @@ module "s3_bucket" {
   bucket        = var.s3_bucket_name_use_prefix ? null : local.s3_bucket_name
   bucket_prefix = var.s3_bucket_name_use_prefix ? local.s3_bucket_name_prefix : null
 
-  # attach_policy = var.attach_bucket_policy
-  # policy        = local.bucket_policy
+  attach_policy = var.attach_bucket_policy
+  policy        = local.bucket_policy
 
   attach_public_policy                 = var.attach_public_bucket_policy
   block_public_acls                    = var.block_public_acls

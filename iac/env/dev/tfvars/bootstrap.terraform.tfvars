@@ -1,2 +1,2 @@
-bucket_enabled   = true
-dynamodb_enabled = true
+# any var customizations here
+# force_destroy    = true

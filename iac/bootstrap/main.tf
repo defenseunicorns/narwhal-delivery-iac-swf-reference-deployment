@@ -3,20 +3,19 @@ provider "aws" {
 }
 
 data "aws_partition" "current" {}
-data "aws_caller_identity" "current" {}
 
 resource "random_id" "default" {
   byte_length = 2
 }
 
 locals {
-  terraform_backend_config_file_path_prefix = "${path.module}/../env/${var.env}/backends"
+  terraform_backend_config_file_path_prefix = "${path.module}/../env/${var.stage}/backends"
   arn_format                                = "arn:${data.aws_partition.current.partition}"
   backends                                  = ["bootstrap", "swf"]
 
   # naming
-  prefix = join("-", [var.namespace, var.stage, var.name])
-  suffix = lower(random_id.default.hex)
+  prefix = var.prefix != "" ? var.prefix : join("-", [var.namespace, var.stage, var.name])
+  suffix = var.suffix != "" ? var.suffix : lower(random_id.default.hex)
   # use provided name, else use generated name
   backend_s3_bucket_name      = var.backend_s3_bucket_name != "" ? var.backend_s3_bucket_name : "${local.prefix}-tfstate-${local.suffix}"
   backend_dynamodb_table_name = var.backend_dynamodb_table_name != "" ? var.backend_dynamodb_table_name : "${local.prefix}-tfstate-${local.suffix}"
