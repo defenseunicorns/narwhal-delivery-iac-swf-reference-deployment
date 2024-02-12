@@ -1,27 +1,4 @@
 ###########################################################
-################## Global Settings ########################
-region                         = "us-gov-west-1"
-bastion_tenancy                = "dedicated"
-eks_worker_tenancy             = "dedicated"
-cluster_endpoint_public_access = true
-
-
-tags = {
-  Environment = "dev"
-  Project     = "du-iac-cicd"
-}
-name_prefix = "nwl-iac-swf"
-
-###########################################################
-################## tfstate backend ########################
-namespace            = "du"
-stage                = "test"
-name                 = "narwhal-delivery-iac-swf"
-terraform_state_file = "swf/terraform.tfstate"
-bucket_enabled       = false
-dynamodb_enabled     = false
-
-###########################################################
 #################### VPC Config ###########################
 
 vpc_cidr              = "10.200.0.0/16"
@@ -33,13 +10,14 @@ secondary_cidr_blocks = ["100.64.0.0/16"] #https://aws.amazon.com/blogs/containe
 bastion_ssh_user     = "ec2-user" # local user in bastion used to ssh
 bastion_ssh_password = "my-password"
 # renovate: datasource=github-tags depName=defenseunicorns/zarf
-zarf_version = "v0.29.2"
+zarf_version = "v0.32.3"
 
 ###########################################################
 #################### EKS Config ###########################
 # renovate: datasource=endoflife-date depName=amazon-eks versioning=loose extractVersion=^(?<version>.*)-eks.+$
-cluster_version = "1.27"
-eks_use_mfa     = false
+cluster_version                = "1.27"
+eks_use_mfa                    = false
+cluster_endpoint_public_access = true
 
 ###########################################################
 ############## Big Bang Dependencies ######################
@@ -69,17 +47,21 @@ cluster_addons = {
   coredns = {
     most_recent = true
     timeouts = {
-      create = "10m"
+      create = "20m"
       delete = "10m"
     }
   }
   kube-proxy = {
     most_recent = true
+    timeouts = {
+      create = "20m"
+      delete = "10m"
+    }
   }
   aws-ebs-csi-driver = {
     most_recent = true
     timeouts = {
-      create = "10m"
+      create = "20m"
       delete = "10m"
     }
   }
@@ -87,7 +69,7 @@ cluster_addons = {
   aws-efs-csi-driver = {
     most_recent = true
     timeouts = {
-      create = "10m"
+      create = "20m"
       delete = "10m"
     }
   }

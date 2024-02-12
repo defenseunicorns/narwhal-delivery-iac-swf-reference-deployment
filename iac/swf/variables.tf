@@ -6,14 +6,34 @@ variable "region" {
   type        = string
 }
 
-variable "name_prefix" {
-  description = "The prefix to use when naming all resources"
+variable "namespace" {
   type        = string
-  default     = "iac-swf"
-  validation {
-    condition     = length(var.name_prefix) <= 20
-    error_message = "The name prefix cannot be more than 20 characters"
-  }
+  default     = "du"
+  description = "Namespace, which could be your organization name or abbreviation, e.g. 'eg' or 'cp'"
+}
+
+variable "stage" {
+  type        = string
+  default     = "test"
+  description = "Stage, e.g. 'prod', 'staging', 'dev', or 'test'"
+}
+
+variable "name" {
+  type        = string
+  description = "Name, e.g. 'app' or 'jenkins'"
+  default     = "narwhal-delivery-iac-swf"
+}
+
+variable "prefix" {
+  type        = string
+  description = "name prefix to prepend to most resources, if not defined, created as: 'namespace-stage-name'"
+  default     = ""
+}
+
+variable "suffix" {
+  type        = string
+  description = "name suffix to append to most resources, if not defined, randomly generated"
+  default     = ""
 }
 
 variable "iam_role_permissions_boundary" {
@@ -321,64 +341,4 @@ variable "enable_cluster_creator_admin_permissions" {
   description = "Indicates whether or not to add the cluster creator (the identity used by Terraform) as an administrator via access entry"
   type        = bool
   default     = true
-}
-
-variable "create_local_backend_file" {
-  description = "only accepts true or false, if true it will create a backend.tf file in the current directory."
-  type        = bool
-  default     = true
-}
-
-variable "arn_format" {
-  type        = string
-  default     = "arn:aws-us-gov" # module default = "arn:aws"
-  description = "ARN format to be used. May be changed to support deployment in GovCloud regions."
-}
-
-variable "bucket_enabled" {
-  type        = bool
-  default     = false
-  description = "Whether to create the s3 bucket."
-}
-
-variable "dynamodb_enabled" {
-  type        = bool
-  default     = false
-  description = "Whether to create the dynamodb table."
-}
-
-variable "terraform_state_file" {
-  type        = string
-  default     = "terraform.tfstate"
-  description = "The path to the state file inside the bucket"
-}
-
-variable "bucket_ownership_enforced_enabled" {
-  type        = bool
-  default     = true
-  description = "Whether S3 bucket ownership is enforced"
-}
-
-variable "force_destroy" {
-  type        = bool
-  description = "A boolean that indicates the S3 bucket can be destroyed even if it contains objects. These objects are not recoverable"
-  default     = false
-}
-
-variable "namespace" {
-  type        = string
-  default     = "du"
-  description = "Namespace, which could be your organization name or abbreviation, e.g. 'eg' or 'cp'"
-}
-
-variable "stage" {
-  type        = string
-  default     = "test"
-  description = "Stage, e.g. 'prod', 'staging', 'dev', or 'test'"
-}
-
-variable "name" {
-  type        = string
-  description = "Name, e.g. 'app' or 'jenkins'"
-  default     = "narwhal-delivery-iac-swf"
 }

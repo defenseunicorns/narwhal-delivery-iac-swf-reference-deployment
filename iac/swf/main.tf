@@ -1,24 +1,3 @@
-module "tfstate_backend" {
-  source                                 = "cloudposse/tfstate-backend/aws"
-  version                                = "1.4.0"
-  terraform_backend_config_template_file = "../templates/backend.tf.tpl"
-  terraform_backend_config_file_path     = var.create_local_backend_file ? "." : ""
-  terraform_backend_config_file_name     = var.create_local_backend_file ? "backend.tf" : ""
-  arn_format                             = var.arn_format
-
-  namespace            = var.namespace
-  stage                = var.stage
-  name                 = var.name
-  terraform_state_file = var.terraform_state_file
-
-  tags = var.tags
-
-  bucket_enabled                    = var.bucket_enabled
-  dynamodb_enabled                  = var.dynamodb_enabled
-  bucket_ownership_enforced_enabled = var.bucket_ownership_enforced_enabled
-  force_destroy                     = var.force_destroy
-}
-
 data "aws_partition" "current" {}
 
 data "aws_caller_identity" "current" {}
@@ -45,12 +24,16 @@ resource "random_id" "default" {
 }
 
 locals {
-  vpc_name                   = "${var.name_prefix}-${lower(random_id.default.hex)}"
-  cluster_name               = "${var.name_prefix}-${lower(random_id.default.hex)}"
-  bastion_name               = "${var.name_prefix}-bastion-${lower(random_id.default.hex)}"
-  access_logging_name_prefix = "${var.name_prefix}-accesslog-${lower(random_id.default.hex)}"
-  kms_key_alias_name_prefix  = "alias/${var.name_prefix}-${lower(random_id.default.hex)}"
-  access_log_sqs_queue_name  = "${var.name_prefix}-accesslog-access-${lower(random_id.default.hex)}"
+  prefix = var.prefix != "" ? var.prefix : join("-", [var.namespace, var.stage, var.name])
+  suffix = var.suffix != "" ? var.suffix : lower(random_id.default.hex)
+
+  # naming, be aware of character limits
+  vpc_name                   = "${local.prefix}-${local.suffix}"
+  cluster_name               = "${local.prefix}-${local.suffix}"
+  bastion_name               = "${local.prefix}-bastion-${local.suffix}"
+  access_logging_name_prefix = "${local.prefix}-accesslog-${local.suffix}"
+  kms_key_alias_name_prefix  = "alias/${local.prefix}-${local.suffix}"
+  access_log_sqs_queue_name  = "${local.prefix}-accesslog-access-${local.suffix}"
   tags = merge(
     var.tags,
     {
