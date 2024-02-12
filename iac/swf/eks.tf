@@ -355,24 +355,3 @@ resource "aws_iam_policy" "additional" {
 
   tags = local.tags
 }
-
-locals {
-}
-
-module "zarf" {
-  source = "./modules/zarf"
-
-  region    = var.region
-  namespace = var.namespace
-  stage     = var.stage
-  name      = "zarf-registry"
-  suffix    = local.suffix # attach this here so it's clear what belongs to this root module
-
-  s3_bucket_name_use_prefix = true
-  s3_bucket_name_prefix     = "${local.prefix}-zarf-registry"
-  s3_bucket_lifecycle_rules = []
-
-  oidc_provider_arn = module.eks.oidc_provider_arn
-
-  tags = local.tags
-}
