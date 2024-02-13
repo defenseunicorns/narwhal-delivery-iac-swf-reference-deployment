@@ -24,26 +24,31 @@ locals {
 # KMS Key
 ################################################################################
 # just make this to reduce complexity for now
+data "aws_iam_policy_document" "kms_access" {
+  # checkov:skip=CKV_AWS_111: todo reduce perms on key
+  # checkov:skip=CKV_AWS_109: todo be more specific with resources
+  # checkov:skip=CKV_AWS_356: todo be more specific with kms resources
+  statement {
+    sid = "KMS Key Default"
+    principals {
+      type = "AWS"
+      identifiers = [
+        "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:root"
+      ]
+    }
 
-locals {
-  key_statements = jsonencode({
-    sid       = "Enable IAM User Permissions"
-    effect    = "Allow"
-    actions   = ["kms:*"]
-    resources = ["*"]
-    principals = [
-      {
-        type        = "AWS"
-        identifiers = ["arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:root"]
-      }
+    actions = [
+      "kms:*",
     ]
-  })
+
+    resources = ["*"]
+  }
 }
 
 resource "aws_kms_key" "default" {
   description             = "kms key"
   deletion_window_in_days = 7
-  policy                  = local.key_statements
+  policy                  = data.aws_iam_policy_document.kms_access.json
   enable_key_rotation     = true
   tags                    = local.tags
   multi_region            = true
@@ -145,7 +150,7 @@ module "zarf_irsa_policy" {
           "s3:PutObject",   # Allows uploading objects to the bucket
           "s3:DeleteObject" # Allows deleting objects from the bucket
         ]
-        Resource = module.s3_bucket.s3_bucket_arn
+        Resource = [module.s3_bucket.s3_bucket_arn, "${module.s3_bucket.s3_bucket_arn}/*"]
       }
     ]
   })
