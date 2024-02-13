@@ -33,6 +33,7 @@
 | [aws_kms_key.default](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_key) | resource |
 | [random_id.default](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/id) | resource |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
+| [aws_iam_policy_document.kms_access](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.s3_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |
 
@@ -71,4 +72,5 @@
 |------|-------------|
 | <a name="output_irsa_k8s_sa_name"></a> [irsa\_k8s\_sa\_name](#output\_irsa\_k8s\_sa\_name) | zarf IRSA k8s service account name in k8s |
 | <a name="output_irsa_role_arn"></a> [irsa\_role\_arn](#output\_irsa\_role\_arn) | zarf IRSA role ARN |
+| <a name="output_zarf_registry_s3_bucket_name"></a> [zarf\_registry\_s3\_bucket\_name](#output\_zarf\_registry\_s3\_bucket\_name) | zarf registry S3 bucket name |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
