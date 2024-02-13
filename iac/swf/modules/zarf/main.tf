@@ -98,6 +98,8 @@ data "aws_iam_policy_document" "s3_bucket" {
   }
 }
 
+
+
 module "s3_bucket" {
   source = "git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v4.1.0"
 
@@ -146,15 +148,24 @@ module "zarf_irsa_policy" {
         Effect = "Allow"
         Action = [
           "s3:ListBucket",
-          "s3:GetObject",   # Allows reading objects from the bucket
-          "s3:PutObject",   # Allows uploading objects to the bucket
-          "s3:DeleteObject" # Allows deleting objects from the bucket
+          "s3:GetBucketLocation",
+          "s3:ListBucketMultipartUploads"
         ]
-        Resource = [module.s3_bucket.s3_bucket_arn, "${module.s3_bucket.s3_bucket_arn}/*"]
+        Resource = [module.s3_bucket.s3_bucket_arn]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:DeleteObject",
+          "s3:ListMultipartUploadParts",
+          "s3:AbortMultipartUpload"
+        ]
+        Resource = ["${module.s3_bucket.s3_bucket_arn}/*"]
       }
     ]
   })
-
 }
 
 module "zarf_irsa_role" {
