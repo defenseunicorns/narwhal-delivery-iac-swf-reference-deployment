@@ -65,6 +65,8 @@
 | <a name="input_stage"></a> [stage](#input\_stage) | Stage, e.g. 'prod', 'staging', 'dev', or 'test' | `string` | `"test"` | no |
 | <a name="input_suffix"></a> [suffix](#input\_suffix) | name suffix to append to most resources, if not defined, randomly generated | `string` | `""` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to apply to all resources | `map(string)` | `{}` | no |
+| <a name="input_zarf_irsa_policy_name"></a> [zarf\_irsa\_policy\_name](#input\_zarf\_irsa\_policy\_name) | The name of the IAM policy to create for IRSA. | `string` | `""` | no |
+| <a name="input_zarf_irsa_role_name"></a> [zarf\_irsa\_role\_name](#input\_zarf\_irsa\_role\_name) | The name of the IAM role to create for IRSA. | `string` | `""` | no |
 
 ## Outputs
 

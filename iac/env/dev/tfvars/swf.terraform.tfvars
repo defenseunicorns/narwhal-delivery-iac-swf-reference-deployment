@@ -125,3 +125,8 @@ cron_schedule_password_rotation = "cron(0 0 1 * ? *)"
 slack_notification_enabled = false
 
 slack_webhook_url = ""
+
+###########################################################
+################ Zarf AWS Dependencies ####################
+
+zarf_s3_bucket_force_destroy = true
