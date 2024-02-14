@@ -36,4 +36,5 @@ output "efs_storageclass_name" {
 output "lambda_password_function_arn" {
   description = "Arn for lambda password function"
   value       = try(module.password_lambda.lambda_password_function_arn, null)
+  sensitive   = true
 }
