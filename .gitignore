@@ -3,6 +3,9 @@
 .DS_Store
 .vscode
 
+# UDS/Zarf things
+*.tar.zst
+zarf-sbom
 
 # Local .terraform directories
 .terraform/
