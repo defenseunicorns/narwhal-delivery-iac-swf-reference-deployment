@@ -129,9 +129,10 @@ module "s3_bucket" {
 ################################################################################
 
 locals {
-  zarf_irsa_policy_name = "${local.prefix}-irsa-policy-${local.suffix}"
-  zarf_irsa_role_name   = "${local.prefix}-irsa-role-${local.suffix}"
+  zarf_irsa_policy_name = var.zarf_irsa_policy_name != "" ? var.zarf_irsa_policy_name : "${local.prefix}-${var.name}-irsa-policy-${local.suffix}"
+  zarf_irsa_role_name   = var.zarf_irsa_role_name != "" ? var.zarf_irsa_role_name : "${local.prefix}-${var.name}-irsa-role-${local.suffix}"
 }
+
 module "zarf_irsa_policy" {
   count = var.create_irsa_role ? 1 : 0
 

@@ -98,6 +98,24 @@ variable "num_azs" {
 
 ###########################################################
 #################### EKS Config ###########################
+variable "access_entries" {
+  description = "Map of access entries to add to the cluster"
+  type        = any
+  default     = {}
+}
+
+variable "authentication_mode" {
+  description = "The authentication mode for the cluster. Valid values are `CONFIG_MAP`, `API` or `API_AND_CONFIG_MAP`"
+  type        = string
+  default     = "API"
+}
+
+variable "enable_cluster_creator_admin_permissions" {
+  description = "Indicates whether or not to add the cluster creator (the identity used by Terraform) as an administrator via access entry"
+  type        = bool
+  default     = true
+}
+
 variable "eks_worker_tenancy" {
   description = "The tenancy of the EKS worker nodes"
   type        = string
@@ -288,7 +306,7 @@ variable "zarf_version" {
 }
 
 ############################################################################
-####################### DUBBD Add-on Dependencies ########################
+####################### UDS Dependencies ########################
 
 variable "keycloak_enabled" {
   description = "Enable Keycloak dedicated nodegroup"
@@ -323,22 +341,11 @@ variable "slack_webhook_url" {
   default     = null
 }
 
+############################################################################
+################## Zarf Init AWS Dependencies #########################
 
-#----------------Access Entry-------------------------
-variable "access_entries" {
-  description = "Map of access entries to add to the cluster"
-  type        = any
-  default     = {}
-}
-
-variable "authentication_mode" {
-  description = "The authentication mode for the cluster. Valid values are `CONFIG_MAP`, `API` or `API_AND_CONFIG_MAP`"
-  type        = string
-  default     = "API"
-}
-
-variable "enable_cluster_creator_admin_permissions" {
-  description = "Indicates whether or not to add the cluster creator (the identity used by Terraform) as an administrator via access entry"
+variable "zarf_s3_bucket_force_destroy" {
+  description = "A boolean that indicates all objects should be deleted from the bucket so that the bucket can be destroyed without error. These objects are not recoverable."
   type        = bool
-  default     = true
+  default     = false
 }

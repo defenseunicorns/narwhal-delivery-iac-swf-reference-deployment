@@ -179,3 +179,15 @@ variable "oidc_provider_arn" {
   type        = string
   default     = ""
 }
+
+variable "zarf_irsa_role_name" {
+  description = "The name of the IAM role to create for IRSA."
+  type        = string
+  default     = ""
+}
+
+variable "zarf_irsa_policy_name" {
+  description = "The name of the IAM policy to create for IRSA."
+  type        = string
+  default     = ""
+}
