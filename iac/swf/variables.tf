@@ -349,3 +349,75 @@ variable "zarf_s3_bucket_force_destroy" {
   type        = bool
   default     = false
 }
+
+############################################################################
+################## Gitlab Dependencies #########################
+
+# Gitlab Variables
+
+variable "gitlab_bucket_names" {
+  description = "List of buckets to create for GitLab"
+  type        = list(string)
+  default     = ["gitlab-artifacts", "gitlab-backups", "gitlab-ci-secure-files", "gitlab-dependency-proxy", "gitlab-lfs", "gitlab-mr-diffs", "gitlab-packages", "gitlab-pages", "gitlab-terraform-state", "gitlab-uploads", "gitlab-registry", "gitlab-runner-cache", "gitlab-tmp"]
+}
+
+variable "gitlab_s3_bucket_force_destroy" {
+  description = "A boolean that indicates all objects should be deleted from the bucket so that the bucket can be destroyed without error. These objects are not recoverable."
+  type        = bool
+  default     = false
+}
+
+variable "gitlab_kms_key_alias" {
+  description = "KMS Key Alias name prefix"
+  type        = string
+  default     = "gitlab"
+}
+
+variable "gitlab_db_name" {
+  description = "Name of the GitLab database."
+  type        = string
+  default     = "gitlabdb"
+}
+
+variable "gitlab_namespace" {
+  description = "Namespace GitLab is deployed to"
+  type        = string
+  default     = "gitlab"
+}
+
+variable "gitlab_elasticache_cluster_name" {
+  description = "ElastiCache Cluster Name"
+  type        = string
+  default     = "gitlab"
+}
+
+variable "gitlab_db_idenitfier_prefix" {
+  description = "The prefix to use for the RDS instance identifier"
+  type        = string
+  default     = "gitlab-db"
+}
+
+variable "gitlab_rds_instance_class" {
+  description = "The instance class to use for the RDS instance"
+  type        = string
+  default     = "db.t4g.large"
+}
+
+variable "gitlab_service_account_names" {
+  description = "List of service accounts to create for GitLab"
+  type        = list(string)
+  default     = ["gitlab-gitaly", "gitlab-sidekiq", "gitlab-toolbox", "gitlab-gitlab-exporter", "gitlab-registry", "gitlab-geo-logcursor", "gitlab-migrations", "gitlab-webservice", "gitlab-mailroom", "gitlab-gitlab-shell"]
+}
+
+variable "permissions_boundary" {
+  description = "The ARN of the policy that is used to set the permissions boundary for IAM roles"
+  type        = string
+  default     = null
+}
+
+
+variable "recovery_window" {
+  description = "Number of days to retain secret before permanent deletion in Secrets Manager"
+  type        = number
+  default     = 30
+}

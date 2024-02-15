@@ -130,3 +130,7 @@ slack_webhook_url = ""
 ################ Zarf AWS Dependencies ####################
 
 zarf_s3_bucket_force_destroy = true
+
+###########################################################
+################ Gitlab AWS Dependencies ####################
+gitlab_s3_bucket_force_destroy = true
