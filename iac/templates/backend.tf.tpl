@@ -1,6 +1,4 @@
-region  = "${region}"
-bucket = "${bucket}"
-key    = "${key}"
-dynamodb_table = "${dynamodb_table}"
-profile = "${profile}"
-encrypt = "${encrypt}"
+terraform {
+  backend "s3" {
+  }
+}
