@@ -65,7 +65,13 @@ variable "profile" {
 
 variable "terraform_backend_config_template_file" {
   type        = string
-  description = "The path to the backend config template file"
+  description = "The path to the backend config template file, this a backend Partial Configuration that is scalable across multiple environments"
+  default     = "../templates/backend.tfconfig.tpl"
+}
+
+variable "terraform_backend_tf_template_file" {
+  type        = string
+  description = "The path to the backend tf template file, this a backend Partial Configuration that is scalable across multiple environments"
   default     = "../templates/backend.tf.tpl"
 }
 

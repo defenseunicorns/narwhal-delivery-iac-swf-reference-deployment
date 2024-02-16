@@ -1,4 +1,37 @@
-https://github.com/cloudposse/terraform-aws-tfstate-backend#usage
+<https://github.com/cloudposse/terraform-aws-tfstate-backend#usage>
+
+This module is used to bootstrap s3 and dynamodb backend for this repostiory.
+
+It templates out a `backend.tf` file and a `$root-module-backend.tfconfig` file that are used to configure terraform to utilize an s3 backend. Each environment (dev, staging, prod) has its own backend-config file that is used to configure the backend. This is called a [partial backend configuration](https://developer.hashicorp.com/terraform/language/settings/backends/configuration#partial-configuration).
+
+Steps to use this module:
+
+1. Initialize the bootstrap module in the environment you want to use it in
+2. Apply the bootstrap module using relevant tfvars files
+3. Re-init backend to use the newly created backend
+
+example usage:
+
+``` bash
+# from the root of the repo
+
+env=dev
+root_module=bootstrap
+
+pushd "iac/${root_module}"
+terraform init
+
+# var-file path relative to current working directory
+terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file ../env/${env}/tfvars/${root_module}.terraform.tfvars -auto-approve
+
+# init again to use the new s3 backend
+echo "yes" | terraform init -reconfigure -backend-config=../env/${env}/backends/${root_module}-backend.tfconfig
+```
+
+When bootstrapping multiple environments and the same root module, you'll need to remove your local `.terraform` directory `and backend.tf` file before re-initializing the backend since it will need to create the s3 bucket and dynamodb table for each environment as well as the `$root-module-backend.tfconfig` files.
+
+``` bash
+
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
@@ -28,6 +61,7 @@ https://github.com/cloudposse/terraform-aws-tfstate-backend#usage
 | Name | Type |
 |------|------|
 | [local_file.backend_config](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
+| [local_file.backend_tf_template](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [random_id.default](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/id) | resource |
 | [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |
 
@@ -47,7 +81,8 @@ https://github.com/cloudposse/terraform-aws-tfstate-backend#usage
 | <a name="input_stage"></a> [stage](#input\_stage) | Stage, e.g. 'prod', 'staging', 'dev', or 'test' | `string` | `"test"` | no |
 | <a name="input_suffix"></a> [suffix](#input\_suffix) | name suffix to append to most resources, if not defined, randomly generated | `string` | `""` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Additional tags to apply to all resources. | `map(string)` | `{}` | no |
-| <a name="input_terraform_backend_config_template_file"></a> [terraform\_backend\_config\_template\_file](#input\_terraform\_backend\_config\_template\_file) | The path to the backend config template file | `string` | `"../templates/backend.tf.tpl"` | no |
+| <a name="input_terraform_backend_config_template_file"></a> [terraform\_backend\_config\_template\_file](#input\_terraform\_backend\_config\_template\_file) | The path to the backend config template file, this a backend Partial Configuration that is scalable across multiple environments | `string` | `"../templates/backend.tfconfig.tpl"` | no |
+| <a name="input_terraform_backend_tf_template_file"></a> [terraform\_backend\_tf\_template\_file](#input\_terraform\_backend\_tf\_template\_file) | The path to the backend tf template file, this a backend Partial Configuration that is scalable across multiple environments | `string` | `"../templates/backend.tf.tpl"` | no |
 | <a name="input_terraform_state_file"></a> [terraform\_state\_file](#input\_terraform\_state\_file) | The path to the state file inside the bucket | `string` | `"terraform.tfstate"` | no |
 
 ## Outputs

@@ -10,6 +10,7 @@ resource "random_id" "default" {
 
 locals {
   terraform_backend_config_file_path_prefix = "${path.module}/../env/${var.stage}/backends"
+  terraform_backend_iac_root_path           = "${path.module}/.."
   arn_format                                = "arn:${data.aws_partition.current.partition}"
   backends                                  = ["bootstrap", "swf"]
 
@@ -56,5 +57,12 @@ resource "local_file" "backend_config" {
     profile        = var.profile
     encrypt        = true
   })
-  filename = "${local.terraform_backend_config_file_path_prefix}/${each.key}-backend.conf"
+  filename = "${local.terraform_backend_config_file_path_prefix}/${each.key}-backend.tfconfig"
+}
+
+resource "local_file" "backend_tf_template" {
+  for_each = toset(local.backends)
+
+  content  = file(var.terraform_backend_tf_template_file)
+  filename = "${local.terraform_backend_iac_root_path}/${each.key}/backend.tf"
 }
