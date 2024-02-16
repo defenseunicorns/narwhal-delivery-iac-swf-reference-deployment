@@ -13,7 +13,7 @@ Steps to use this module:
 example usage:
 
 ``` bash
-# from the./iac directory
+# from the root of the repo
 
 env=dev
 root_module=bootstrap
