@@ -1,0 +1,47 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/defenseunicorns/zarf/main/zarf.schema.json
+kind: ZarfPackageConfig
+metadata:
+  name: swf-deps-aws
+  version: "0.1.0"
+  architecture: amd64
+
+variables:
+  - name: GITLAB_DB_PASSWORD
+    default: "set-me"
+  # - name: SONARQUBE_DB_PASSWORD
+  #   default: "set-me"
+  - name: REDIS_PASSWORD
+    default: "set-me"
+
+components:
+  - name: gitlab-rds
+    required: true
+    manifests:
+      - name: gitlab-postgres
+        namespace: gitlab
+        files:
+          - manifests/rds/gitlab-secret.yaml
+
+  - name: gitlab-elasticache
+    required: true
+    manifests:
+      - name: gitlab-redis
+        namespace: gitlab
+        files:
+          - manifests/elasticache/gitlab-secret.yaml
+
+  - name: gitlab-s3
+    required: true
+    manifests:
+      - name: gitlab-s3
+        namespace: gitlab
+        files:
+          - manifests/s3/gitlab-secret.yaml
+
+  # - name: sonarqube-rds
+  #   required: true
+  #   manifests:
+  #     - name: sonarqube-rds
+  #       namespace: sonarqube
+  #       files:
+  #         - manifests/rds/sonarqube-secret.yaml

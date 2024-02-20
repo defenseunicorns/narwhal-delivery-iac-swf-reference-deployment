@@ -18,6 +18,30 @@ packages:
               value: true
             - path: containerd.path
               value: /run/containerd/containerd.sock
+
+  - name: swf-deps-aws
+    path: ../../
+    ref: "0.1.0"
+
+  - name: gitlab
+    repository: ghcr.io/defenseunicorns/packages/uds/gitlab
+    ref: 16.8.1-uds.4-registry1
+    overrides:
+      gitlab:
+        gitlab:
+          variables:
+            - name: REGISTRY_ROLE_ARN
+              description: "The ARN of the role to assume for the registry pods"
+              path: registry.serviceAccount.annotations.eks\.amazonaws\.com/role-arn
+            - name: SIDEKIQ_ROLE_ARN
+              description: "The ARN of the role to assume for the sidekiq pods"
+              path: gitlab.sidekiq.serviceAccount.annotations.eks\.amazonaws\.com/role-arn
+            - name: WEBSERVICE_ROLE_ARN
+              description: "The ARN of the role to assume for the web service pods"
+              path: gitlab.webservice.serviceAccount.annotations.eks\.amazonaws\.com/role-arn
+            - name: TOOLBOX_ROLE_ARN
+              description: "The ARN of the role to assume for the toolbox pods"
+              path: gitlab.toolbox.serviceAccount.annotations.eks\.amazonaws\.com/role-arn
     #   istio-admin-gateway:
     #     uds-istio-config:
     #       variables:
