@@ -60,3 +60,7 @@ packages:
     #         - name: TENANT_TLS_KEY
     #           description: "The TLS key for the tenant gateway (must be base64 encoded)"
     #           path: tls.key
+
+  - name: gitlab-runner
+    repository: ghcr.io/defenseunicorns/packages/uds/gitlab-runner
+    ref: 16.8.0-uds.0-registry1
