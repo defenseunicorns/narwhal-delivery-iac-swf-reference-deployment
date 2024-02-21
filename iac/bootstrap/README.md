@@ -25,7 +25,7 @@ terraform init
 terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file ../env/${env}/tfvars/${root_module}.terraform.tfvars -auto-approve
 
 # init again to use the new s3 backend
-echo "yes" | terraform init -reconfigure -backend-config=../env/${env}/backends/${root_module}-backend.tfconfig
+terraform init --reconfigure --force-copy --backend-config=../env/${env}/backends/${root_module}-backend.tfconfig
 ```
 
 When bootstrapping multiple environments and the same root module, you'll need to remove your local `.terraform` directory `and backend.tf` file before re-initializing the backend since it will need to create the s3 bucket and dynamodb table for each environment as well as the `$root-module-backend.tfconfig` files.

@@ -116,6 +116,12 @@ variable "enable_cluster_creator_admin_permissions" {
   default     = true
 }
 
+variable "admin_users" {
+  description = "List of IAM users to add as administrators to the EKS cluster"
+  type        = list(string)
+  default     = []
+}
+
 variable "eks_worker_tenancy" {
   description = "The tenancy of the EKS worker nodes"
   type        = string

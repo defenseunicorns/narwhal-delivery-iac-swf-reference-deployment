@@ -197,8 +197,25 @@ module "ssm_kms_key" {
 locals {
   ssm_parameter_key_arn = var.create_ssm_parameters ? module.ssm_kms_key.key_arn : ""
 
+  admin_user_access_entries = {
+    for user in var.admin_users :
+    user => {
+      principal_arn = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:user/${user}"
+      type          = "STANDARD"
+      policy_associations = {
+        admin = {
+          policy_arn = "arn:${data.aws_partition.current.partition}:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          access_scope = {
+            type = "cluster"
+          }
+        }
+      }
+    }
+  }
+
   access_entries = merge(
     var.access_entries,
+    local.admin_user_access_entries,
     { bastion = {
       principal_arn = module.bastion.bastion_role_arn
       type          = "STANDARD"

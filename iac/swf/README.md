@@ -15,7 +15,7 @@ root_module=swf
 
 pushd "iac/${root_module}"
 # init -reconfigure to use the new s3 backend
-echo "yes" | terraform init -reconfigure -backend-config=../env/${env}/backends/${root_module}-backend.tfconfig
+terraform init --reconfigure --force-copy --backend-config=../env/${env}/backends/${root_module}-backend.tfconfig
 
 # apply terraform as you normally would
 terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file ../env/${env}/tfvars/${root_module}.terraform.tfvars

@@ -48,7 +48,7 @@ resource "random_password" "gitlab_db_password" {
 }
 
 resource "aws_secretsmanager_secret" "gitlab_db_secret" {
-  name                    = "${local.prefix}-gitlab-db-secret"
+  name                    = "${local.prefix}-gitlab-db-secret-${local.suffix}"
   description             = "Gitlab DB authentication token"
   recovery_window_in_days = var.recovery_window
   kms_key_id              = module.gitlab_kms_key.kms_key_arn
@@ -114,7 +114,7 @@ resource "random_password" "elasticache_password" {
 }
 
 resource "aws_secretsmanager_secret" "elasticache_secret" {
-  name                    = "${local.prefix}-elasticache-secret"
+  name                    = "${local.prefix}-elasticache-secret-${local.suffix}"
   description             = "swf-${var.stage} Elasticache authentication token"
   recovery_window_in_days = var.recovery_window
   kms_key_id              = module.gitlab_kms_key.kms_key_arn
