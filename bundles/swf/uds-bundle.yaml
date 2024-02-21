@@ -5,6 +5,22 @@ metadata:
   version: "0.1.0"
 
 packages:
+  - name: zarf-init-s3-backend
+    repository: ghcr.io/defenseunicorns/zacks-zarf-funhouse/init
+    ref: v0.32.2
+
+  - name: storageclass
+    repository: ghcr.io/defenseunicorns/packages/narwhal-delivery-zarf-package-eks-addons/storageclass
+    ref: 0.0.1
+    optionalComponents:
+      - fetch-staged-aws-ssm-vars
+
+  - name: aws-load-balancer-controller
+    repository: ghcr.io/defenseunicorns/packages/narwhal-delivery-zarf-package-eks-addons/aws-load-balancer-controller
+    ref: 0.0.1
+    optionalComponents:
+      - fetch-staged-aws-ssm-vars
+
   - name: core
     repository: ghcr.io/defenseunicorns/packages/uds/core
     ref: 0.12.0-registry1
@@ -18,6 +34,18 @@ packages:
               value: true
             - path: containerd.path
               value: /run/containerd/containerd.sock
+
+  - name: cluster-autoscaler
+    repository: ghcr.io/defenseunicorns/packages/narwhal-delivery-zarf-package-eks-addons/cluster-autoscaler
+    ref: 0.0.1-registry1
+    optionalComponents:
+      - fetch-staged-aws-ssm-vars
+
+  - name: aws-node-termination-handler
+    repository: ghcr.io/defenseunicorns/packages/narwhal-delivery-zarf-package-eks-addons/aws-node-termination-handler
+    ref: 0.0.1-registry1
+    optionalComponents:
+      - fetch-staged-aws-ssm-vars
 
   - name: swf-deps-aws
     path: ../../

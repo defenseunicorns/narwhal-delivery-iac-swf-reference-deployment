@@ -5,6 +5,20 @@ shared:
   bucket_suffix: "-${local.suffix}"
 
 variables:
+  zarf-init-s3-backend:
+    registry_pc_enabled: "false"
+    registry_hpa_min: "2"
+    registry_pvc_enabled: "false"
+    registry_service_account_name: "docker-registry-sa"
+    registry_create_service_account: "true"
+    registry_service_account_annotations: "eks.amazonaws.com/role-arn: ${module.zarf.irsa_role_arn}"
+    registry_extra_envs: |
+      - name: REGISTRY_STORAGE
+        value: s3
+      - name: REGISTRY_STORAGE_S3_REGION
+        value: "${var.region}"
+      - name: REGISTRY_STORAGE_S3_BUCKET
+        value: "${module.zarf.zarf_registry_s3_bucket_name}"
   swf-deps-aws:
     gitlab_db_password: "${random_password.gitlab_db_password.result}"
     redis_password: "${random_password.elasticache_password.result}"
