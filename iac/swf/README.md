@@ -1,5 +1,28 @@
 # terraform
 
+Steps to use this module:
+
+1. init backend with the -reconfigure flag to use the newly created backend from the bootstrap process, see [Bootstrap README](../bootstrap/README.md)
+2. Apply the terraform using relevant tfvars files. It should push the state file to the correct bucket and to the key defined in ../env/${env}/backends/swf-backend.tfconfig
+
+example usage:
+
+``` bash
+# from the root of the repo
+
+env=dev
+root_module=swf
+
+pushd "iac/${root_module}"
+# init -reconfigure to use the new s3 backend
+echo "yes" | terraform init -reconfigure -backend-config=../env/${env}/backends/${root_module}-backend.tfconfig
+
+# apply terraform as you normally would
+terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file ../env/${env}/tfvars/${root_module}.terraform.tfvars
+```
+
+``` bash
+
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
