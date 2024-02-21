@@ -23,7 +23,7 @@ packages:
 
   - name: core
     repository: ghcr.io/defenseunicorns/packages/uds/core
-    ref: 0.12.0-registry1
+    ref: 0.13.1-registry1
     overrides:
       neuvector:
         core:
@@ -34,6 +34,33 @@ packages:
               value: true
             - path: containerd.path
               value: /run/containerd/containerd.sock
+      istio-admin-gateway:
+        gateway:
+          values:
+            - path: service.annotations
+              value:
+                service.beta.kubernetes.io/aws-load-balancer-type: "external"
+                service.beta.kubernetes.io/aws-load-balancer-scheme: "internal"
+                service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
+                service.beta.kubernetes.io/aws-load-balancer-attributes: "load_balancing.cross_zone.enabled=true"
+      istio-tenant-gateway:
+        gateway:
+          values:
+            - path: service.annotations
+              value:
+                service.beta.kubernetes.io/aws-load-balancer-type: "external"
+                service.beta.kubernetes.io/aws-load-balancer-scheme: "internal"
+                service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
+                service.beta.kubernetes.io/aws-load-balancer-attributes: "load_balancing.cross_zone.enabled=true"
+      istio-passthrough-gateway:
+        gateway:
+          values:
+            - path: service.annotations
+              value:
+                service.beta.kubernetes.io/aws-load-balancer-type: "external"
+                service.beta.kubernetes.io/aws-load-balancer-scheme: "internal"
+                service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
+                service.beta.kubernetes.io/aws-load-balancer-attributes: "load_balancing.cross_zone.enabled=true"
 
   - name: cluster-autoscaler
     repository: ghcr.io/defenseunicorns/packages/narwhal-delivery-zarf-package-eks-addons/cluster-autoscaler
@@ -70,24 +97,6 @@ packages:
             - name: TOOLBOX_ROLE_ARN
               description: "The ARN of the role to assume for the toolbox pods"
               path: gitlab.toolbox.serviceAccount.annotations.eks\.amazonaws\.com/role-arn
-    #   istio-admin-gateway:
-    #     uds-istio-config:
-    #       variables:
-    #         - name: ADMIN_TLS_CERT
-    #           description: "The TLS cert for the admin gateway (must be base64 encoded)"
-    #           path: tls.cert
-    #         - name: ADMIN_TLS_KEY
-    #           description: "The TLS key for the admin gateway (must be base64 encoded)"
-    #           path: tls.key
-    #   istio-tenant-gateway:
-    #     uds-istio-config:
-    #       variables:
-    #         - name: TENANT_TLS_CERT
-    #           description: "The TLS cert for the tenant gateway (must be base64 encoded)"
-    #           path: tls.cert
-    #         - name: TENANT_TLS_KEY
-    #           description: "The TLS key for the tenant gateway (must be base64 encoded)"
-    #           path: tls.key
 
   - name: gitlab-runner
     repository: ghcr.io/defenseunicorns/packages/uds/gitlab-runner
