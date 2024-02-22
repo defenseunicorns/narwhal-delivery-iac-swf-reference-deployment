@@ -427,3 +427,50 @@ variable "recovery_window" {
   type        = number
   default     = 30
 }
+
+############################################################################
+################## Confluence Dependencies #########################
+
+# Confluence Variables
+
+variable "confluence_db_name" {
+  description = "Name of the Confluence database."
+  type        = string
+  default     = "confluencedb"
+}
+
+variable "confluence_db_idenitfier_prefix" {
+  description = "The prefix to use for the RDS instance identifier"
+  type        = string
+  default     = "confluence-db"
+}
+
+variable "confluence_rds_instance_class" {
+  description = "The instance class to use for the RDS instance"
+  type        = string
+  default     = "db.t4g.large"
+}
+
+############################################################################
+################## Jira Dependencies #########################
+
+# Jira Variables
+
+variable "jira_db_name" {
+  description = "Name of the Jira database."
+  type        = string
+  default     = "jiradb"
+}
+
+variable "jira_db_idenitfier_prefix" {
+  description = "The prefix to use for the RDS instance identifier"
+  type        = string
+  default     = "jira-db"
+}
+
+variable "jira_rds_instance_class" {
+  description = "The instance class to use for the RDS instance"
+  type        = string
+  default     = "db.t4g.large"
+}
+

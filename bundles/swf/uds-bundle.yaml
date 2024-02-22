@@ -87,7 +87,7 @@ packages:
           variables:
             - name: REGISTRY_ROLE_ARN
               description: "The ARN of the role to assume for the registry pods"
-              path: registry.serviceAccount.annotations.eks\.amazonaws\.com/role-arn
+              path: registry.serpowceAccount.annotations.eks\.amazonaws\.com/role-arn
             - name: SIDEKIQ_ROLE_ARN
               description: "The ARN of the role to assume for the sidekiq pods"
               path: gitlab.sidekiq.serviceAccount.annotations.eks\.amazonaws\.com/role-arn
@@ -101,3 +101,15 @@ packages:
   - name: gitlab-runner
     repository: ghcr.io/defenseunicorns/packages/uds/gitlab-runner
     ref: 16.8.0-uds.0-registry1
+
+  # - name: jenkins
+  #   repository: ghcr.io/defenseunicorns/packages/uds/jenkins
+  #   ref: 4.12.0-uds.0
+
+  # - name: jira
+  #   repository: ghcr.io/defenseunicorns/packages/uds/jira
+  #   ref: 1.17.0-uds.1-registry1
+
+  # - name: confluence
+  #   repository: ghcr.io/defenseunicorns/packages/uds/confluence
+  #   ref: 1.17.0-uds.1-registry1
