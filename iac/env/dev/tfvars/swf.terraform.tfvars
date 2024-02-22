@@ -113,6 +113,8 @@ metrics_server = {
   chart_version = "v3.11.0"
 }
 
+enable_aws_load_balancer_controller = true
+
 ######################################################
 ################## Lambda Config #####################
 
