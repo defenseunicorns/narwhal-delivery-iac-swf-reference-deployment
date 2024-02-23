@@ -433,6 +433,12 @@ variable "recovery_window" {
 
 # Confluence Variables
 
+variable "confluence_kms_key_alias" {
+  description = "KMS Key Alias name prefix"
+  type        = string
+  default     = "confluence"
+}
+
 variable "confluence_db_name" {
   description = "Name of the Confluence database."
   type        = string
@@ -455,6 +461,12 @@ variable "confluence_rds_instance_class" {
 ################## Jira Dependencies #########################
 
 # Jira Variables
+
+variable "jira_kms_key_alias" {
+  description = "KMS Key Alias name prefix"
+  type        = string
+  default     = "jira"
+}
 
 variable "jira_db_name" {
   description = "Name of the Jira database."

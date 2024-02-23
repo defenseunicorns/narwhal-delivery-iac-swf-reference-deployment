@@ -232,7 +232,7 @@ locals {
 }
 
 module "eks" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-eks.git?ref=v0.0.15"
+  source = "git::https://github.com/defenseunicorns/terraform-aws-eks.git?ref=v0.0.16"
 
   name                                     = local.cluster_name
   aws_region                               = var.region

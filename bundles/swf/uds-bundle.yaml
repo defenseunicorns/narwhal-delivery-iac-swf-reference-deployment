@@ -14,6 +14,8 @@ packages:
     ref: 0.0.1
     optionalComponents:
       - fetch-staged-aws-ssm-vars
+      - ebs-storageclass
+      - efs-storageclass
 
   - name: aws-load-balancer-controller
     repository: ghcr.io/defenseunicorns/packages/narwhal-delivery-zarf-package-eks-addons/aws-load-balancer-controller
@@ -40,8 +42,8 @@ packages:
             - path: service.annotations
               value:
                 service.beta.kubernetes.io/aws-load-balancer-type: "external"
-                service.beta.kubernetes.io/aws-load-balancer-scheme: "internal"
-                service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
+                service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+                service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "instance"
                 service.beta.kubernetes.io/aws-load-balancer-attributes: "load_balancing.cross_zone.enabled=true"
       istio-tenant-gateway:
         gateway:
@@ -49,8 +51,8 @@ packages:
             - path: service.annotations
               value:
                 service.beta.kubernetes.io/aws-load-balancer-type: "external"
-                service.beta.kubernetes.io/aws-load-balancer-scheme: "internal"
-                service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
+                service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+                service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "instance"
                 service.beta.kubernetes.io/aws-load-balancer-attributes: "load_balancing.cross_zone.enabled=true"
       istio-passthrough-gateway:
         gateway:
@@ -58,8 +60,8 @@ packages:
             - path: service.annotations
               value:
                 service.beta.kubernetes.io/aws-load-balancer-type: "external"
-                service.beta.kubernetes.io/aws-load-balancer-scheme: "internal"
-                service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
+                service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+                service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "instance"
                 service.beta.kubernetes.io/aws-load-balancer-attributes: "load_balancing.cross_zone.enabled=true"
 
   - name: cluster-autoscaler
@@ -102,14 +104,14 @@ packages:
     repository: ghcr.io/defenseunicorns/packages/uds/gitlab-runner
     ref: 16.8.0-uds.0-registry1
 
-  # - name: jenkins
-  #   repository: ghcr.io/defenseunicorns/packages/uds/jenkins
-  #   ref: 4.12.0-uds.0
+  - name: jenkins
+    repository: ghcr.io/defenseunicorns/packages/uds/jenkins
+    ref: 4.12.0-uds.0
 
-  # - name: jira
-  #   repository: ghcr.io/defenseunicorns/packages/uds/jira
-  #   ref: 1.17.0-uds.1-registry1
+  - name: jira
+    repository: ghcr.io/defenseunicorns/packages/uds/jira
+    ref: 1.17.0-uds.1-registry1
 
-  # - name: confluence
-  #   repository: ghcr.io/defenseunicorns/packages/uds/confluence
-  #   ref: 1.17.0-uds.1-registry1
+  - name: confluence
+    repository: ghcr.io/defenseunicorns/packages/uds/confluence
+    ref: 1.17.0-uds.1-registry1

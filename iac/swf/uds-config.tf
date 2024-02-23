@@ -21,16 +21,22 @@ variables:
         value: "${module.zarf.zarf_registry_s3_bucket_name}"
   swf-deps-aws:
     gitlab_db_password: "${random_password.gitlab_db_password.result}"
-    redis_password: "${random_password.elasticache_password.result}"
+    confluence_db_password: "${random_password.confluence_db_password.result}"
+    jira_db_password: "${random_password.jira_db_password.result}"
+    redis_password: "${random_password.gitlab_elasticache_password.result}"
     region: "${var.region}"
   gitlab:
     gitlab_db_endpoint: "${element(split(":", module.gitlab_db.db_instance_endpoint), 0)}"
-    gitlab_redis_endpoint: "${aws_elasticache_replication_group.redis.primary_endpoint_address}"
+    gitlab_redis_endpoint: "${aws_elasticache_replication_group.gitlab_redis.primary_endpoint_address}"
     gitlab_redis_scheme: "rediss"
     registry_role_arn: "${module.gitlab_irsa_s3.bucket_roles["gitlab-registry"].iam_role_arn}"
     sidekiq_role_arn: "${module.gitlab_irsa_s3.bucket_roles["gitlab-sidekiq"].iam_role_arn}"
     webservice_role_arn: "${module.gitlab_irsa_s3.bucket_roles["gitlab-webservice"].iam_role_arn}"
     toolbox_role_arn: "${module.gitlab_irsa_s3.bucket_roles["gitlab-toolbox"].iam_role_arn}"
+  confluence:
+    confluence_db_endpoint: "${element(split(":", module.confluence_db.db_instance_endpoint), 0)}"
+  jira:
+    jira_db_endpoint: "${element(split(":", module.jira_db.db_instance_endpoint), 0)}"
 EOY
 }
 

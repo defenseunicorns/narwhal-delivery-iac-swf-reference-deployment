@@ -14,7 +14,7 @@ resource "random_password" "jira_db_password" {
 }
 
 resource "aws_secretsmanager_secret" "jira_db_secret" {
-  name                    = "${local.prefix}-jira-db-secret"
+  name                    = "${local.prefix}-jira-db-secret-${local.suffix}"
   description             = "Jira DB authentication token"
   recovery_window_in_days = var.recovery_window
   kms_key_id              = module.jira_kms_key.kms_key_arn
@@ -47,10 +47,10 @@ module "jira_db" {
   manage_master_user_password = false
   password                    = random_password.jira_db_password.result
 
-  vpc_security_group_ids = [aws_security_group.rds_sg.id]
+  vpc_security_group_ids = [aws_security_group.jira_rds_sg.id]
 }
 
-resource "aws_security_group" "rds_sg" {
+resource "aws_security_group" "jira_rds_sg" {
   vpc_id = module.vpc.vpc_id
 
   egress {
@@ -62,8 +62,8 @@ resource "aws_security_group" "rds_sg" {
   }
 }
 
-resource "aws_vpc_security_group_ingress_rule" "rds_ingress" {
-  security_group_id = aws_security_group.rds_sg.id
+resource "aws_vpc_security_group_ingress_rule" "jira_rds_ingress" {
+  security_group_id = aws_security_group.jira_rds_sg.id
 
   cidr_ipv4   = "0.0.0.0/0"
   ip_protocol = "tcp"
