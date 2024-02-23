@@ -92,4 +92,6 @@ resource "aws_iam_role_policy_attachment" "s3_policy_attach" {
 
   role       = "${local.prefix}-${each.value}-s3-role-${local.suffix}"
   policy_arn = aws_iam_policy.s3_bucket_policy.arn
+
+  depends_on = [module.irsa_role]
 }
