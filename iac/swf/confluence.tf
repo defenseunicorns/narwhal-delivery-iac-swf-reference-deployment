@@ -1,7 +1,7 @@
 module "confluence_kms_key" {
   source = "github.com/defenseunicorns/terraform-aws-uds-kms?ref=v0.0.2"
 
-  kms_key_alias_name_prefix = "${local.prefix}-${var.confluence_kms_key_alias}-${local.suffix}"
+  kms_key_alias_name_prefix = join("-", [local.prefix, var.confluence_kms_key_alias, local.suffix])
   kms_key_deletion_window   = 7
   kms_key_description       = "Confluence Key"
 }
@@ -14,7 +14,7 @@ resource "random_password" "confluence_db_password" {
 }
 
 resource "aws_secretsmanager_secret" "confluence_db_secret" {
-  name                    = "${local.prefix}-confluence-db-secret-${local.suffix}"
+  name                    = join("-", [local.prefix, "confluence-db-secret", local.suffix])
   description             = "Confluence DB authentication token"
   recovery_window_in_days = var.recovery_window
   kms_key_id              = module.confluence_kms_key.kms_key_arn

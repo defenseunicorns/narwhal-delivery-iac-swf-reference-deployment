@@ -18,8 +18,8 @@ locals {
   prefix = var.prefix != "" ? var.prefix : join("-", [var.namespace, var.stage, var.name])
   suffix = var.suffix != "" ? var.suffix : lower(random_id.default.hex)
   # use provided name, else use generated name
-  backend_s3_bucket_name      = var.backend_s3_bucket_name != "" ? var.backend_s3_bucket_name : "${local.prefix}-tfstate-${local.suffix}"
-  backend_dynamodb_table_name = var.backend_dynamodb_table_name != "" ? var.backend_dynamodb_table_name : "${local.prefix}-tfstate-${local.suffix}"
+  backend_s3_bucket_name      = var.backend_s3_bucket_name != "" ? var.backend_s3_bucket_name : join("-", [local.prefix, "tfstate", local.suffix])
+  backend_dynamodb_table_name = var.backend_dynamodb_table_name != "" ? var.backend_dynamodb_table_name : join("-", [local.prefix, "tfstate", local.suffix])
 
   tags = merge(
     var.tags,

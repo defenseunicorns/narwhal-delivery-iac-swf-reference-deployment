@@ -41,7 +41,7 @@ EOY
 }
 
 resource "aws_secretsmanager_secret" "uds_config" {
-  name                    = "${local.prefix}-uds-config-${local.suffix}"
+  name                    = join("-", [local.prefix, "uds-config", local.suffix])
   description             = "uds-swf-${var.stage} UDS Config file"
   recovery_window_in_days = var.recovery_window
 }

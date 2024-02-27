@@ -1,7 +1,7 @@
 module "jira_kms_key" {
   source = "github.com/defenseunicorns/terraform-aws-uds-kms?ref=v0.0.2"
 
-  kms_key_alias_name_prefix = "${local.prefix}-${var.jira_kms_key_alias}-${local.suffix}"
+  kms_key_alias_name_prefix = join("-", [local.prefix, var.jira_kms_key_alias, local.suffix])
   kms_key_deletion_window   = 7
   kms_key_description       = "Jira Key"
 }
@@ -14,7 +14,7 @@ resource "random_password" "jira_db_password" {
 }
 
 resource "aws_secretsmanager_secret" "jira_db_secret" {
-  name                    = "${local.prefix}-jira-db-secret-${local.suffix}"
+  name                    = join("-", [local.prefix, "jira-db-secret", local.suffix])
   description             = "Jira DB authentication token"
   recovery_window_in_days = var.recovery_window
   kms_key_id              = module.jira_kms_key.kms_key_arn

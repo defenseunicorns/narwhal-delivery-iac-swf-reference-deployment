@@ -59,7 +59,7 @@ resource "aws_kms_key" "default" {
 ################################################################################
 
 locals {
-  s3_bucket_name        = try(coalesce(var.s3_bucket_name, "${local.prefix}-${local.suffix}"), null)
+  s3_bucket_name        = try(coalesce(var.s3_bucket_name, join("-", [local.prefix, local.suffix])), null)
   s3_bucket_name_prefix = try(coalesce(var.s3_bucket_name_prefix, "${local.prefix}-"), null)
   bucket_policy         = try(coalesce(var.bucket_policy, data.aws_iam_policy_document.s3_bucket.json), null)
 
@@ -129,8 +129,8 @@ module "s3_bucket" {
 ################################################################################
 
 locals {
-  zarf_irsa_policy_name = var.zarf_irsa_policy_name != "" ? var.zarf_irsa_policy_name : "${local.prefix}-${var.name}-irsa-policy-${local.suffix}"
-  zarf_irsa_role_name   = var.zarf_irsa_role_name != "" ? var.zarf_irsa_role_name : "${local.prefix}-${var.name}-irsa-role-${local.suffix}"
+  zarf_irsa_policy_name = var.zarf_irsa_policy_name != "" ? var.zarf_irsa_policy_name : join("-", [local.prefix, var.name, "irsa-policy", local.suffix])
+  zarf_irsa_role_name   = var.zarf_irsa_role_name != "" ? var.zarf_irsa_role_name : join("-", [local.prefix, var.name, "irsa-role", local.suffix])
 }
 
 module "zarf_irsa_policy" {

@@ -22,7 +22,7 @@ locals {
 
 ## This will create a policy for the S3 Buckets
 resource "aws_iam_policy" "s3_bucket_policy" {
-  name        = "${local.prefix}-${var.policy_name}-s3-access-policy-${local.suffix}"
+  name        = join("-", [local.prefix, var.policy_name, "s3-access-policy", local.suffix])
   path        = "/"
   description = "IRSA policy to access buckets."
   policy = jsonencode({
@@ -72,7 +72,7 @@ module "irsa_role" {
 
   source = "git::https://github.com/terraform-aws-modules/terraform-aws-iam.git//modules/iam-role-for-service-accounts-eks?ref=v5.34.0"
 
-  role_name = "${local.prefix}-${each.value}-s3-role-${local.suffix}"
+  role_name = join("-", [local.prefix, each.value, "s3-role", local.suffix])
 
   role_policy_arns = {
     policy = aws_iam_policy.s3_bucket_policy.arn
@@ -90,7 +90,7 @@ module "irsa_role" {
 resource "aws_iam_role_policy_attachment" "s3_policy_attach" {
   for_each = toset(var.serviceaccount_names)
 
-  role       = "${local.prefix}-${each.value}-s3-role-${local.suffix}"
+  role       = join("-", [local.prefix, each.value, "s3-role", local.suffix])
   policy_arn = aws_iam_policy.s3_bucket_policy.arn
 
   depends_on = [module.irsa_role]

@@ -13,7 +13,7 @@ locals {
     use_mixed_instances_policy = true
 
     instance_requirements = {
-      allowed_instance_types = ["m7i.4xlarge", "m6a.4xlarge", "m5a.4xlarge"] #this should be adjusted to the appropriate instance family if reserved instances are being utilized
+      allowed_instance_types = ["m6i.4xlarge", "m5a.4xlarge"] #this should be adjusted to the appropriate instance family if reserved instances are being utilized
       memory_mib = {
         min = 64000
       }
@@ -79,8 +79,16 @@ locals {
         xvda = {
           device_name = "/dev/xvda"
           ebs = {
-            volume_size = 50
+            volume_size = 100
             volume_type = "gp3"
+          }
+        }
+        xvdb = {
+          device_name = "/dev/xvdb"
+          ebs = {
+            volume_size = 100
+            volume_type = "gp3"
+            #need to add and create EBS key
           }
         }
       }
@@ -161,7 +169,7 @@ module "ssm_kms_key" {
   description = "KMS key for SecureString SSM parameters"
 
   key_administrators = [
-    data.aws_caller_identity.current.arn
+    data.aws_iam_session_context.current.issuer_arn
   ]
 
   computed_aliases = {
@@ -213,10 +221,24 @@ locals {
     }
   }
 
-  access_entries = merge(
-    var.access_entries,
-    local.admin_user_access_entries,
-    { bastion = {
+  # create conflics with
+  unicorn_admin_role_access_entry = {
+    unicorn_admin = {
+      principal_arn = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/unicorn-admin"
+      type          = "STANDARD"
+      policy_associations = {
+        admin = {
+          policy_arn = "arn:${data.aws_partition.current.partition}:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          access_scope = {
+            type = "cluster"
+          }
+        }
+      }
+    }
+  }
+
+  bastion_role_access_entry = {
+    bastion = {
       principal_arn = module.bastion.bastion_role_arn
       type          = "STANDARD"
       policy_associations = {
@@ -227,8 +249,16 @@ locals {
           }
         }
       }
-    } },
+    }
+  }
+
+  access_entries = merge(
+    local.unicorn_admin_role_access_entry,
+    local.bastion_role_access_entry,
+    local.admin_user_access_entries,
+    var.access_entries
   )
+
 }
 
 module "eks" {
@@ -333,7 +363,7 @@ module "ebs_kms_key" {
 
   # Policy
   key_administrators = [
-    data.aws_caller_identity.current.arn
+    data.aws_iam_session_context.current.issuer_arn
   ]
 
   key_service_roles_for_autoscaling = [
