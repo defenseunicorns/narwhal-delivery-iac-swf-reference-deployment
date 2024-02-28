@@ -30,8 +30,8 @@ locals {
   )
 
   # use provided name, else use generated name
-  backend_s3_bucket_name      = var.backend_s3_bucket_name != "" ? var.backend_s3_bucket_name : join("-", compact([local.prefix, "tfstate-backend", local.suffix]))
-  backend_dynamodb_table_name = var.backend_dynamodb_table_name != "" ? var.backend_dynamodb_table_name : join("-", compact([local.prefix, "tfstate-backend", local.suffix]))
+  backend_s3_bucket_name      = var.backend_s3_bucket_name != "" ? var.backend_s3_bucket_name : join("-", compact([local.prefix, var.tfstate_backend_name, local.suffix]))
+  backend_dynamodb_table_name = var.backend_dynamodb_table_name != "" ? var.backend_dynamodb_table_name : join("-", compact([local.prefix, var.tfstate_backend_name, local.suffix]))
 
   tags = merge(
     var.tags,

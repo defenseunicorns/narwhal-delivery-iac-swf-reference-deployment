@@ -27,6 +27,12 @@ variable "backends" {
   default     = ["bootstrap", "swf"]
 }
 
+variable "tfstate_backend_name" {
+  type        = string
+  description = "The naming convention for the tfstate backend"
+  default     = "tfstate"
+}
+
 variable "prefix" {
   type        = string
   description = "name prefix to prepend to most resources, if not defined, created as: 'namespace-stage-name'"
