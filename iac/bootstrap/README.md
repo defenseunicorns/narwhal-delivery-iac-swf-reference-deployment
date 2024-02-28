@@ -71,6 +71,7 @@ When bootstrapping multiple environments and the same root module, you'll need t
 |------|-------------|------|---------|:--------:|
 | <a name="input_backend_dynamodb_table_name"></a> [backend\_dynamodb\_table\_name](#input\_backend\_dynamodb\_table\_name) | The name of the DynamoDB table | `string` | `""` | no |
 | <a name="input_backend_s3_bucket_name"></a> [backend\_s3\_bucket\_name](#input\_backend\_s3\_bucket\_name) | The name of the S3 bucket | `string` | `""` | no |
+| <a name="input_backends"></a> [backends](#input\_backends) | List of root module backends to template | `list(string)` | <pre>[<br>  "bootstrap",<br>  "swf"<br>]</pre> | no |
 | <a name="input_bucket_ownership_enforced_enabled"></a> [bucket\_ownership\_enforced\_enabled](#input\_bucket\_ownership\_enforced\_enabled) | Whether S3 bucket ownership is enforced | `bool` | `true` | no |
 | <a name="input_force_destroy"></a> [force\_destroy](#input\_force\_destroy) | A boolean that indicates the S3 bucket can be destroyed even if it contains objects. These objects are not recoverable | `bool` | `false` | no |
 | <a name="input_name"></a> [name](#input\_name) | Name, e.g. 'app' or 'jenkins' | `string` | `"narwhal-delivery-iac-swf"` | no |
@@ -84,6 +85,7 @@ When bootstrapping multiple environments and the same root module, you'll need t
 | <a name="input_terraform_backend_config_template_file"></a> [terraform\_backend\_config\_template\_file](#input\_terraform\_backend\_config\_template\_file) | The path to the backend config template file, this a backend Partial Configuration that is scalable across multiple environments | `string` | `"../templates/backend.tfconfig.tpl"` | no |
 | <a name="input_terraform_backend_tf_template_file"></a> [terraform\_backend\_tf\_template\_file](#input\_terraform\_backend\_tf\_template\_file) | The path to the backend tf template file, this a backend Partial Configuration that is scalable across multiple environments | `string` | `"../templates/backend.tf.tpl"` | no |
 | <a name="input_terraform_state_file"></a> [terraform\_state\_file](#input\_terraform\_state\_file) | The path to the state file inside the bucket | `string` | `"terraform.tfstate"` | no |
+| <a name="input_tfstate_backend_name"></a> [tfstate\_backend\_name](#input\_tfstate\_backend\_name) | The naming convention for the tfstate backend | `string` | `"tfstate"` | no |
 
 ## Outputs
 

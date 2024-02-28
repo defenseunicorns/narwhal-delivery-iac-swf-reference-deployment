@@ -22,7 +22,7 @@ module "vpc" {
   }
 
   public_subnet_tags = {
-    "kubernetes.io/role/elb"             = 1
+    "kubernetes.io/role/elb" = 1
   }
   create_database_subnet_group = true
 
