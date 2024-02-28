@@ -21,6 +21,12 @@ variable "name" {
   default     = "narwhal-delivery-iac-swf"
 }
 
+variable "backends" {
+  type        = list(string)
+  description = "List of root module backends to template"
+  default     = ["bootstrap", "swf"]
+}
+
 variable "prefix" {
   type        = string
   description = "name prefix to prepend to most resources, if not defined, created as: 'namespace-stage-name'"

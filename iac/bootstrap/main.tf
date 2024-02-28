@@ -12,7 +12,6 @@ locals {
   terraform_backend_config_file_path_prefix = "${path.module}/../env/${var.stage}/backends"
   terraform_backend_iac_root_path           = "${path.module}/.."
   arn_format                                = "arn:${data.aws_partition.current.partition}"
-  backends                                  = ["bootstrap", "account", "swf"]
 
   # If 'var.prefix' is explicitly null, allow it to be empty
   # If 'var.prefix' is an empty string, generate a prefix
@@ -60,7 +59,7 @@ module "tfstate_backend" {
 }
 
 resource "local_file" "backend_config" {
-  for_each = toset(local.backends)
+  for_each = toset(var.backends)
 
   content = templatefile(var.terraform_backend_config_template_file, {
     region         = var.region
@@ -74,7 +73,7 @@ resource "local_file" "backend_config" {
 }
 
 resource "local_file" "backend_tf_template" {
-  for_each = toset(local.backends)
+  for_each = toset(var.backends)
 
   content  = file(var.terraform_backend_tf_template_file)
   filename = "${local.terraform_backend_iac_root_path}/${each.key}/backend.tf"
