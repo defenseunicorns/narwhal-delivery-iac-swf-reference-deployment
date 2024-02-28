@@ -415,13 +415,6 @@ variable "gitlab_service_account_names" {
   default     = ["gitlab-gitaly", "gitlab-sidekiq", "gitlab-toolbox", "gitlab-gitlab-exporter", "gitlab-registry", "gitlab-geo-logcursor", "gitlab-migrations", "gitlab-webservice", "gitlab-mailroom", "gitlab-gitlab-shell"]
 }
 
-variable "permissions_boundary" {
-  description = "The ARN of the policy that is used to set the permissions boundary for IAM roles"
-  type        = string
-  default     = null
-}
-
-
 variable "recovery_window" {
   description = "Number of days to retain secret before permanent deletion in Secrets Manager"
   type        = number
