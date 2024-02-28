@@ -1,0 +1,58 @@
+includes:
+  - deploy: ./tasks/deploy.yaml
+
+tasks:
+  - name: terraform-one-time-bootstrap-per-env
+    actions:
+      - description: |
+          One time bootstrapping of a terraform environment for both the bootstrap and swf modules using the bootstrap root module
+          This sets up the backend resources in AWS and templates out the backend.tf file in each root module and generates the ${root_module}-backend.tfconfig files in the ./iac/env/${env}/backends directory.
+        task: deploy:terraform-one-time-bootstrap-per-env
+        with:
+          env: ${ENV}
+
+  - name: terraform-init-aws-bootstrap
+    actions:
+      - description: "terraform init AWS SWF IaC Bootstrap module"
+        task: deploy:terraform-init
+        with:
+          root_module: bootstrap
+
+  - name: terraform-plan-aws-bootstrap
+    actions:
+      - description: "Terraform plan AWS SWF IaC Bootstrap module"
+        task: deploy:terraform-plan
+        with:
+          env: ${ENV}
+          root_module: bootstrap
+
+  - name: terraform-deploy-aws-bootstrap
+    actions:
+      - description: "Terraform deploy AWS SWF IaC Bootstrap module"
+        task: deploy:terraform-deploy
+        with:
+          env: ${ENV}
+          root_module: bootstrap
+
+  - name: terraform-init-aws-swf
+    actions:
+      - description: "AWS SWF IaC"
+        task: deploy:terraform-init
+        with:
+          root_module: swf
+
+  - name: terraform-plan-aws-swf
+    actions:
+      - description: "AWS SWF IaC"
+        task: deploy:terraform-plan
+        with:
+          env: ${ENV}
+          root_module: swf
+
+  - name: terraform-deploy-aws-swf
+    actions:
+      - description: "Deploy AWS SWF IaC"
+        task: deploy:terraform-deploy
+        with:
+          env: ${ENV}
+          root_module: swf

@@ -1,0 +1,76 @@
+tasks:
+  - name: terraform-one-time-bootstrap-per-env
+    inputs:
+      env:
+        required: true
+        description: "The environment to bootstrap"
+    actions:
+      - description: "Check if bootstrap for '$env' is clean"
+        cmd: |
+          set -exo pipefail
+          # check if ./iac/env/${INPUT_ENV}/backends/bootstrap-backend.tfconfig exists
+          if [ -f ./iac/env/${INPUT_ENV}/backends/bootstrap-backend.tfconfig ]; then
+            echo "terraform s3 backend environment files for ${INPUT_ENV} already exists"
+            exit 1
+          fi
+      - description: "Init the bootstrap module"
+        task: terraform-init
+        with:
+          root_module: bootstrap
+      - description: "Deploy the bootstrap module in the specified environment"
+        task: terraform-deploy
+        with:
+          env: ${ENV}
+          root_module: bootstrap
+      - description: "Migrate local backend to s3"
+        cmd: |
+          set -exo pipefail
+          cd ./iac/${INPUT_ROOT_MODULE}
+          terraform init --reconfigure --force-copy --backend-config=../env/${INPUT_ENV}/backends/${INPUT_ROOT_MODULE}-backend.tfconfig && \
+            mv .terraform ".terraform-${INPUT_ENV}-local-backend-backup"
+
+  - name: terraform-init
+    inputs:
+      root_module:
+        required: true
+        description: "The root module to init"
+    actions:
+      - cmd: |
+          set -exo pipefail
+          cd ./iac/${INPUT_ROOT_MODULE}
+          terraform init
+
+  - name: terraform-plan
+    inputs:
+      env:
+        required: true
+        description: "The environment to plan"
+      root_module:
+        required: true
+        description: "The root module to plan"
+    actions:
+      - description: "Terraform plan"
+        cmd: |
+          set -exo pipefail
+          cd ./iac/${INPUT_ROOT_MODULE}
+          terraform plan \
+            -var-file ../env/${INPUT_ENV}/tfvars/common.terraform.tfvars \
+            -var-file ../env/${INPUT_ENV}/tfvars/${INPUT_ROOT_MODULE}.terraform.tfvars
+
+  - name: terraform-deploy
+    inputs:
+      env:
+        required: true
+        description: "The environment to deploy"
+      root_module:
+        required: true
+        description: "The root module to deploy"
+    actions:
+      - description: "Terraform deploy"
+        cmd: |
+          set -exo pipefail
+          cd ./iac/${INPUT_ROOT_MODULE}
+          terraform apply \
+            -var-file ../env/${INPUT_ENV}/tfvars/common.terraform.tfvars \
+            -var-file ../env/${INPUT_ENV}/tfvars/${INPUT_ROOT_MODULE}.terraform.tfvars \
+            --auto-approve
