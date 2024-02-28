@@ -1,3 +1,7 @@
+locals {
+  uds_config_secret_name = join("-", compact([local.prefix, "uds-config", local.suffix]))
+}
+
 resource "local_sensitive_file" "uds_config" {
   filename = "uds-config.yaml"
   content  = <<EOY
@@ -41,7 +45,7 @@ EOY
 }
 
 resource "aws_secretsmanager_secret" "uds_config" {
-  name                    = join("-", [local.prefix, "uds-config", local.suffix])
+  name                    = local.uds_config_secret_name
   description             = "uds-swf-${var.stage} UDS Config file"
   recovery_window_in_days = var.recovery_window
 }

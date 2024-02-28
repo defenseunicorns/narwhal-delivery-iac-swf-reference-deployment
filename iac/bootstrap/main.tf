@@ -12,14 +12,27 @@ locals {
   terraform_backend_config_file_path_prefix = "${path.module}/../env/${var.stage}/backends"
   terraform_backend_iac_root_path           = "${path.module}/.."
   arn_format                                = "arn:${data.aws_partition.current.partition}"
-  backends                                  = ["bootstrap", "swf"]
+  backends                                  = ["bootstrap", "account", "swf"]
 
-  # naming
-  prefix = var.prefix != "" ? var.prefix : join("-", [var.namespace, var.stage, var.name])
-  suffix = var.suffix != "" ? var.suffix : lower(random_id.default.hex)
+  # If 'var.prefix' is explicitly null, allow it to be empty
+  # If 'var.prefix' is an empty string, generate a prefix
+  # If 'var.prefix' is neither null nor an empty string, assign the value of 'var.prefix' itself
+  prefix = var.prefix == null ? "" : (
+    var.prefix == "" ? join("-", compact([var.namespace, var.stage, var.name])) :
+    var.prefix
+  )
+
+  # If 'var.suffix' is null, assign an empty string
+  # If 'var.suffix' is an empty string, assign a randomly generated hexadecimal value
+  # If 'var.suffix' is neither null nor an empty string, assign the value of 'var.suffix' itself
+  suffix = var.suffix == null ? "" : (
+    var.suffix == "" ? lower(random_id.default.hex) :
+    var.suffix
+  )
+
   # use provided name, else use generated name
-  backend_s3_bucket_name      = var.backend_s3_bucket_name != "" ? var.backend_s3_bucket_name : join("-", [local.prefix, "tfstate", local.suffix])
-  backend_dynamodb_table_name = var.backend_dynamodb_table_name != "" ? var.backend_dynamodb_table_name : join("-", [local.prefix, "tfstate", local.suffix])
+  backend_s3_bucket_name      = var.backend_s3_bucket_name != "" ? var.backend_s3_bucket_name : join("-", compact([local.prefix, "tfstate-backend", local.suffix]))
+  backend_dynamodb_table_name = var.backend_dynamodb_table_name != "" ? var.backend_dynamodb_table_name : join("-", compact([local.prefix, "tfstate-backend", local.suffix]))
 
   tags = merge(
     var.tags,

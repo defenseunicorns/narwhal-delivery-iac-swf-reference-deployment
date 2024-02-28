@@ -8,8 +8,21 @@ resource "random_id" "default" {
 
 
 locals {
-  prefix = var.prefix != "" ? var.prefix : join("-", [var.namespace, var.stage, var.name])
-  suffix = var.suffix != "" ? var.suffix : lower(random_id.default.hex)
+  # If 'var.prefix' is explicitly null, allow it to be empty
+  # If 'var.prefix' is an empty string, generate a prefix
+  # If 'var.prefix' is neither null nor an empty string, assign the value of 'var.prefix' itself
+  prefix = var.prefix == null ? "" : (
+    var.prefix == "" ? join("-", compact([var.namespace, var.stage, var.name])) :
+    var.prefix
+  )
+
+  # If 'var.suffix' is null, assign an empty string
+  # If 'var.suffix' is an empty string, assign a randomly generated hexadecimal value
+  # If 'var.suffix' is neither null nor an empty string, assign the value of 'var.suffix' itself
+  suffix = var.suffix == null ? "" : (
+    var.suffix == "" ? lower(random_id.default.hex) :
+    var.suffix
+  )
 
   tags = merge(
     var.tags,
@@ -18,11 +31,12 @@ locals {
       GithubRepo   = "github.com/defenseunicorns/narwhal-delivery-iac-swf-reference-deployment"
     }
   )
+  s3_bucket_polcy_name = join("-", compact([local.prefix, var.policy_name, "s3-access-policy", local.suffix]))
 }
 
 ## This will create a policy for the S3 Buckets
 resource "aws_iam_policy" "s3_bucket_policy" {
-  name        = join("-", [local.prefix, var.policy_name, "s3-access-policy", local.suffix])
+  name        = local.s3_bucket_polcy_name
   path        = "/"
   description = "IRSA policy to access buckets."
   policy = jsonencode({
@@ -72,7 +86,7 @@ module "irsa_role" {
 
   source = "git::https://github.com/terraform-aws-modules/terraform-aws-iam.git//modules/iam-role-for-service-accounts-eks?ref=v5.34.0"
 
-  role_name = join("-", [local.prefix, each.value, "s3-role", local.suffix])
+  role_name = join("-", compact([local.prefix, each.value, "s3-role", local.suffix]))
 
   role_policy_arns = {
     policy = aws_iam_policy.s3_bucket_policy.arn
@@ -90,7 +104,7 @@ module "irsa_role" {
 resource "aws_iam_role_policy_attachment" "s3_policy_attach" {
   for_each = toset(var.serviceaccount_names)
 
-  role       = join("-", [local.prefix, each.value, "s3-role", local.suffix])
+  role       = join("-", compact([local.prefix, each.value, "s3-role", local.suffix]))
   policy_arn = aws_iam_policy.s3_bucket_policy.arn
 
   depends_on = [module.irsa_role]

@@ -8,9 +8,21 @@ resource "random_id" "default" {
 
 
 locals {
-  prefix = var.prefix != "" ? var.prefix : join("-", [var.namespace, var.stage, var.name])
-  suffix = var.suffix != "" ? var.suffix : lower(random_id.default.hex)
+  # If 'var.prefix' is explicitly null, allow it to be empty
+  # If 'var.prefix' is an empty string, generate a prefix
+  # If 'var.prefix' is neither null nor an empty string, assign the value of 'var.prefix' itself
+  prefix = var.prefix == null ? "" : (
+    var.prefix == "" ? join("-", compact([var.namespace, var.stage, var.name])) :
+    var.prefix
+  )
 
+  # If 'var.suffix' is null, assign an empty string
+  # If 'var.suffix' is an empty string, assign a randomly generated hexadecimal value
+  # If 'var.suffix' is neither null nor an empty string, assign the value of 'var.suffix' itself
+  suffix = var.suffix == null ? "" : (
+    var.suffix == "" ? lower(random_id.default.hex) :
+    var.suffix
+  )
   tags = merge(
     var.tags,
     {
@@ -59,7 +71,7 @@ resource "aws_kms_key" "default" {
 ################################################################################
 
 locals {
-  s3_bucket_name        = try(coalesce(var.s3_bucket_name, join("-", [local.prefix, local.suffix])), null)
+  s3_bucket_name        = try(coalesce(var.s3_bucket_name, join("-", compact([local.prefix, local.suffix]))), null)
   s3_bucket_name_prefix = try(coalesce(var.s3_bucket_name_prefix, "${local.prefix}-"), null)
   bucket_policy         = try(coalesce(var.bucket_policy, data.aws_iam_policy_document.s3_bucket.json), null)
 
@@ -129,8 +141,8 @@ module "s3_bucket" {
 ################################################################################
 
 locals {
-  zarf_irsa_policy_name = var.zarf_irsa_policy_name != "" ? var.zarf_irsa_policy_name : join("-", [local.prefix, var.name, "irsa-policy", local.suffix])
-  zarf_irsa_role_name   = var.zarf_irsa_role_name != "" ? var.zarf_irsa_role_name : join("-", [local.prefix, var.name, "irsa-role", local.suffix])
+  zarf_irsa_policy_name = var.zarf_irsa_policy_name != "" ? var.zarf_irsa_policy_name : join("-", compact([local.prefix, var.name, "irsa-policy", local.suffix]))
+  zarf_irsa_role_name   = var.zarf_irsa_role_name != "" ? var.zarf_irsa_role_name : join("-", compact([local.prefix, var.name, "irsa-role", local.suffix]))
 }
 
 module "zarf_irsa_policy" {

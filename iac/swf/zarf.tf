@@ -1,3 +1,7 @@
+locals {
+  zarf_s3_bucket_name_prefix = join("-", compact([local.prefix, "zarf-registry", local.suffix]))
+}
+
 module "zarf" {
   source = "./modules/zarf"
 
@@ -9,7 +13,7 @@ module "zarf" {
   name      = "zarf-registry"
 
   s3_bucket_name_use_prefix = true
-  s3_bucket_name_prefix     = join("-", [local.prefix, "zarf-registry"])
+  s3_bucket_name_prefix     = local.zarf_s3_bucket_name_prefix
   s3_bucket_lifecycle_rules = []
   s3_bucket_force_destroy   = var.zarf_s3_bucket_force_destroy
 

@@ -32,16 +32,30 @@ resource "random_id" "default" {
 }
 
 locals {
-  prefix = var.prefix != "" ? var.prefix : join("-", [var.namespace, var.stage, var.name])
-  suffix = var.suffix != "" ? var.suffix : lower(random_id.default.hex)
+  # If 'var.prefix' is explicitly null, allow it to be empty
+  # If 'var.prefix' is an empty string, generate a prefix
+  # If 'var.prefix' is neither null nor an empty string, assign the value of 'var.prefix' itself
+  prefix = var.prefix == null ? "" : (
+    var.prefix == "" ? join("-", compact([var.namespace, var.stage, var.name])) :
+    var.prefix
+  )
+
+  # If 'var.suffix' is null, assign an empty string
+  # If 'var.suffix' is an empty string, assign a randomly generated hexadecimal value
+  # If 'var.suffix' is neither null nor an empty string, assign the value of 'var.suffix' itself
+  suffix = var.suffix == null ? "" : (
+    var.suffix == "" ? lower(random_id.default.hex) :
+    var.suffix
+  )
+
 
   # naming, be aware of character limits
-  vpc_name                   = join("-", [local.prefix, local.suffix])
-  cluster_name               = join("-", [local.prefix, local.suffix])
-  bastion_name               = join("-", [local.prefix, "bastion", local.suffix])
-  access_logging_name_prefix = join("-", [local.prefix, "accesslog", local.suffix])
-  kms_key_alias_name_prefix  = "alias/${join("-", [local.prefix, local.suffix])}"
-  access_log_sqs_queue_name  = join("-", [local.prefix, "accesslog", "access", local.suffix])
+  vpc_name                   = join("-", compact([local.prefix, local.suffix]))
+  kms_key_alias_name_prefix  = "alias/${join("-", compact([local.prefix, local.suffix]))}"
+  cluster_name               = join("-", compact([local.prefix, local.suffix]))
+  bastion_name               = join("-", compact([local.prefix, "bastion", local.suffix]))
+  access_logging_name_prefix = join("-", compact([local.prefix, "accesslog", local.suffix]))
+  access_log_sqs_queue_name  = join("-", compact([local.prefix, "accesslog", "access", local.suffix]))
   tags = merge(
     var.tags,
     {

@@ -1,3 +1,8 @@
+locals {
+  gitlab_db_secret_name            = join("-", compact([local.prefix, "gitlab-db-secret", local.suffix]))
+  gitlab_kms_key_alias_name_prefix = join("-", compact([local.prefix, var.gitlab_kms_key_alias, local.suffix]))
+}
+
 module "gitlab_s3_bucket" {
   for_each = toset(var.gitlab_bucket_names)
 
@@ -21,7 +26,7 @@ module "gitlab_s3_bucket" {
 module "gitlab_kms_key" {
   source = "github.com/defenseunicorns/terraform-aws-uds-kms?ref=v0.0.2"
 
-  kms_key_alias_name_prefix = join("-", [local.prefix, var.gitlab_kms_key_alias, local.suffix])
+  kms_key_alias_name_prefix = local.gitlab_kms_key_alias_name_prefix
   kms_key_deletion_window   = 7
   kms_key_description       = "GitLab Key"
 }
@@ -48,7 +53,7 @@ resource "random_password" "gitlab_db_password" {
 }
 
 resource "aws_secretsmanager_secret" "gitlab_db_secret" {
-  name                    = join("-", [local.prefix, "gitlab-db-secret", local.suffix])
+  name                    = local.gitlab_db_secret_name
   description             = "Gitlab DB authentication token"
   recovery_window_in_days = var.recovery_window
   kms_key_id              = module.gitlab_kms_key.kms_key_arn
@@ -114,14 +119,14 @@ resource "random_password" "gitlab_elasticache_password" {
 }
 
 resource "aws_secretsmanager_secret" "gitlab_elasticache_secret" {
-  name                    = join("-", [local.prefix, "elasticache-secret", local.suffix])
+  name                    = join("-", compact([local.prefix, "elasticache-secret", local.suffix]))
   description             = "swf-${var.stage} Elasticache authentication token"
   recovery_window_in_days = var.recovery_window
   kms_key_id              = module.gitlab_kms_key.kms_key_arn
 }
 
 resource "aws_elasticache_replication_group" "gitlab_redis" {
-  replication_group_id = join("-", [local.prefix, var.gitlab_elasticache_cluster_name, local.suffix])
+  replication_group_id = join("-", compact([local.prefix, var.gitlab_elasticache_cluster_name, local.suffix]))
   description          = "Redis Replication Group for GitLab"
 
   subnet_group_name = aws_elasticache_subnet_group.gitlab_redis.name
