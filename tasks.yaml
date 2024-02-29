@@ -27,10 +27,10 @@ tasks:
           env: ${ENV}
           root_module: bootstrap
 
-  - name: terraform-deploy-aws-bootstrap
+  - name: terraform-apply-aws-bootstrap
     actions:
-      - description: "Terraform deploy AWS SWF IaC Bootstrap module"
-        task: deploy:terraform-deploy
+      - description: "Terraform apply AWS SWF IaC Bootstrap module"
+        task: deploy:terraform-apply
         with:
           env: ${ENV}
           root_module: bootstrap
