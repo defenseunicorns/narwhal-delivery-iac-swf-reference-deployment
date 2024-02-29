@@ -17,8 +17,8 @@ tasks:
         task: terraform-init
         with:
           root_module: bootstrap
-      - description: "Deploy the bootstrap module in the specified environment"
-        task: terraform-deploy
+      - description: "Apply the bootstrap module in the specified environment"
+        task: terraform-apply
         with:
           env: ${ENV}
           root_module: bootstrap
