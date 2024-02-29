@@ -1,5 +1,6 @@
 includes:
   - deploy: ./tasks/deploy.yaml
+  - swf: ./tasks/swf.yaml
 
 tasks:
   - name: terraform-one-time-bootstrap-per-env
@@ -49,10 +50,42 @@ tasks:
           env: ${ENV}
           root_module: swf
 
-  - name: terraform-deploy-aws-swf
+  - name: terraform-apply-aws-swf
     actions:
-      - description: "Deploy AWS SWF IaC"
-        task: deploy:terraform-deploy
+      - description: "Apply AWS SWF IaC"
+        task: deploy:terraform-apply
         with:
           env: ${ENV}
           root_module: swf
+      - description: "Move uds-config.yaml"
+        task: swf:uds-config
+
+  - name: zarf-create
+    actions:
+      - description: "Create the zarf package"
+        task: swf:zarf-create
+
+  - name: zarf-deploy
+    actions:
+      - description: "Deploy the zarf package"
+        task: swf:zarf-deploy
+
+  - name: zarf-publish
+    actions:
+      - description: "Publish the zarf package"
+        task: swf:zarf-publish
+
+  - name: bundle-create
+    actions:
+      - description: "Create the swf bundle"
+        task: swf:bundle-create
+
+  - name: bundle-deploy
+    actions:
+      - description: "Deploy the swf bundle"
+        task: swf:bundle-deploy
+
+  - name: bundle-publish
+    actions:
+      - description: "Publish the swf bundle"
+        task: swf:bundle-publish

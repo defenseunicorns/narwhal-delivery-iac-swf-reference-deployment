@@ -1,0 +1,38 @@
+tasks:
+  - name: zarf-create
+    description: "Creates the swf package"
+    actions:
+      - cmd: uds zarf package create ./zarf/swf-deps-aws
+
+  - name: zarf-deploy
+    description: "Creates the swf package"
+    actions:
+      - cmd: uds zarf package create ./zarf/swf-deps-aws
+
+  - name: zarf-publish
+    description: "Creates the swf package"
+    actions:
+      - cmd: uds zarf package publish zarf-package-swf-deps-aws-amd64-*.tar
+
+  - name: bundle-create
+    description: "Creates the swf bundle"
+    actions:
+      - cmd: uds create bundles/swf/
+
+  - name: bundle-deploy
+    description: "Deploys the swf bundle"
+    actions:
+      - cmd: uds deploy bundles/swf/ --confirm
+
+  - name: bundle-publish
+    description: "Deploys the swf bundle"
+    actions:
+      - cmd: uds deploy bundles/swf/ --confirm
+
+  - name: uds-config
+    inputs:
+      root_module:
+        required: true
+        description: "Move the uds-config.yaml to an appropriate directory"
+    actions:
+      - cmd: mv ./iac/swf/uds-config.yaml ./bundles/swf/

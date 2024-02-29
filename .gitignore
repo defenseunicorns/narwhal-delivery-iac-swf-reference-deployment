@@ -71,4 +71,4 @@ examples/zarf-complete-example/build
 **/.terraform.lock.hcl
 
 
-iac/swf/uds-config.yaml
+**/uds-config.yaml

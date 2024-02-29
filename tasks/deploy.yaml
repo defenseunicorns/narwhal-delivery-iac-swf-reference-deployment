@@ -57,16 +57,16 @@ tasks:
             -var-file ../env/${INPUT_ENV}/tfvars/common.terraform.tfvars \
             -var-file ../env/${INPUT_ENV}/tfvars/${INPUT_ROOT_MODULE}.terraform.tfvars
 
-  - name: terraform-deploy
+  - name: terraform-apply
     inputs:
       env:
         required: true
-        description: "The environment to deploy"
+        description: "The environment to apply"
       root_module:
         required: true
-        description: "The root module to deploy"
+        description: "The root module to apply"
     actions:
-      - description: "Terraform deploy"
+      - description: "Terraform apply"
         cmd: |
           set -exo pipefail
           cd ./iac/${INPUT_ROOT_MODULE}
