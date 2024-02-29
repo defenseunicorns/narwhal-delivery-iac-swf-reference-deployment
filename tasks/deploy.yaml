@@ -27,7 +27,7 @@ tasks:
           set -exo pipefail
           cd ./iac/bootstrap
           terraform init --reconfigure --force-copy --backend-config=../env/${INPUT_ENV}/backends/bootstrap-backend.tfconfig && \
-            mv .terraform.tfstate ".terraform-tfstate.${INPUT_ENV}-local-backend-backup"
+            mv terraform.tfstate "terraform-tfstate.${INPUT_ENV}-local-backend-backup"
 
   - name: terraform-init
     inputs:
