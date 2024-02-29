@@ -25,9 +25,9 @@ tasks:
       - description: "Migrate local backend to s3"
         cmd: |
           set -exo pipefail
-          cd ./iac/${INPUT_ROOT_MODULE}
-          terraform init --reconfigure --force-copy --backend-config=../env/${INPUT_ENV}/backends/${INPUT_ROOT_MODULE}-backend.tfconfig && \
-            mv .terraform ".terraform-${INPUT_ENV}-local-backend-backup"
+          cd ./iac/bootstrap
+          terraform init --reconfigure --force-copy --backend-config=../env/${INPUT_ENV}/backends/bootstrap-backend.tfconfig && \
+            mv .terraform.tfstate ".terraform-tfstate.${INPUT_ENV}-local-backend-backup"
 
   - name: terraform-init
     inputs:
