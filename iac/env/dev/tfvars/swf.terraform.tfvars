@@ -9,6 +9,10 @@ enable_nat_gateway    = true
 admin_role_name       = "unicorn-admin"
 
 ###########################################################
+#################### Transit Gateway Config ###############
+target_transit_gateway_tag_name = "target-tgw-placeholder"
+
+###########################################################
 ################## Bastion Config #########################
 
 bastion_ssh_user     = "ec2-user" # local user in bastion used to ssh
