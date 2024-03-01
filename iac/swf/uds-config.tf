@@ -2,12 +2,12 @@ locals {
   uds_config_secret_name = join("-", compact([local.prefix, "uds-config", local.suffix]))
 }
 
+#template comments
+# roles: loop through the list of service account names and create a role for each, replacing dashes with underscores and removing the gitlab- prefix
+# buckets: loop through the list of bucket names and create a variable for each, replacing dashes with underscores and removing the gitlab- prefix
 resource "local_sensitive_file" "uds_config" {
   filename = "uds-config.yaml"
   content  = <<EOY
-shared:
-  bucket_suffix: "-${local.suffix}"
-
 variables:
   zarf-init-s3-backend:
     registry_pc_enabled: "false"
@@ -33,10 +33,13 @@ variables:
     gitlab_db_endpoint: "${element(split(":", module.gitlab_db.db_instance_endpoint), 0)}"
     gitlab_redis_endpoint: "${aws_elasticache_replication_group.gitlab_redis.primary_endpoint_address}"
     gitlab_redis_scheme: "rediss"
-    registry_role_arn: "${module.gitlab_irsa_s3.bucket_roles["gitlab-registry"].iam_role_arn}"
-    sidekiq_role_arn: "${module.gitlab_irsa_s3.bucket_roles["gitlab-sidekiq"].iam_role_arn}"
-    webservice_role_arn: "${module.gitlab_irsa_s3.bucket_roles["gitlab-webservice"].iam_role_arn}"
-    toolbox_role_arn: "${module.gitlab_irsa_s3.bucket_roles["gitlab-toolbox"].iam_role_arn}"
+    %{~for role in var.gitlab_service_account_names~}
+    ${replace(trimprefix(role, "gitlab-"), "-", "_")}_role_arn: "${module.gitlab_irsa_s3.bucket_roles[role].iam_role_arn}"
+    %{~endfor~}
+    %{~for bucket in var.gitlab_bucket_names~}
+    ${replace(trimprefix(bucket, "gitlab-"), "-", "_")}_bucket: "${module.gitlab_s3_bucket[bucket].s3_bucket_id}"
+    %{~endfor~}
+
   confluence:
     confluence_db_endpoint: "${element(split(":", module.confluence_db.db_instance_endpoint), 0)}"
   jira:

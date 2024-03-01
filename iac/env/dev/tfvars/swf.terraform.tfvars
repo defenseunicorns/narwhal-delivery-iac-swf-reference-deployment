@@ -153,3 +153,7 @@ admin_users = [
   "Zack.Annexstein",
   "matt.bunch"
 ]
+
+admin_roles = [
+  "unicorn-admin"
+]

@@ -77,12 +77,6 @@ variable "eks_use_mfa" {
   type        = bool
 }
 
-variable "admin_role_name" {
-  type        = string
-  description = "Name of the IAM role to create"
-  default     = "unicorn-admin"
-}
-
 ###########################################################
 #################### VPC Config ###########################
 variable "vpc_cidr" {
@@ -160,8 +154,14 @@ variable "enable_cluster_creator_admin_permissions" {
 }
 
 variable "admin_users" {
-  description = "List of IAM users to add as administrators to the EKS cluster"
+  description = "List of IAM users to add as administrators to the EKS cluster via access entry"
   type        = list(string)
+  default     = []
+}
+
+variable "admin_roles" {
+  type        = list(string)
+  description = "List of IAM roles to add as administrators to the EKS cluster via access entry"
   default     = []
 }
 

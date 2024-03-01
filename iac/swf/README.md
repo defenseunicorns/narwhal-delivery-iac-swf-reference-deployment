@@ -61,7 +61,7 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="module_gitlab_db"></a> [gitlab\_db](#module\_gitlab\_db) | terraform-aws-modules/rds/aws | 6.1.1 |
 | <a name="module_gitlab_irsa_s3"></a> [gitlab\_irsa\_s3](#module\_gitlab\_irsa\_s3) | ./modules/irsa-s3 | n/a |
 | <a name="module_gitlab_kms_key"></a> [gitlab\_kms\_key](#module\_gitlab\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.2 |
-| <a name="module_gitlab_s3_bucket"></a> [gitlab\_s3\_bucket](#module\_gitlab\_s3\_bucket) | terraform-aws-modules/s3-bucket/aws | 3.14.1 |
+| <a name="module_gitlab_s3_bucket"></a> [gitlab\_s3\_bucket](#module\_gitlab\_s3\_bucket) | git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git | v4.1.0 |
 | <a name="module_jira_db"></a> [jira\_db](#module\_jira\_db) | terraform-aws-modules/rds/aws | 6.1.1 |
 | <a name="module_jira_kms_key"></a> [jira\_kms\_key](#module\_jira\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.2 |
 | <a name="module_key_pair"></a> [key\_pair](#module\_key\_pair) | terraform-aws-modules/key-pair/aws | ~> 2.0 |
@@ -120,8 +120,8 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 |------|-------------|------|---------|:--------:|
 | <a name="input_access_entries"></a> [access\_entries](#input\_access\_entries) | Map of access entries to add to the cluster | `any` | `{}` | no |
 | <a name="input_access_log_expire_days"></a> [access\_log\_expire\_days](#input\_access\_log\_expire\_days) | Number of days to wait before deleting access logs | `number` | `30` | no |
-| <a name="input_admin_role_name"></a> [admin\_role\_name](#input\_admin\_role\_name) | Name of the IAM role to create | `string` | `"unicorn-admin"` | no |
-| <a name="input_admin_users"></a> [admin\_users](#input\_admin\_users) | List of IAM users to add as administrators to the EKS cluster | `list(string)` | `[]` | no |
+| <a name="input_admin_roles"></a> [admin\_roles](#input\_admin\_roles) | List of IAM roles to add as administrators to the EKS cluster via access entry | `list(string)` | `[]` | no |
+| <a name="input_admin_users"></a> [admin\_users](#input\_admin\_users) | List of IAM users to add as administrators to the EKS cluster via access entry | `list(string)` | `[]` | no |
 | <a name="input_authentication_mode"></a> [authentication\_mode](#input\_authentication\_mode) | The authentication mode for the cluster. Valid values are `CONFIG_MAP`, `API` or `API_AND_CONFIG_MAP` | `string` | `"API"` | no |
 | <a name="input_aws_admin_usernames"></a> [aws\_admin\_usernames](#input\_aws\_admin\_usernames) | A list of one or more AWS usernames with authorized access to KMS and EKS resources, will automatically add the user running the terraform as an admin | `list(string)` | `[]` | no |
 | <a name="input_aws_efs_csi_driver"></a> [aws\_efs\_csi\_driver](#input\_aws\_efs\_csi\_driver) | AWS EFS CSI Driver helm chart config | `any` | `{}` | no |

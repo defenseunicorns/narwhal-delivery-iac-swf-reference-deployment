@@ -6,11 +6,9 @@ locals {
 module "gitlab_s3_bucket" {
   for_each = toset(var.gitlab_bucket_names)
 
-  source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "3.14.1"
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v4.1.0"
 
-  # NOTE: need to keep track that the suffix for gitlab buckets is the environment
-  bucket        = "uds-${each.key}-${local.suffix}"
+  bucket        = join("-", compact([local.prefix, each.key, local.suffix]))
   force_destroy = var.gitlab_s3_bucket_force_destroy
 
   server_side_encryption_configuration = {

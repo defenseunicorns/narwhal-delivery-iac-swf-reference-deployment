@@ -204,7 +204,6 @@ module "ssm_kms_key" {
 
 locals {
   ssm_parameter_key_arn = var.create_ssm_parameters ? module.ssm_kms_key.key_arn : ""
-  admin_role_name       = join("-", compact([local.prefix, var.admin_role_name, local.suffix]))
 
   admin_user_access_entries = {
     for user in var.admin_users :
@@ -222,9 +221,10 @@ locals {
     }
   }
 
-  unicorn_admin_role_access_entry = {
-    unicorn_admin = {
-      principal_arn = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/${local.admin_role_name}"
+  admin_role_access_entries = {
+    for role in var.admin_roles :
+    role => {
+      principal_arn = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/${role}"
       type          = "STANDARD"
       policy_associations = {
         admin = {
@@ -253,9 +253,9 @@ locals {
   }
 
   access_entries = merge(
-    local.unicorn_admin_role_access_entry,
-    local.bastion_role_access_entry,
     local.admin_user_access_entries,
+    local.admin_role_access_entries,
+    local.bastion_role_access_entry,
     var.access_entries
   )
 

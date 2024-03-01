@@ -89,7 +89,7 @@ packages:
           variables:
             - name: REGISTRY_ROLE_ARN
               description: "The ARN of the role to assume for the registry pods"
-              path: registry.serpowceAccount.annotations.eks\.amazonaws\.com/role-arn
+              path: registry.serviceAccount.annotations.eks\.amazonaws\.com/role-arn
             - name: SIDEKIQ_ROLE_ARN
               description: "The ARN of the role to assume for the sidekiq pods"
               path: gitlab.sidekiq.serviceAccount.annotations.eks\.amazonaws\.com/role-arn
@@ -99,6 +99,42 @@ packages:
             - name: TOOLBOX_ROLE_ARN
               description: "The ARN of the role to assume for the toolbox pods"
               path: gitlab.toolbox.serviceAccount.annotations.eks\.amazonaws\.com/role-arn
+            - name: LFS_BUCKET
+              description: "The name of the S3 bucket to use for LFS storage"
+              path: gitlab.global.appConfig.lfs.bucket
+            - name: ARTIFACTS_BUCKET
+              description: "The name of the S3 bucket to use for artifacts storage"
+              path: gitlab.global.appConfig.artifacts.bucket
+            - name: UPLOADS_BUCKET
+              description: "The name of the S3 bucket to use for uploads storage"
+              path: gitlab.global.appConfig.uploads.bucket
+            - name: PACKAGES_BUCKET
+              description: "The name of the S3 bucket to use for packages storage"
+              path: gitlab.global.appConfig.packages.bucket
+            - name: EXTERNAL_DIFFS_BUCKET
+              description: "The name of the S3 bucket to use for external diffs storage"
+              path: gitlab.global.appConfig.externalDiffs.bucket
+            - name: TERRAFORM_STATE_BUCKET
+              description: "The name of the S3 bucket to use for terraform state storage"
+              path: gitlab.global.appConfig.terraformState.bucket
+            - name: CI_SECURE_FILES_BUCKET
+              description: "The name of the S3 bucket to use for CI secure files storage"
+              path: gitlab.global.appConfig.ciSecureFiles.bucket
+            - name: DEPENDENCY_PROXY_BUCKET
+              description: "The name of the S3 bucket to use for dependency proxy storage"
+              path: gitlab.global.appConfig.dependencyProxy.bucket
+            - name: BACKUPS_BUCKET
+              description: "The name of the S3 bucket to use for backups storage"
+              path: gitlab.global.appConfig.backups.bucket
+            - name: BACKUPS_TMP_BUCKET
+              description: "The name of the S3 bucket to use for temporary backups storage"
+              path: gitlab.global.appConfig.backups.tmpBucket
+            - name: REGISTRY_BUCKET
+              description: "The name of the S3 bucket to use for registry storage"
+              path: gitlab.global.registry.bucket
+            - name: PAGES_BUCKET
+              description: "The name of the S3 bucket to use for pages storage"
+              path: gitlab.global.pages.objectStore.bucket
 
   - name: gitlab-runner
     repository: ghcr.io/defenseunicorns/packages/uds/gitlab-runner
