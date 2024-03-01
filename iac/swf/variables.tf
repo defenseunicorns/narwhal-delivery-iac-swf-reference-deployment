@@ -77,6 +77,12 @@ variable "eks_use_mfa" {
   type        = bool
 }
 
+variable "admin_role_name" {
+  type        = string
+  description = "Name of the IAM role to create"
+  default     = "unicorn-admin"
+}
+
 ###########################################################
 #################### VPC Config ###########################
 variable "vpc_cidr" {
@@ -95,6 +101,29 @@ variable "num_azs" {
   type        = number
   default     = 3
 }
+
+variable "enable_public_subnets" {
+  description = "If true, public subnets will be created"
+  type        = bool
+  default     = false
+}
+
+variable "single_nat_gateway" {
+  description = "If true, a single NAT Gateway will be created"
+  type        = bool
+  default     = false
+}
+
+variable "enable_nat_gateway" {
+  description = "If true, NAT Gateways will be created"
+  type        = bool
+  default     = false
+}
+
+# variable "transit_gateway_route_table_name" {
+#   description = "The name of the transit gateway route table"
+#   type        = string
+# }
 
 ###########################################################
 #################### EKS Config ###########################

@@ -204,6 +204,7 @@ module "ssm_kms_key" {
 
 locals {
   ssm_parameter_key_arn = var.create_ssm_parameters ? module.ssm_kms_key.key_arn : ""
+  admin_role_name       = join("-", compact([local.prefix, var.admin_role_name, local.suffix]))
 
   admin_user_access_entries = {
     for user in var.admin_users :
@@ -221,10 +222,9 @@ locals {
     }
   }
 
-  # create conflics with
   unicorn_admin_role_access_entry = {
     unicorn_admin = {
-      principal_arn = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/unicorn-admin"
+      principal_arn = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/${local.admin_role_name}"
       type          = "STANDARD"
       policy_associations = {
         admin = {
