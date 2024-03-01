@@ -2,37 +2,24 @@ tasks:
   - name: zarf-create
     description: "Creates the swf package"
     actions:
-      - cmd: uds zarf package create ./zarf/swf-deps-aws
+      - cmd: uds zarf package create ./zarf/swf-deps-aws --confirm --no-progress
 
   - name: zarf-deploy
     description: "Creates the swf package"
     actions:
-      - cmd: uds zarf package create ./zarf/swf-deps-aws
-
-  - name: zarf-publish
-    description: "Creates the swf package"
-    actions:
-      - cmd: uds zarf package publish zarf-package-swf-deps-aws-amd64-*.tar
+      - cmd: uds zarf package create ./zarf/swf-deps-aws --confirm --no-progress
 
   - name: bundle-create
     description: "Creates the swf bundle"
     actions:
-      - cmd: uds create bundles/swf/
+      - cmd: uds create bundles/swf/ --confirm --no-progress
 
   - name: bundle-deploy
     description: "Deploys the swf bundle"
     actions:
-      - cmd: uds deploy bundles/swf/ --confirm
-
-  - name: bundle-publish
-    description: "Deploys the swf bundle"
-    actions:
-      - cmd: uds deploy bundles/swf/ --confirm
+      - cmd: uds deploy bundles/swf/ --confirm --no-progress
 
   - name: uds-config
-    inputs:
-      root_module:
-        required: true
-        description: "Move the uds-config.yaml to an appropriate directory"
     actions:
-      - cmd: mv ./iac/swf/uds-config.yaml ./bundles/swf/
+      - description: "Moves the uds-config.yaml to an appropiate spot"
+        cmd: mv ./iac/swf/uds-config.yaml ./bundles/swf/
