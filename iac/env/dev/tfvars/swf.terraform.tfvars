@@ -5,6 +5,10 @@ vpc_cidr              = "10.200.0.0/16"
 secondary_cidr_blocks = ["100.64.0.0/16"] #https://aws.amazon.com/blogs/containers/optimize-ip-addresses-usage-by-pods-in-your-amazon-eks-cluster/
 
 ###########################################################
+#################### Transit Gateway Config ###############
+target_transit_gateway_tag_name = "target-tgw-placeholder"
+
+###########################################################
 ################## Bastion Config #########################
 
 bastion_ssh_user     = "ec2-user" # local user in bastion used to ssh

@@ -97,6 +97,20 @@ variable "num_azs" {
 }
 
 ###########################################################
+#################### Transit Gateway ######################
+# variable "target_transit_gateway_tag_name" {
+#   description = "The value of the Name tag"
+#   type        = string
+#   default     = "N/A"
+# }
+
+# variable "peered_transit_gateway_tag_name" {
+#   description = "The value of the Name tag"
+#   type        = string
+#   default     = "N/A"
+# }
+
+###########################################################
 #################### EKS Config ###########################
 variable "access_entries" {
   description = "Map of access entries to add to the cluster"
