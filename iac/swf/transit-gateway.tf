@@ -1,6 +1,6 @@
 # TODO - Verify this is what is desired
 # module "transit_gateway_attach_vpc_and_route" {
-#   source = "git::https://github.com/defenseunicorns/terraform-aws-transit-gateway.git?ref=feature/setup-transit-gateway-and-example"
+#   source = "git::https://github.com/defenseunicorns/terraform-aws-transit-gateway.git?ref=main"
 #   vpc_id                          = module.vpc.vpc_id
 #   subnet_ids                      = module.vpc.private_subnets
 #   tags                            = local.tags
