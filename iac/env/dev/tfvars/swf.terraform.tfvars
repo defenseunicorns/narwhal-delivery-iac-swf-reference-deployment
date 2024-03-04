@@ -154,6 +154,7 @@ admin_users = [
   "matt.bunch"
 ]
 
+enable_admin_roles_prefix_or_suffix = false
 admin_roles = [
   "unicorn-admin"
 ]

@@ -165,6 +165,12 @@ variable "admin_roles" {
   default     = []
 }
 
+variable "enable_admin_roles_prefix_or_suffix" {
+  description = "Indicates whether or not to add the admin_roles with a prefix or suffix"
+  type        = bool
+  default     = true
+}
+
 variable "eks_worker_tenancy" {
   description = "The tenancy of the EKS worker nodes"
   type        = string

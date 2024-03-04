@@ -205,6 +205,10 @@ module "ssm_kms_key" {
 locals {
   ssm_parameter_key_arn = var.create_ssm_parameters ? module.ssm_kms_key.key_arn : ""
 
+  # If the `enable_admin_roles_prefix_or_suffix` variable is set to true, it will generate a new list by concatenating the `local.prefix`, `role`, and `local.suffix` with a hyphen separator.
+  admin_roles = var.enable_admin_roles_prefix_or_suffix ? [for role in var.admin_roles : join("-", compact([local.prefix, role, local.suffix]))] : var.admin_roles
+
+
   admin_user_access_entries = {
     for user in var.admin_users :
     user => {
@@ -222,7 +226,7 @@ locals {
   }
 
   admin_role_access_entries = {
-    for role in var.admin_roles :
+    for role in local.admin_roles :
     role => {
       principal_arn = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/${role}"
       type          = "STANDARD"
