@@ -527,3 +527,32 @@ variable "jira_rds_instance_class" {
   type        = string
   default     = "db.t4g.large"
 }
+
+############################################################################
+################## Keycloak Dependencies #########################
+
+# Keycloak Variables
+
+variable "keycloak_kms_key_alias" {
+  description = "KMS Key Alias name prefix"
+  type        = string
+  default     = "keycloak"
+}
+
+variable "keycloak_db_name" {
+  description = "Name of the Keycloak database."
+  type        = string
+  default     = "keycloakdb"
+}
+
+variable "keycloak_db_idenitfier_prefix" {
+  description = "The prefix to use for the RDS instance identifier"
+  type        = string
+  default     = "keycloak-db"
+}
+
+variable "keycloak_rds_instance_class" {
+  description = "The instance class to use for the RDS instance"
+  type        = string
+  default     = "db.t4g.large"
+}

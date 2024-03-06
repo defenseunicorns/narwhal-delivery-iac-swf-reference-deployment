@@ -21,5 +21,5 @@ tasks:
 
   - name: uds-config
     actions:
-      - description: "Moves the uds-config.yaml to an appropiate spot"
+      - description: "Moves the uds-config.yaml to an appropriate spot"
         cmd: mv ./iac/swf/uds-config.yaml ./bundles/swf/

@@ -9,6 +9,9 @@ resource "local_sensitive_file" "uds_config" {
   filename = "uds-config.yaml"
   content  = <<EOY
 variables:
+  core:
+    KC_DB_PASSWORD: "${random_password.keycloak_db_password.result}"
+    KC_DB_HOST: "${element(split(":", module.keycloak_db.db_instance_endpoint), 0)}"
   zarf-init-s3-backend:
     registry_pc_enabled: "false"
     registry_hpa_min: "2"

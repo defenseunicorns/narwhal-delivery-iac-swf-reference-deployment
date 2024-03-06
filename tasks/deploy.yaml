@@ -13,6 +13,8 @@ tasks:
             echo "terraform s3 backend environment files for ${INPUT_ENV} already exists"
             exit 1
           fi
+        shell:
+          linux: bash
       - description: "Init the bootstrap module"
         task: terraform-init
         with:
@@ -28,6 +30,8 @@ tasks:
           cd ./iac/bootstrap
           terraform init --reconfigure --force-copy --backend-config=../env/${INPUT_ENV}/backends/bootstrap-backend.tfconfig && \
             mv terraform.tfstate "terraform-tfstate.${INPUT_ENV}-local-backend-backup"
+        shell:
+          linux: bash
 
   - name: terraform-init
     inputs:
@@ -39,6 +43,8 @@ tasks:
           set -exo pipefail
           cd ./iac/${INPUT_ROOT_MODULE}
           terraform init
+        shell:
+          linux: bash
 
   - name: terraform-plan
     inputs:
@@ -56,6 +62,8 @@ tasks:
           terraform plan \
             -var-file ../env/${INPUT_ENV}/tfvars/common.terraform.tfvars \
             -var-file ../env/${INPUT_ENV}/tfvars/${INPUT_ROOT_MODULE}.terraform.tfvars
+        shell:
+          linux: bash
 
   - name: terraform-apply
     inputs:
@@ -74,3 +82,5 @@ tasks:
             -var-file ../env/${INPUT_ENV}/tfvars/common.terraform.tfvars \
             -var-file ../env/${INPUT_ENV}/tfvars/${INPUT_ROOT_MODULE}.terraform.tfvars \
             --auto-approve
+        shell:
+          linux: bash
