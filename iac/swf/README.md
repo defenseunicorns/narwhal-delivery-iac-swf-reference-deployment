@@ -65,9 +65,11 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="module_jira_db"></a> [jira\_db](#module\_jira\_db) | terraform-aws-modules/rds/aws | 6.1.1 |
 | <a name="module_jira_kms_key"></a> [jira\_kms\_key](#module\_jira\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.2 |
 | <a name="module_key_pair"></a> [key\_pair](#module\_key\_pair) | terraform-aws-modules/key-pair/aws | ~> 2.0 |
+| <a name="module_keycloak_db"></a> [keycloak\_db](#module\_keycloak\_db) | terraform-aws-modules/rds/aws | 6.1.1 |
+| <a name="module_keycloak_kms_key"></a> [keycloak\_kms\_key](#module\_keycloak\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.2 |
 | <a name="module_password_lambda"></a> [password\_lambda](#module\_password\_lambda) | git::https://github.com/defenseunicorns/terraform-aws-lambda.git//modules/password-rotation | v0.0.3 |
 | <a name="module_ssm_kms_key"></a> [ssm\_kms\_key](#module\_ssm\_kms\_key) | terraform-aws-modules/kms/aws | ~> 2.0 |
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | git::https://github.com/defenseunicorns/terraform-aws-vpc.git | v0.1.5 |
+| <a name="module_vpc"></a> [vpc](#module\_vpc) | git::https://github.com/defenseunicorns/terraform-aws-vpc.git | v0.1.6 |
 | <a name="module_zarf"></a> [zarf](#module\_zarf) | ./modules/zarf | n/a |
 
 ## Resources
@@ -89,23 +91,27 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | [aws_secretsmanager_secret.gitlab_db_secret](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret) | resource |
 | [aws_secretsmanager_secret.gitlab_elasticache_secret](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret) | resource |
 | [aws_secretsmanager_secret.jira_db_secret](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret) | resource |
+| [aws_secretsmanager_secret.keycloak_db_secret](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret) | resource |
 | [aws_secretsmanager_secret.uds_config](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret) | resource |
 | [aws_secretsmanager_secret_version.uds_config_value](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret_version) | resource |
 | [aws_security_group.confluence_rds_sg](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
 | [aws_security_group.gitlab_rds_sg](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
 | [aws_security_group.gitlab_redis_sg](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
 | [aws_security_group.jira_rds_sg](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
+| [aws_security_group.keycloak_rds_sg](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
 | [aws_sqs_queue.access_log_queue](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sqs_queue) | resource |
 | [aws_vpc_security_group_ingress_rule.confluence_rds_ingress](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_security_group_ingress_rule) | resource |
 | [aws_vpc_security_group_ingress_rule.gitlab_rds_ingress](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_security_group_ingress_rule) | resource |
 | [aws_vpc_security_group_ingress_rule.gitlab_redis_ingress](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_security_group_ingress_rule) | resource |
 | [aws_vpc_security_group_ingress_rule.jira_rds_ingress](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_security_group_ingress_rule) | resource |
+| [aws_vpc_security_group_ingress_rule.keycloak_rds_ingress](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_security_group_ingress_rule) | resource |
 | [local_sensitive_file.uds_config](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/sensitive_file) | resource |
 | [random_id.default](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/id) | resource |
 | [random_password.confluence_db_password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
 | [random_password.gitlab_db_password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
 | [random_password.gitlab_elasticache_password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
 | [random_password.jira_db_password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
+| [random_password.keycloak_db_password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
 | [aws_ami.amazonlinux2](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
 | [aws_ami.eks_default_bottlerocket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
 | [aws_availability_zones.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
@@ -172,7 +178,11 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="input_jira_db_name"></a> [jira\_db\_name](#input\_jira\_db\_name) | Name of the Jira database. | `string` | `"jiradb"` | no |
 | <a name="input_jira_kms_key_alias"></a> [jira\_kms\_key\_alias](#input\_jira\_kms\_key\_alias) | KMS Key Alias name prefix | `string` | `"jira"` | no |
 | <a name="input_jira_rds_instance_class"></a> [jira\_rds\_instance\_class](#input\_jira\_rds\_instance\_class) | The instance class to use for the RDS instance | `string` | `"db.t4g.large"` | no |
+| <a name="input_keycloak_db_idenitfier_prefix"></a> [keycloak\_db\_idenitfier\_prefix](#input\_keycloak\_db\_idenitfier\_prefix) | The prefix to use for the RDS instance identifier | `string` | `"keycloak-db"` | no |
+| <a name="input_keycloak_db_name"></a> [keycloak\_db\_name](#input\_keycloak\_db\_name) | Name of the Keycloak database. | `string` | `"keycloakdb"` | no |
 | <a name="input_keycloak_enabled"></a> [keycloak\_enabled](#input\_keycloak\_enabled) | Enable Keycloak dedicated nodegroup | `bool` | `false` | no |
+| <a name="input_keycloak_kms_key_alias"></a> [keycloak\_kms\_key\_alias](#input\_keycloak\_kms\_key\_alias) | KMS Key Alias name prefix | `string` | `"keycloak"` | no |
+| <a name="input_keycloak_rds_instance_class"></a> [keycloak\_rds\_instance\_class](#input\_keycloak\_rds\_instance\_class) | The instance class to use for the RDS instance | `string` | `"db.t4g.large"` | no |
 | <a name="input_kms_key_deletion_window"></a> [kms\_key\_deletion\_window](#input\_kms\_key\_deletion\_window) | Waiting period for scheduled KMS Key deletion. Can be 7-30 days. | `number` | `7` | no |
 | <a name="input_metrics_server"></a> [metrics\_server](#input\_metrics\_server) | Metrics Server config for aws-ia/eks-blueprints-addon/aws | `any` | `{}` | no |
 | <a name="input_name"></a> [name](#input\_name) | Name, e.g. 'app' or 'jenkins' | `string` | `"narwhal-delivery-iac-swf"` | no |
@@ -200,11 +210,7 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 
 | Name | Description |
 |------|-------------|
-| <a name="output_bastion_instance_id"></a> [bastion\_instance\_id](#output\_bastion\_instance\_id) | The ID of the bastion host |
-| <a name="output_bastion_private_dns"></a> [bastion\_private\_dns](#output\_bastion\_private\_dns) | The private DNS address of the bastion host |
-| <a name="output_bastion_region"></a> [bastion\_region](#output\_bastion\_region) | The region that the bastion host was deployed to |
-| <a name="output_efs_storageclass_name"></a> [efs\_storageclass\_name](#output\_efs\_storageclass\_name) | The name of the EFS storageclass that was created (if var.enable\_amazon\_eks\_aws\_efs\_csi\_driver was set to true) |
-| <a name="output_eks_cluster_name"></a> [eks\_cluster\_name](#output\_eks\_cluster\_name) | The name of the EKS cluster |
-| <a name="output_lambda_password_function_arn"></a> [lambda\_password\_function\_arn](#output\_lambda\_password\_function\_arn) | Arn for lambda password function |
-| <a name="output_vpc_cidr"></a> [vpc\_cidr](#output\_vpc\_cidr) | The CIDR block of the VPC |
+| <a name="output_eks"></a> [eks](#output\_eks) | EKS module output data |
+| <a name="output_vpc"></a> [vpc](#output\_vpc) | VPC module output data |
+| <a name="output_zarf"></a> [zarf](#output\_zarf) | Zarf module output data |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

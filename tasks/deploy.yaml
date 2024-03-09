@@ -60,8 +60,8 @@ tasks:
           set -exo pipefail
           cd ./iac/${INPUT_ROOT_MODULE}
           terraform plan \
-            -var-file ../env/${INPUT_ENV}/tfvars/common.terraform.tfvars \
-            -var-file ../env/${INPUT_ENV}/tfvars/${INPUT_ROOT_MODULE}.terraform.tfvars
+            --var-file ../env/${INPUT_ENV}/tfvars/common.terraform.tfvars \
+            --var-file ../env/${INPUT_ENV}/tfvars/${INPUT_ROOT_MODULE}.terraform.tfvars
         shell:
           linux: bash
 
@@ -79,8 +79,30 @@ tasks:
           set -exo pipefail
           cd ./iac/${INPUT_ROOT_MODULE}
           terraform apply \
-            -var-file ../env/${INPUT_ENV}/tfvars/common.terraform.tfvars \
-            -var-file ../env/${INPUT_ENV}/tfvars/${INPUT_ROOT_MODULE}.terraform.tfvars \
+            --var-file ../env/${INPUT_ENV}/tfvars/common.terraform.tfvars \
+            --var-file ../env/${INPUT_ENV}/tfvars/${INPUT_ROOT_MODULE}.terraform.tfvars \
+            --auto-approve
+        shell:
+          linux: bash
+
+  - name: terraform-apply-transit-gateway
+    inputs:
+      env:
+        required: true
+        description: "The environment to apply"
+      root_module:
+        required: true
+        description: "The root module to apply"
+    actions:
+      - description: "Terraform apply"
+        cmd: |
+          set -exo pipefail
+          cd ./iac/${INPUT_ROOT_MODULE}
+          terraform apply \
+            --var-file ../env/${INPUT_ENV}/tfvars/common.terraform.tfvars \
+            --var-file ../env/${INPUT_ENV}/tfvars/context.tfvars \
+            --var-file ../env/${INPUT_ENV}/backends/swf-backend.tfconfig \
+            --var-file ../env/${INPUT_ENV}/tfvars/${INPUT_ROOT_MODULE}.terraform.tfvars \
             --auto-approve
         shell:
           linux: bash
