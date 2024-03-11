@@ -75,6 +75,25 @@ variable "profile" {
   default     = ""
 }
 
+# variable "terraform_templates_files_path_prefix" {
+#   type        = string
+#   description = "This is a path prefix variable to the templates directory"
+#   default     = "../templates"
+# }
+
+variable "terraform_context_tfvars_template_file" {
+  type        = string
+  description = "The path to the context tfvars template file, this a backend Partial Configuration that is scalable across multiple environments"
+  default     = "../templates/context.tf.tpl"
+}
+
+variable "create_context_tfvars" {
+  type        = bool
+  description = "A boolean that indicates whether to create the context.tfvars file"
+  default     = true
+
+}
+
 variable "terraform_backend_config_template_file" {
   type        = string
   description = "The path to the backend config template file, this a backend Partial Configuration that is scalable across multiple environments"

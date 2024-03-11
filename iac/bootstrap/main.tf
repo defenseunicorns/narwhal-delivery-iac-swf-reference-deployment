@@ -10,6 +10,7 @@ resource "random_id" "default" {
 
 locals {
   terraform_backend_config_file_path_prefix = "${path.module}/../env/${var.stage}/backends"
+  terraform_env_file_path_prefix            = "${path.module}/../env/${var.stage}/tfvars"
   terraform_backend_iac_root_path           = "${path.module}/.."
   arn_format                                = "arn:${data.aws_partition.current.partition}"
 
@@ -77,4 +78,14 @@ resource "local_file" "backend_tf_template" {
 
   content  = file(var.terraform_backend_tf_template_file)
   filename = "${local.terraform_backend_iac_root_path}/${each.key}/backend.tf"
+}
+
+resource "local_file" "context_tfvars_template" {
+  count = var.create_context_tfvars ? 1 : 0
+  content = templatefile(var.terraform_context_tfvars_template_file, {
+    prefix                      = var.prefix == null ? "null" : local.prefix
+    suffix                      = var.suffix == null ? "null" : local.suffix
+    terraform_state_bucket_name = local.backend_s3_bucket_name
+  })
+  filename = "${local.terraform_env_file_path_prefix}/context.tfvars"
 }
