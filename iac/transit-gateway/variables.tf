@@ -57,7 +57,7 @@ variable "key" {
 ###########################################################
 ################## Transit Gateway ########################
 
-variable "name" {
+variable "tgw_name" {
   description = "The name of the Transit Gateway"
   type        = string
   default     = "tgw"

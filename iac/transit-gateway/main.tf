@@ -27,7 +27,7 @@ locals {
     var.suffix == "" ? lower(random_id.default.hex) :
     var.suffix
   )
-  transit_gateway_name = join("-", compact([local.prefix, var.name, local.suffix]))
+  transit_gateway_name = join("-", compact([local.prefix, var.tgw_name, local.suffix]))
 
   tags = merge(
     var.tags,

@@ -36,13 +36,14 @@
 |------|-------------|------|---------|:--------:|
 | <a name="input_bucket"></a> [bucket](#input\_bucket) | The name of the S3 bucket where the Terraform state file is stored | `string` | n/a | yes |
 | <a name="input_key"></a> [key](#input\_key) | The name of the Terraform state file to retrieve state information from | `string` | n/a | yes |
-| <a name="input_name"></a> [name](#input\_name) | The name of the Transit Gateway | `string` | `"tgw"` | no |
+| <a name="input_name"></a> [name](#input\_name) | Name, e.g. 'app' or 'jenkins' | `string` | `"narwhal-delivery-iac-swf"` | no |
 | <a name="input_namespace"></a> [namespace](#input\_namespace) | Namespace, which could be your organization name or abbreviation, e.g. 'eg' or 'cp' | `string` | `"du"` | no |
 | <a name="input_prefix"></a> [prefix](#input\_prefix) | name prefix to prepend to most resources, if not defined, created as: 'namespace-stage-name' | `string` | `""` | no |
 | <a name="input_region"></a> [region](#input\_region) | The AWS region to deploy into | `string` | n/a | yes |
 | <a name="input_stage"></a> [stage](#input\_stage) | Stage, e.g. 'prod', 'staging', 'dev', or 'test' | `string` | `"test"` | no |
 | <a name="input_suffix"></a> [suffix](#input\_suffix) | name suffix to append to most resources, if not defined, randomly generated | `string` | `""` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to apply to all resources | `map(string)` | `{}` | no |
+| <a name="input_tgw_name"></a> [tgw\_name](#input\_tgw\_name) | The name of the Transit Gateway | `string` | `"tgw"` | no |
 
 ## Outputs
 

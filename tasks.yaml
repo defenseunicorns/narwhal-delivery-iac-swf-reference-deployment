@@ -26,6 +26,7 @@ tasks:
         with:
           env: ${ENV}
           root_module: bootstrap
+          var_files: '["common.terraform.tfvars", "bootstrap.terraform.tfvars"]'
 
   - name: terraform-apply-aws-bootstrap
     actions:
@@ -34,38 +35,79 @@ tasks:
         with:
           env: ${ENV}
           root_module: bootstrap
+          var_files: '["common.terraform.tfvars", "bootstrap.terraform.tfvars"]'
 
   - name: terraform-init-aws-swf
     actions:
-      - description: "AWS SWF IaC"
+      - description: "Terraform init AWS SWF IaC swf module"
         task: deploy:terraform-init
         with:
           root_module: swf
 
   - name: terraform-plan-aws-swf
     actions:
-      - description: "AWS SWF IaC"
+      - description: "Terraform plan AWS SWF IaC swf module"
         task: deploy:terraform-plan
         with:
           env: ${ENV}
           root_module: swf
+          var_files: '["common.terraform.tfvars", "swf.terraform.tfvars"]'
 
   - name: terraform-apply-aws-swf
     actions:
-      - description: "Apply AWS SWF IaC"
+      - description: "Terraform apply AWS SWF IaC swf module"
         task: deploy:terraform-apply
         with:
           env: ${ENV}
           root_module: swf
+          var_files: '["common.terraform.tfvars", "swf.terraform.tfvars"]'
       - description: "Move uds-config.yaml"
         task: swf:uds-config
+
+  - name: terraform-init-aws-transit-gateway
+    actions:
+      - description: "Terraform init AWS SWF IaC transit-gateway module"
+        task: deploy:terraform-init
+        with:
+          root_module: transit-gateway
+
+  # Ideally, we would like to ensure that the swf module is applied and state reconciled before the transit-gateway module
+  - name: terraform-plan-aws-transit-gateway
+    actions:
+      # - description: "Terraform apply AWS SWF IaC swf module"
+      #   task: deploy:terraform-apply
+      #   with:
+      #     env: ${ENV}
+      #     root_module: swf
+      #     var_files: '["common.terraform.tfvars", "swf.terraform.tfvars"]'
+      - description: "Terraform plan AWS SWF IaC transit-gateway module"
+        task: deploy:terraform-plan
+        with:
+          env: ${ENV}
+          root_module: transit-gateway
+          var_files: '["common.terraform.tfvars", "context.tfvars", "swf-backend.tfconfig"]'
+
+  - name: terraform-apply-aws-transit-gateway
+    actions:
+      # - description: "Terraform apply AWS SWF IaC swf module"
+      #   task: deploy:terraform-apply
+      #   with:
+      #     env: ${ENV}
+      #     root_module: swf
+      #     var_files: '["common.terraform.tfvars", "swf.terraform.tfvars"]'
+      - description: "Terraform apply AWS SWF IaC transit-gateway module"
+        task: deploy:terraform-apply
+        with:
+          env: ${ENV}
+          root_module: transit-gateway
+          var_files: '["common.terraform.tfvars", "context.tfvars", "swf-backend.tfconfig"]'
 
   - name: bundle-all
     description: "Creates the zarf package, then builds and deploys the bundle"
     actions:
-        - task: swf:zarf-create
-        - task: swf:bundle-create
-        - task: swf:bundle-deploy
+      - task: swf:zarf-create
+      - task: swf:bundle-create
+      - task: swf:bundle-deploy
 
   - name: zarf-create
     actions:
@@ -86,3 +128,11 @@ tasks:
     actions:
       - description: "Deploy the swf bundle"
         task: swf:bundle-deploy
+
+  - name: echo
+    actions:
+      - description: "Just echo"
+        task: deploy:just-echo
+        with:
+          list: '["hello", "world"]'
+          env: ${ENV}
