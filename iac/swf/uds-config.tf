@@ -42,6 +42,7 @@ variables:
     %{~for bucket in var.gitlab_bucket_names~}
     ${replace(trimprefix(bucket, "gitlab-"), "-", "_")}_bucket: "${module.gitlab_s3_bucket[bucket].s3_bucket_id}"
     %{~endfor~}
+    disable_registry_redirect: "true"
 
   confluence:
     confluence_db_endpoint: "${element(split(":", module.confluence_db.db_instance_endpoint), 0)}"

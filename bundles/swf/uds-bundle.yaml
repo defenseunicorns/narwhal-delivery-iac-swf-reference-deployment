@@ -25,8 +25,13 @@ packages:
 
   - name: core
     repository: ghcr.io/defenseunicorns/packages/uds/core
-    ref: 0.14.5-registry1
+    ref: 0.15.0-registry1
     overrides:
+      kube-prometheus-stack:
+            kube-prometheus-stack:
+              values:
+                - path: kube-state-metrics.resources.limits.memory
+                  value: 512Mi
       keycloak:
         keycloak:
           values:
@@ -98,7 +103,7 @@ packages:
 
   - name: gitlab
     repository: ghcr.io/defenseunicorns/packages/uds/gitlab
-    ref: 16.8.1-uds.4-registry1
+    ref: 16.9.1-uds.2-registry1
     overrides:
       gitlab:
         gitlab:
@@ -158,7 +163,7 @@ packages:
 
   - name: jenkins
     repository: ghcr.io/defenseunicorns/packages/uds/jenkins
-    ref: 4.12.0-uds.0
+    ref: 5.1.0-uds.0
 
   - name: jira
     repository: ghcr.io/defenseunicorns/packages/uds/jira
