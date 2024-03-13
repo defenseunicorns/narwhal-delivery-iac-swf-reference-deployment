@@ -48,7 +48,7 @@ variables:
   jira:
     jira_db_endpoint: "${element(split(":", module.jira_db.db_instance_endpoint), 0)}"
   mattermost:
-    mattermost_db_endpoint: ${element(split(":", module.mattermost_db.db_instance_endpoint), 0)}"
+    mattermost_db_endpoint: "${element(split(":", module.mattermost_db.db_instance_endpoint), 0)}"
     mattermost_db_password: "${random_password.mattermost_db_password.result}"
     mattermost_bucket: "${module.mattermost_s3_bucket[var.mattermost_bucket_names[0]].s3_bucket_id}"
     mattermost_region: "${var.region}"
