@@ -161,14 +161,36 @@ packages:
     repository: ghcr.io/defenseunicorns/packages/uds/gitlab-runner
     ref: 16.8.0-uds.0-registry1
 
+  - name: mattermost
+    path: ../../../../uds/uds-package-mattermost/
+    ref: 9.4.1-uds.2
+    overrides:
+      mattermost:
+        uds-mattermost-config:
+          variables:
+            - name: MATTERMOST_DB_ENDPOINT
+              path: "postgres.host"
+            - name: MATTERMOST_DB_PASSWORD
+              path: "postgres.password"
+            - name: MATTERMOST_BUCKET
+              path: "objectStorage.bucket"
+            - name: MATTERMOST_REGION
+              path: "objectStorage.region"
+            - name: MATTERMOST_S3_ENDPOINT
+              path: "objectStorage.endpoint"
+        mattermost-enterprise-edition:
+          variables:
+            - name: MATTERMOST_ROLE_ARN
+              path: "serviceAccount.annotations.irsa/role-arn"
+
   - name: jenkins
     repository: ghcr.io/defenseunicorns/packages/uds/jenkins
     ref: 5.1.0-uds.0
 
   - name: jira
     repository: ghcr.io/defenseunicorns/packages/uds/jira
-    ref: 1.17.0-uds.1-registry1
+    ref: 1.17.2-uds.0-registry1
 
   - name: confluence
     repository: ghcr.io/defenseunicorns/packages/uds/confluence
-    ref: 1.17.0-uds.1-registry1
+    ref: 1.18.0-uds.0-registry1

@@ -77,6 +77,12 @@ variable "eks_use_mfa" {
   type        = bool
 }
 
+variable "recovery_window" {
+  description = "Number of days to retain secret before permanent deletion in Secrets Manager"
+  type        = number
+  default     = 30
+}
+
 ###########################################################
 #################### VPC Config ###########################
 variable "vpc_cidr" {
@@ -464,12 +470,6 @@ variable "gitlab_service_account_names" {
   default     = ["gitlab-gitaly", "gitlab-sidekiq", "gitlab-toolbox", "gitlab-gitlab-exporter", "gitlab-registry", "gitlab-geo-logcursor", "gitlab-migrations", "gitlab-webservice", "gitlab-mailroom", "gitlab-gitlab-shell"]
 }
 
-variable "recovery_window" {
-  description = "Number of days to retain secret before permanent deletion in Secrets Manager"
-  type        = number
-  default     = 30
-}
-
 ############################################################################
 ################## Confluence Dependencies #########################
 
@@ -555,4 +555,57 @@ variable "keycloak_rds_instance_class" {
   description = "The instance class to use for the RDS instance"
   type        = string
   default     = "db.t4g.large"
+}
+
+############################################################################
+################## Mattermost Dependencies #########################
+
+# Mattermost Variables
+
+variable "mattermost_bucket_names" {
+  description = "List of buckets to create for Mattermost"
+  type        = list(string)
+  default     = ["mattermost"]
+}
+
+variable "mattermost_s3_bucket_force_destroy" {
+  description = "A boolean that indicates all objects should be deleted from the bucket so that the bucket can be destroyed without error. These objects are not recoverable."
+  type        = bool
+  default     = false
+}
+
+variable "mattermost_kms_key_alias" {
+  description = "KMS Key Alias name prefix"
+  type        = string
+  default     = "mattermost"
+}
+
+variable "mattermost_db_name" {
+  description = "Name of the Mattermost database."
+  type        = string
+  default     = "mattermostdb"
+}
+
+variable "mattermost_namespace" {
+  description = "Namespace Mattermost is deployed to"
+  type        = string
+  default     = "mattermost"
+}
+
+variable "mattermost_db_idenitfier_prefix" {
+  description = "The prefix to use for the RDS instance identifier"
+  type        = string
+  default     = "mattermost-db"
+}
+
+variable "mattermost_rds_instance_class" {
+  description = "The instance class to use for the RDS instance"
+  type        = string
+  default     = "db.t4g.large"
+}
+
+variable "mattermost_service_account_names" {
+  description = "List of service accounts to create for Mattermost"
+  type        = list(string)
+  default     = ["mattermost"]
 }
