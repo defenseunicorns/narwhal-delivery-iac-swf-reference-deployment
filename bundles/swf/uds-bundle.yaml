@@ -107,6 +107,9 @@ packages:
     overrides:
       gitlab:
         gitlab:
+          values:
+            - path: global.appConfig.omniauth.autoSignInWithProvider
+              value: ""
           variables:
             - name: REGISTRY_ROLE_ARN
               description: "The ARN of the role to assume for the registry pods"
@@ -172,6 +175,8 @@ packages:
               path: "postgres.host"
             - name: MATTERMOST_DB_PASSWORD
               path: "postgres.password"
+            - name: MATTERMOST_DB_NAME
+              path: "postgres.dbName"
             - name: MATTERMOST_BUCKET
               path: "objectStorage.bucket"
             - name: MATTERMOST_REGION
