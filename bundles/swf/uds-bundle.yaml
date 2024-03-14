@@ -165,8 +165,8 @@ packages:
     ref: 16.8.0-uds.0-registry1
 
   - name: mattermost
-    path: ../../../../uds/uds-package-mattermost/
-    ref: 9.4.1-uds.2
+    repository: ghcr.io/defenseunicorns/packages/uds/mattermost
+    ref: 9.4.1-uds.2-registry1
     overrides:
       mattermost:
         uds-mattermost-config:
