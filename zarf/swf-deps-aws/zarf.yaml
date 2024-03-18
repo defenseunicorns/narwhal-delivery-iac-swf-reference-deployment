@@ -58,6 +58,14 @@ components:
         files:
           - manifests/rds/jira-secret.yaml
 
+  - name: artifactory-rds
+    required: true
+    manifests:
+      - name: artifactory-postgres
+        namespace: artifactory
+        files:
+          - manifests/rds/artifactory-secret.yaml
+
   # - name: sonarqube-rds
   #   required: true
   #   manifests:

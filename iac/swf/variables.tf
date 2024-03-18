@@ -529,6 +529,35 @@ variable "jira_rds_instance_class" {
 }
 
 ############################################################################
+################## Artifactory Dependencies #########################
+
+# Artifactory Variables
+
+variable "artifactory_kms_key_alias" {
+  description = "KMS Key Alias name prefix"
+  type        = string
+  default     = "artifactory"
+}
+
+variable "artifactory_db_name" {
+  description = "Name of the artifactory database."
+  type        = string
+  default     = "artifactorydb"
+}
+
+variable "artifactory_db_idenitfier_prefix" {
+  description = "The prefix to use for the RDS instance identifier"
+  type        = string
+  default     = "artifactory-db"
+}
+
+variable "artifactory_rds_instance_class" {
+  description = "The instance class to use for the RDS instance"
+  type        = string
+  default     = "db.t4g.large"
+}
+
+############################################################################
 ################## Keycloak Dependencies #########################
 
 # Keycloak Variables

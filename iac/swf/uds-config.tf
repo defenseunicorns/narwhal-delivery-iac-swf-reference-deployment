@@ -30,6 +30,9 @@ variables:
     gitlab_db_password: "${random_password.gitlab_db_password.result}"
     confluence_db_password: "${random_password.confluence_db_password.result}"
     jira_db_password: "${random_password.jira_db_password.result}"
+    artifactory_db_password: "${random_password.artifactory_db_password.result}"
+    artifactory_db_endpoint: "${element(split(":", module.artifactory_db.db_instance_endpoint), 0)}"
+    artifactory_db_name: "${var.artifactory_db_name}"
     redis_password: "${random_password.gitlab_elasticache_password.result}"
     region: "${var.region}"
   gitlab:
