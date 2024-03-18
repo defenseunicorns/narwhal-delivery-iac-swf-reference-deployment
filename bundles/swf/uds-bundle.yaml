@@ -25,7 +25,7 @@ packages:
 
   - name: core
     repository: ghcr.io/defenseunicorns/packages/uds/core
-    ref: 0.15.0-registry1
+    ref: 0.16.1-registry1
     overrides:
       kube-prometheus-stack:
             kube-prometheus-stack:
@@ -103,7 +103,7 @@ packages:
 
   - name: gitlab
     repository: ghcr.io/defenseunicorns/packages/uds/gitlab
-    ref: 16.9.1-uds.2-registry1
+    ref: 16.9.2-uds.0-registry1
     overrides:
       gitlab:
         gitlab:
@@ -162,7 +162,7 @@ packages:
 
   - name: gitlab-runner
     repository: ghcr.io/defenseunicorns/packages/uds/gitlab-runner
-    ref: 16.8.0-uds.0-registry1
+    ref: 16.9.1-uds.2-registry1
 
   - name: mattermost
     repository: ghcr.io/defenseunicorns/packages/uds/mattermost
