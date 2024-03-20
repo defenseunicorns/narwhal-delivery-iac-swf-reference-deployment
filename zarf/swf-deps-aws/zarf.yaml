@@ -73,3 +73,11 @@ components:
   #       namespace: sonarqube
   #       files:
   #         - manifests/rds/sonarqube-secret.yaml
+
+  - name: gitlab-backup
+    required: true
+    manifests:
+      - name: gitlab-backup
+        namespace: velero
+        files:
+          - manifests/velero/gitlab.yaml

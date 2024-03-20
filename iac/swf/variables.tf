@@ -638,3 +638,38 @@ variable "mattermost_service_account_names" {
   type        = list(string)
   default     = ["mattermost"]
 }
+
+############################################################################
+################## Velero Dependencies #########################
+
+# Velero Variables
+
+variable "velero_bucket_names" {
+  description = "List of buckets to create for Velero"
+  type        = list(string)
+  default     = ["velero"]
+}
+
+variable "velero_s3_bucket_force_destroy" {
+  description = "A boolean that indicates all objects should be deleted from the bucket so that the bucket can be destroyed without error. These objects are not recoverable."
+  type        = bool
+  default     = false
+}
+
+variable "velero_kms_key_alias" {
+  description = "KMS Key Alias name prefix"
+  type        = string
+  default     = "velero"
+}
+
+variable "velero_namespace" {
+  description = "Namespace Velero is deployed to"
+  type        = string
+  default     = "velero"
+}
+
+variable "velero_service_account_names" {
+  description = "List of service accounts to create for Velero"
+  type        = list(string)
+  default     = ["velero-server"]
+}

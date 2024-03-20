@@ -57,6 +57,22 @@ packages:
               value: true
             - path: containerd.path
               value: /run/containerd/containerd.sock
+      velero:
+        velero:
+          values:
+            - path: credentials.useSecret
+              value: false
+            - path: credentials.name
+              value: ""
+            - path: credentials.secretContents.cloud
+              value: ""
+            - path: schedules.udsbackup.disabled
+              value: true
+          variables:
+            - path: serviceAccount.server.annotations.eks\.amazonaws\.com/role-arn
+              name: VELERO_ROLE_ARN
+            - path: configuration.backupStorageLocation
+              name: VELERO_BACKUP_STORAGE_LOCATION
       istio-admin-gateway:
         gateway:
           values:

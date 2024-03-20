@@ -12,6 +12,13 @@ variables:
   core:
     KC_DB_PASSWORD: "${random_password.keycloak_db_password.result}"
     KC_DB_HOST: "${element(split(":", module.keycloak_db.db_instance_endpoint), 0)}"
+    VELERO_ROLE_ARN: "${module.velero_irsa_s3.bucket_roles[var.velero_service_account_names[0]].iam_role_arn}"
+    VELERO_BACKUP_STORAGE_LOCATION:
+      - name: default
+        provider: aws
+        bucket: "${module.velero_s3_bucket[var.velero_bucket_names[0]].s3_bucket_id}"
+        config:
+          region: "${var.region}"
   zarf-init-s3-backend:
     registry_pc_enabled: "false"
     registry_hpa_min: "2"
