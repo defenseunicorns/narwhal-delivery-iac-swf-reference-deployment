@@ -50,7 +50,7 @@ resource "aws_iam_policy" "s3_bucket_policy" {
         ]
         Resource = [
           for bucket_name in var.bucket_names :
-          "arn:${data.aws_partition.current.partition}:s3:::uds-${bucket_name}-${local.suffix}"
+          "arn:${data.aws_partition.current.partition}:s3:::${local.prefix}-${bucket_name}-${local.suffix}"
         ]
       },
       {
@@ -64,7 +64,7 @@ resource "aws_iam_policy" "s3_bucket_policy" {
         ]
         Resource = [
           for bucket_name in var.bucket_names :
-          "arn:${data.aws_partition.current.partition}:s3:::uds-${bucket_name}-${local.suffix}/*"
+          "arn:${data.aws_partition.current.partition}:s3:::${local.prefix}-${bucket_name}-${local.suffix}/*"
         ]
       },
       {
