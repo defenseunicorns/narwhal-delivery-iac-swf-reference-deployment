@@ -58,6 +58,8 @@ vpc_subnets = [
   },
 ]
 
+recovery_window = 0 # secretsmanager secrets
+
 ###########################################################
 ################## Bastion Config #########################
 

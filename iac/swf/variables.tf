@@ -381,6 +381,12 @@ variable "keycloak_enabled" {
   default     = false
 }
 
+variable "recovery_window" {
+  description = "Number of days to wait before deleting the secret"
+  type        = number
+  default     = 7
+}
+
 ############################################################################
 ################## Lambda Password Rotation Config #########################
 
