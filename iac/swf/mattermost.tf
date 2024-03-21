@@ -10,6 +10,12 @@ module "mattermost_s3_bucket" {
 
   bucket        = join("-", compact([local.prefix, each.key, local.suffix]))
   force_destroy = var.mattermost_s3_bucket_force_destroy
+  tags    = merge(
+    local.tags,
+    {
+      Backup = "true"
+    }
+  )
 
   server_side_encryption_configuration = {
     rule = {
@@ -60,6 +66,12 @@ resource "aws_secretsmanager_secret" "mattermost_db_secret" {
 module "mattermost_db" {
   source  = "terraform-aws-modules/rds/aws"
   version = "6.1.1"
+  tags    = merge(
+    local.tags,
+    {
+      Backup = "true"
+    }
+  )
 
   identifier                     = var.mattermost_db_idenitfier_prefix
   instance_use_identifier_prefix = true

@@ -28,6 +28,12 @@ resource "aws_secretsmanager_secret" "keycloak_db_secret" {
 module "keycloak_db" {
   source  = "terraform-aws-modules/rds/aws"
   version = "6.1.1"
+  tags    = merge(
+    local.tags,
+    {
+      Backup = "true"
+    }
+  )
 
   identifier                     = var.keycloak_db_idenitfier_prefix
   instance_use_identifier_prefix = true

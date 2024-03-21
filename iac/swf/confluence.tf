@@ -28,6 +28,12 @@ resource "aws_secretsmanager_secret" "confluence_db_secret" {
 module "confluence_db" {
   source  = "terraform-aws-modules/rds/aws"
   version = "6.1.1"
+  tags    = merge(
+    local.tags,
+    {
+      Backup = "true"
+    }
+  )
 
   identifier                     = var.confluence_db_idenitfier_prefix
   instance_use_identifier_prefix = true
