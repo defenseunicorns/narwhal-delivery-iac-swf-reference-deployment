@@ -1,27 +1,46 @@
-# terraform
+# SWF
 
-Steps to use this module:
+## Pre-requisites
 
-1. init backend with the -reconfigure flag to use the newly created backend from the bootstrap process, see [Bootstrap README](../bootstrap/README.md)
-2. Apply the terraform using relevant tfvars files. It should push the state file to the correct bucket and to the key defined in ../env/${env}/backends/swf-backend.tfconfig
+- [bootstrap](../bootstrap/README.md)
 
-example usage:
+## Usage
 
-``` bash
+example uds runner usage (preferred):
+
+```bash
 # from the root of the repo
+# bootstrap module should be run first and backend files staged
+
+export ENV=dev
+# initial runs
+uds run terraform-init-aws-swf --set ENV=$ENV
+
+# Apply
+uds run terraform-apply-aws-swf --set ENV=$ENV
+
+# re-init to use a different ENV and also s3 backend
+export ENV=stg
+uds run terraform-backend-reconfigure-init-aws-swf  --set ENV=$ENV
+```
+
+example terraform usage:
+
+```bash
+# from the root this module
 
 env=dev
 root_module=swf
 
 pushd "iac/${root_module}"
-# init -reconfigure to use the new s3 backend
-terraform init --reconfigure --force-copy --backend-config=../env/${env}/backends/${root_module}-backend.tfconfig
+# first time init or switching to a different ENV with a different s3 backend
+# you can just run 'terraform init' on subsequent runs if you are not changing the backend or ENV context
+terraform init --reconfigure --backend-config=../env/${env}/backends/${root_module}-backend.tfconfig
 
-# apply terraform as you normally would
-terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file ../env/${env}/tfvars/${root_module}.terraform.tfvars
+# var-file path relative to current working directory
+terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file ../env/${env}/tfvars/${root_module}.terraform.tfvars -auto-approve
+
 ```
-
-``` bash
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
@@ -30,7 +49,7 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0.0 |
 | <a name="requirement_archive"></a> [archive](#requirement\_archive) | 2.4.1 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.62.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.36.0 |
 | <a name="requirement_cloudinit"></a> [cloudinit](#requirement\_cloudinit) | >= 2.0.0 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.5.1 |
 | <a name="requirement_http"></a> [http](#requirement\_http) | 2.4.1 |
@@ -45,7 +64,7 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.62.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.36.0 |
 | <a name="provider_local"></a> [local](#provider\_local) | >= 2.1.0 |
 | <a name="provider_random"></a> [random](#provider\_random) | >= 3.1.0 |
 
@@ -53,6 +72,8 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 
 | Name | Source | Version |
 |------|--------|---------|
+| <a name="module_artifactory_db"></a> [artifactory\_db](#module\_artifactory\_db) | terraform-aws-modules/rds/aws | 6.1.1 |
+| <a name="module_artifactory_kms_key"></a> [artifactory\_kms\_key](#module\_artifactory\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.2 |
 | <a name="module_bastion"></a> [bastion](#module\_bastion) | git::https://github.com/defenseunicorns/terraform-aws-bastion.git | v0.0.11 |
 | <a name="module_confluence_db"></a> [confluence\_db](#module\_confluence\_db) | terraform-aws-modules/rds/aws | 6.1.1 |
 | <a name="module_confluence_kms_key"></a> [confluence\_kms\_key](#module\_confluence\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.2 |
@@ -67,8 +88,16 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="module_key_pair"></a> [key\_pair](#module\_key\_pair) | terraform-aws-modules/key-pair/aws | ~> 2.0 |
 | <a name="module_keycloak_db"></a> [keycloak\_db](#module\_keycloak\_db) | terraform-aws-modules/rds/aws | 6.1.1 |
 | <a name="module_keycloak_kms_key"></a> [keycloak\_kms\_key](#module\_keycloak\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.2 |
+| <a name="module_mattermost_db"></a> [mattermost\_db](#module\_mattermost\_db) | terraform-aws-modules/rds/aws | 6.1.1 |
+| <a name="module_mattermost_irsa_s3"></a> [mattermost\_irsa\_s3](#module\_mattermost\_irsa\_s3) | ./modules/irsa-s3 | n/a |
+| <a name="module_mattermost_kms_key"></a> [mattermost\_kms\_key](#module\_mattermost\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.2 |
+| <a name="module_mattermost_s3_bucket"></a> [mattermost\_s3\_bucket](#module\_mattermost\_s3\_bucket) | git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git | v4.1.0 |
 | <a name="module_password_lambda"></a> [password\_lambda](#module\_password\_lambda) | git::https://github.com/defenseunicorns/terraform-aws-lambda.git//modules/password-rotation | v0.0.3 |
 | <a name="module_ssm_kms_key"></a> [ssm\_kms\_key](#module\_ssm\_kms\_key) | terraform-aws-modules/kms/aws | ~> 2.0 |
+| <a name="module_subnet_addrs"></a> [subnet\_addrs](#module\_subnet\_addrs) | git::https://github.com/hashicorp/terraform-cidr-subnets | v1.0.0 |
+| <a name="module_velero_irsa_s3"></a> [velero\_irsa\_s3](#module\_velero\_irsa\_s3) | ./modules/irsa-s3 | n/a |
+| <a name="module_velero_kms_key"></a> [velero\_kms\_key](#module\_velero\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.2 |
+| <a name="module_velero_s3_bucket"></a> [velero\_s3\_bucket](#module\_velero\_s3\_bucket) | git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git | v4.1.0 |
 | <a name="module_vpc"></a> [vpc](#module\_vpc) | git::https://github.com/defenseunicorns/terraform-aws-vpc.git | v0.1.6 |
 | <a name="module_zarf"></a> [zarf](#module\_zarf) | ./modules/zarf | n/a |
 
@@ -87,31 +116,39 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | [aws_s3_bucket_public_access_block.access_log_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_public_access_block) | resource |
 | [aws_s3_bucket_server_side_encryption_configuration.access_log_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_server_side_encryption_configuration) | resource |
 | [aws_s3_bucket_versioning.access_log_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_versioning) | resource |
+| [aws_secretsmanager_secret.artifactory_db_secret](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret) | resource |
 | [aws_secretsmanager_secret.confluence_db_secret](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret) | resource |
 | [aws_secretsmanager_secret.gitlab_db_secret](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret) | resource |
 | [aws_secretsmanager_secret.gitlab_elasticache_secret](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret) | resource |
 | [aws_secretsmanager_secret.jira_db_secret](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret) | resource |
 | [aws_secretsmanager_secret.keycloak_db_secret](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret) | resource |
+| [aws_secretsmanager_secret.mattermost_db_secret](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret) | resource |
 | [aws_secretsmanager_secret.uds_config](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret) | resource |
 | [aws_secretsmanager_secret_version.uds_config_value](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret_version) | resource |
+| [aws_security_group.artifactory_rds_sg](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
 | [aws_security_group.confluence_rds_sg](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
 | [aws_security_group.gitlab_rds_sg](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
 | [aws_security_group.gitlab_redis_sg](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
 | [aws_security_group.jira_rds_sg](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
 | [aws_security_group.keycloak_rds_sg](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
+| [aws_security_group.mattermost_rds_sg](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
 | [aws_sqs_queue.access_log_queue](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sqs_queue) | resource |
+| [aws_vpc_security_group_ingress_rule.artifactory_rds_ingress](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_security_group_ingress_rule) | resource |
 | [aws_vpc_security_group_ingress_rule.confluence_rds_ingress](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_security_group_ingress_rule) | resource |
 | [aws_vpc_security_group_ingress_rule.gitlab_rds_ingress](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_security_group_ingress_rule) | resource |
 | [aws_vpc_security_group_ingress_rule.gitlab_redis_ingress](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_security_group_ingress_rule) | resource |
 | [aws_vpc_security_group_ingress_rule.jira_rds_ingress](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_security_group_ingress_rule) | resource |
 | [aws_vpc_security_group_ingress_rule.keycloak_rds_ingress](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_security_group_ingress_rule) | resource |
+| [aws_vpc_security_group_ingress_rule.mattermost_rds_ingress](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_security_group_ingress_rule) | resource |
 | [local_sensitive_file.uds_config](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/sensitive_file) | resource |
 | [random_id.default](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/id) | resource |
+| [random_password.artifactory_db_password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
 | [random_password.confluence_db_password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
 | [random_password.gitlab_db_password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
 | [random_password.gitlab_elasticache_password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
 | [random_password.jira_db_password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
 | [random_password.keycloak_db_password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
+| [random_password.mattermost_db_password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
 | [aws_ami.amazonlinux2](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
 | [aws_ami.eks_default_bottlerocket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
 | [aws_availability_zones.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
@@ -128,6 +165,10 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="input_access_log_expire_days"></a> [access\_log\_expire\_days](#input\_access\_log\_expire\_days) | Number of days to wait before deleting access logs | `number` | `30` | no |
 | <a name="input_admin_roles"></a> [admin\_roles](#input\_admin\_roles) | List of IAM roles to add as administrators to the EKS cluster via access entry | `list(string)` | `[]` | no |
 | <a name="input_admin_users"></a> [admin\_users](#input\_admin\_users) | List of IAM users to add as administrators to the EKS cluster via access entry | `list(string)` | `[]` | no |
+| <a name="input_artifactory_db_idenitfier_prefix"></a> [artifactory\_db\_idenitfier\_prefix](#input\_artifactory\_db\_idenitfier\_prefix) | The prefix to use for the RDS instance identifier | `string` | `"artifactory-db"` | no |
+| <a name="input_artifactory_db_name"></a> [artifactory\_db\_name](#input\_artifactory\_db\_name) | Name of the artifactory database. | `string` | `"artifactorydb"` | no |
+| <a name="input_artifactory_kms_key_alias"></a> [artifactory\_kms\_key\_alias](#input\_artifactory\_kms\_key\_alias) | KMS Key Alias name prefix | `string` | `"artifactory"` | no |
+| <a name="input_artifactory_rds_instance_class"></a> [artifactory\_rds\_instance\_class](#input\_artifactory\_rds\_instance\_class) | The instance class to use for the RDS instance | `string` | `"db.t4g.large"` | no |
 | <a name="input_authentication_mode"></a> [authentication\_mode](#input\_authentication\_mode) | The authentication mode for the cluster. Valid values are `CONFIG_MAP`, `API` or `API_AND_CONFIG_MAP` | `string` | `"API"` | no |
 | <a name="input_aws_admin_usernames"></a> [aws\_admin\_usernames](#input\_aws\_admin\_usernames) | A list of one or more AWS usernames with authorized access to KMS and EKS resources, will automatically add the user running the terraform as an admin | `list(string)` | `[]` | no |
 | <a name="input_aws_efs_csi_driver"></a> [aws\_efs\_csi\_driver](#input\_aws\_efs\_csi\_driver) | AWS EFS CSI Driver helm chart config | `any` | `{}` | no |
@@ -161,7 +202,6 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="input_enable_gp3_default_storage_class"></a> [enable\_gp3\_default\_storage\_class](#input\_enable\_gp3\_default\_storage\_class) | Enable gp3 as default storage class | `bool` | `false` | no |
 | <a name="input_enable_metrics_server"></a> [enable\_metrics\_server](#input\_enable\_metrics\_server) | Enable metrics server add-on | `bool` | `false` | no |
 | <a name="input_enable_nat_gateway"></a> [enable\_nat\_gateway](#input\_enable\_nat\_gateway) | If true, NAT Gateways will be created | `bool` | `false` | no |
-| <a name="input_enable_public_subnets"></a> [enable\_public\_subnets](#input\_enable\_public\_subnets) | If true, public subnets will be created | `bool` | `false` | no |
 | <a name="input_enable_secrets_store_csi_driver"></a> [enable\_secrets\_store\_csi\_driver](#input\_enable\_secrets\_store\_csi\_driver) | Enable k8s Secret Store CSI Driver add-on | `bool` | `false` | no |
 | <a name="input_enable_sqs_events_on_access_log_access"></a> [enable\_sqs\_events\_on\_access\_log\_access](#input\_enable\_sqs\_events\_on\_access\_log\_access) | If true, generates an SQS event whenever on object is created in the Access Log bucket, which happens whenever a server access log is generated by any entity. This will potentially generate a lot of events, so use with caution. | `bool` | `false` | no |
 | <a name="input_gitlab_bucket_names"></a> [gitlab\_bucket\_names](#input\_gitlab\_bucket\_names) | List of buckets to create for GitLab | `list(string)` | <pre>[<br>  "gitlab-artifacts",<br>  "gitlab-backups",<br>  "gitlab-ci-secure-files",<br>  "gitlab-dependency-proxy",<br>  "gitlab-lfs",<br>  "gitlab-mr-diffs",<br>  "gitlab-packages",<br>  "gitlab-pages",<br>  "gitlab-terraform-state",<br>  "gitlab-uploads",<br>  "gitlab-registry",<br>  "gitlab-runner-cache",<br>  "gitlab-tmp"<br>]</pre> | no |
@@ -184,13 +224,20 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="input_keycloak_kms_key_alias"></a> [keycloak\_kms\_key\_alias](#input\_keycloak\_kms\_key\_alias) | KMS Key Alias name prefix | `string` | `"keycloak"` | no |
 | <a name="input_keycloak_rds_instance_class"></a> [keycloak\_rds\_instance\_class](#input\_keycloak\_rds\_instance\_class) | The instance class to use for the RDS instance | `string` | `"db.t4g.large"` | no |
 | <a name="input_kms_key_deletion_window"></a> [kms\_key\_deletion\_window](#input\_kms\_key\_deletion\_window) | Waiting period for scheduled KMS Key deletion. Can be 7-30 days. | `number` | `7` | no |
+| <a name="input_mattermost_bucket_names"></a> [mattermost\_bucket\_names](#input\_mattermost\_bucket\_names) | List of buckets to create for Mattermost | `list(string)` | <pre>[<br>  "mattermost"<br>]</pre> | no |
+| <a name="input_mattermost_db_idenitfier_prefix"></a> [mattermost\_db\_idenitfier\_prefix](#input\_mattermost\_db\_idenitfier\_prefix) | The prefix to use for the RDS instance identifier | `string` | `"mattermost-db"` | no |
+| <a name="input_mattermost_db_name"></a> [mattermost\_db\_name](#input\_mattermost\_db\_name) | Name of the Mattermost database. | `string` | `"mattermostdb"` | no |
+| <a name="input_mattermost_kms_key_alias"></a> [mattermost\_kms\_key\_alias](#input\_mattermost\_kms\_key\_alias) | KMS Key Alias name prefix | `string` | `"mattermost"` | no |
+| <a name="input_mattermost_namespace"></a> [mattermost\_namespace](#input\_mattermost\_namespace) | Namespace Mattermost is deployed to | `string` | `"mattermost"` | no |
+| <a name="input_mattermost_rds_instance_class"></a> [mattermost\_rds\_instance\_class](#input\_mattermost\_rds\_instance\_class) | The instance class to use for the RDS instance | `string` | `"db.t4g.large"` | no |
+| <a name="input_mattermost_s3_bucket_force_destroy"></a> [mattermost\_s3\_bucket\_force\_destroy](#input\_mattermost\_s3\_bucket\_force\_destroy) | A boolean that indicates all objects should be deleted from the bucket so that the bucket can be destroyed without error. These objects are not recoverable. | `bool` | `false` | no |
+| <a name="input_mattermost_service_account_names"></a> [mattermost\_service\_account\_names](#input\_mattermost\_service\_account\_names) | List of service accounts to create for Mattermost | `list(string)` | <pre>[<br>  "mattermost"<br>]</pre> | no |
 | <a name="input_metrics_server"></a> [metrics\_server](#input\_metrics\_server) | Metrics Server config for aws-ia/eks-blueprints-addon/aws | `any` | `{}` | no |
 | <a name="input_name"></a> [name](#input\_name) | Name, e.g. 'app' or 'jenkins' | `string` | `"narwhal-delivery-iac-swf"` | no |
 | <a name="input_namespace"></a> [namespace](#input\_namespace) | Namespace, which could be your organization name or abbreviation, e.g. 'eg' or 'cp' | `string` | `"du"` | no |
 | <a name="input_num_azs"></a> [num\_azs](#input\_num\_azs) | The number of AZs to use | `number` | `3` | no |
 | <a name="input_prefix"></a> [prefix](#input\_prefix) | name prefix to prepend to most resources, if not defined, created as: 'namespace-stage-name' | `string` | `""` | no |
 | <a name="input_reclaim_policy"></a> [reclaim\_policy](#input\_reclaim\_policy) | Reclaim policy for EFS storage class, valid options are Delete and Retain | `string` | `"Delete"` | no |
-| <a name="input_recovery_window"></a> [recovery\_window](#input\_recovery\_window) | Number of days to retain secret before permanent deletion in Secrets Manager | `number` | `30` | no |
 | <a name="input_region"></a> [region](#input\_region) | The AWS region to deploy into | `string` | n/a | yes |
 | <a name="input_secondary_cidr_blocks"></a> [secondary\_cidr\_blocks](#input\_secondary\_cidr\_blocks) | A list of secondary CIDR blocks for the VPC | `list(string)` | `[]` | no |
 | <a name="input_secrets_store_csi_driver"></a> [secrets\_store\_csi\_driver](#input\_secrets\_store\_csi\_driver) | k8s Secret Store CSI Driver Helm Chart config | `any` | `{}` | no |
@@ -201,8 +248,16 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="input_storageclass_reclaim_policy"></a> [storageclass\_reclaim\_policy](#input\_storageclass\_reclaim\_policy) | Reclaim policy for gp3 storage class, valid options are Delete and Retain | `string` | `"Delete"` | no |
 | <a name="input_suffix"></a> [suffix](#input\_suffix) | name suffix to append to most resources, if not defined, randomly generated | `string` | `""` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to apply to all resources | `map(string)` | `{}` | no |
+| <a name="input_uds_config_output_file_name"></a> [uds\_config\_output\_file\_name](#input\_uds\_config\_output\_file\_name) | The name of the UDS config file when templating | `string` | `""` | no |
+| <a name="input_uds_config_output_path"></a> [uds\_config\_output\_path](#input\_uds\_config\_output\_path) | The path to output the UDS config file when templating | `string` | `""` | no |
 | <a name="input_users"></a> [users](#input\_users) | This needs to be a list of users that will be on your ec2 instances that need password changes. | `list(string)` | `[]` | no |
+| <a name="input_velero_bucket_names"></a> [velero\_bucket\_names](#input\_velero\_bucket\_names) | List of buckets to create for Velero | `list(string)` | <pre>[<br>  "velero"<br>]</pre> | no |
+| <a name="input_velero_kms_key_alias"></a> [velero\_kms\_key\_alias](#input\_velero\_kms\_key\_alias) | KMS Key Alias name prefix | `string` | `"velero"` | no |
+| <a name="input_velero_namespace"></a> [velero\_namespace](#input\_velero\_namespace) | Namespace Velero is deployed to | `string` | `"velero"` | no |
+| <a name="input_velero_s3_bucket_force_destroy"></a> [velero\_s3\_bucket\_force\_destroy](#input\_velero\_s3\_bucket\_force\_destroy) | A boolean that indicates all objects should be deleted from the bucket so that the bucket can be destroyed without error. These objects are not recoverable. | `bool` | `false` | no |
+| <a name="input_velero_service_account_names"></a> [velero\_service\_account\_names](#input\_velero\_service\_account\_names) | List of service accounts to create for Velero | `list(string)` | <pre>[<br>  "velero-server"<br>]</pre> | no |
 | <a name="input_vpc_cidr"></a> [vpc\_cidr](#input\_vpc\_cidr) | The CIDR block for the VPC | `string` | n/a | yes |
+| <a name="input_vpc_subnets"></a> [vpc\_subnets](#input\_vpc\_subnets) | A list of subnet objects to do subnet math things on - see https://github.com/hashicorp/terraform-cidr-subnets | `list(map(any))` | <pre>[<br>  {}<br>]</pre> | no |
 | <a name="input_zarf_s3_bucket_force_destroy"></a> [zarf\_s3\_bucket\_force\_destroy](#input\_zarf\_s3\_bucket\_force\_destroy) | A boolean that indicates all objects should be deleted from the bucket so that the bucket can be destroyed without error. These objects are not recoverable. | `bool` | `false` | no |
 | <a name="input_zarf_version"></a> [zarf\_version](#input\_zarf\_version) | The version of Zarf to use | `string` | `""` | no |
 
@@ -210,6 +265,7 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 
 | Name | Description |
 |------|-------------|
+| <a name="output_bastion"></a> [bastion](#output\_bastion) | Bastion module output data |
 | <a name="output_eks"></a> [eks](#output\_eks) | EKS module output data |
 | <a name="output_vpc"></a> [vpc](#output\_vpc) | VPC module output data |
 | <a name="output_zarf"></a> [zarf](#output\_zarf) | Zarf module output data |

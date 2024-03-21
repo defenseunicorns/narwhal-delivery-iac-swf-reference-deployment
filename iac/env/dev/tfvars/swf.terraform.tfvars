@@ -9,16 +9,12 @@ enable_nat_gateway    = true
 admin_role_name       = "unicorn-admin"
 
 ###########################################################
-#################### Transit Gateway Config ###############
-target_transit_gateway_tag_name = "target-tgw-placeholder"
-
-###########################################################
 ################## Bastion Config #########################
 
 bastion_ssh_user     = "ec2-user" # local user in bastion used to ssh
 bastion_ssh_password = "my-password"
 # renovate: datasource=github-tags depName=defenseunicorns/zarf
-zarf_version = "v0.32.3"
+zarf_version = "v0.32.4"
 
 ###########################################################
 #################### EKS Config ###########################

@@ -53,6 +53,7 @@ tasks:
           fi
         shell:
           linux: bash
+          darwin: bash
       - description: "Init the bootstrap module"
         task: terraform-init
         with:
@@ -62,6 +63,7 @@ tasks:
         with:
           env: ${ENV}
           root_module: bootstrap
+          var_files: '["common.terraform.tfvars", "bootstrap.terraform.tfvars"]'
       - description: "Migrate local backend to s3"
         cmd: |
           set -exo pipefail
@@ -70,6 +72,38 @@ tasks:
             mv terraform.tfstate "terraform-tfstate.${INPUT_ENV}-local-backend-backup"
         shell:
           linux: bash
+          darwin: bash
+
+  - name: dryrun-terraform-one-time-bootstrap-per-env
+    inputs:
+      env:
+        required: true
+        description: "The environment to bootstrap"
+    actions:
+      - task: check-env
+        with:
+          env: ${ENV}
+      - description: "Check if bootstrap for '$env' is clean"
+        cmd: |
+          set -exo pipefail
+          # check if ./iac/env/${INPUT_ENV}/backends/bootstrap-backend.tfconfig exists
+          if [ -f ./iac/env/${INPUT_ENV}/backends/bootstrap-backend.tfconfig ]; then
+            echo "terraform s3 backend environment files for ${INPUT_ENV} already exists"
+            exit 1
+          fi
+        shell:
+          linux: bash
+          darwin: bash
+      - description: "Init the bootstrap module"
+        task: terraform-init
+        with:
+          root_module: bootstrap
+      - description: "Apply the bootstrap module in the specified environment"
+        task: terraform-plan
+        with:
+          env: ${ENV}
+          root_module: bootstrap
+          var_files: '["common.terraform.tfvars", "bootstrap.terraform.tfvars"]'
 
   - name: terraform-init
     inputs:
@@ -83,6 +117,25 @@ tasks:
           terraform init
         shell:
           linux: bash
+          darwin: bash
+
+  - name: terraform-backend-reconfigure-init
+    description: "Reconfigure the backend using partial backend configuration patterns and init the root module"
+    inputs:
+      env:
+        required: true
+        description: "The environment to init, relative to the backend config file"
+      root_module:
+        required: true
+        description: "The root module to init"
+    actions:
+      - cmd: |
+          set -exo pipefail
+          cd ./iac/${INPUT_ROOT_MODULE}
+          terraform init --reconfigure --backend-config=../env/${INPUT_ENV}/backends/${INPUT_ROOT_MODULE}-backend.tfconfig
+        shell:
+          linux: bash
+          darwin: bash
 
   - name: terraform-plan
     inputs:
@@ -170,13 +223,11 @@ tasks:
           darwin: bash
 
   - name: just-echo
+    description: "sanity checking different ways to access input variables"
     inputs:
-      list:
-        required: false
-        description: "idk"
       env:
         required: true
-        description: "idk"
+        description: "input env"
     actions:
       - description: "echo"
         cmd: |
@@ -186,8 +237,30 @@ tasks:
           echo "${{ index .inputs "env" }}"
           echo "${INPUT_ENV}"
           echo "${ENV}"
-        # env:
-        #   - env=${{ index .inputs "env" }}
         shell:
           linux: bash
           darwin: bash
+
+  - name: get-bastion-instance-id
+    inputs:
+      env:
+        required: true
+        description: "The environment to start the sshuttle session in"
+    actions:
+      - description: "Get the bastion's instance ID"
+        cmd: |
+          set -exo pipefail
+          cd ./iac/swf > /dev/null
+          terraform output -json bastion | jq -r .instance_id
+        setVariables:
+          - name: BASTION_INSTANCE_ID
+        shell:
+          linux: bash
+          darwin: bash
+      # - description: "Start an sshuttle session in the background"
+      #   cmd: |
+      #     set -exo pipefail
+      #     sshuttle -r ${SSHUTTLE_REMOTE} ${SSHUTTLE_SUBNETS} --daemon --pidfile /tmp/sshuttle.pid
+      #   shell:
+      #     linux: bash
+      #     darwin: bash

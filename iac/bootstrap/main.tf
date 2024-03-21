@@ -83,8 +83,10 @@ resource "local_file" "backend_tf_template" {
 resource "local_file" "context_tfvars_template" {
   count = var.create_context_tfvars ? 1 : 0
   content = templatefile(var.terraform_context_tfvars_template_file, {
-    prefix                      = var.prefix == null ? "null" : local.prefix
-    suffix                      = var.suffix == null ? "null" : local.suffix
+    var_prefix                  = var.prefix # determines if the prefix is explicitly set to null
+    var_suffix                  = var.suffix
+    local_prefix                = local.prefix # use local if var is not explicitly set to null
+    local_suffix                = local.suffix
     terraform_state_bucket_name = local.backend_s3_bucket_name
   })
   filename = "${local.terraform_env_file_path_prefix}/context.tfvars"

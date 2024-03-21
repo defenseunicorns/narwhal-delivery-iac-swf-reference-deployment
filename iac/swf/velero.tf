@@ -1,5 +1,4 @@
 locals {
-  velero_db_secret_name            = join("-", compact([local.prefix, "velero-db-secret", local.suffix]))
   velero_kms_key_alias_name_prefix = join("-", compact([local.prefix, var.velero_kms_key_alias, local.suffix]))
 }
 
@@ -10,7 +9,7 @@ module "velero_s3_bucket" {
 
   bucket        = join("-", compact([local.prefix, each.key, local.suffix]))
   force_destroy = var.velero_s3_bucket_force_destroy
-  tags    = local.tags
+  tags          = local.tags
 
   server_side_encryption_configuration = {
     rule = {

@@ -20,8 +20,8 @@
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_transit_gateway"></a> [transit\_gateway](#module\_transit\_gateway) | git::https://github.com/defenseunicorns/terraform-aws-transit-gateway.git | v0.0.1 |
-| <a name="module_transit_gateway_attachment"></a> [transit\_gateway\_attachment](#module\_transit\_gateway\_attachment) | git::https://github.com/defenseunicorns/terraform-aws-transit-gateway.git | v0.0.2 |
+| <a name="module_transit_gateway"></a> [transit\_gateway](#module\_transit\_gateway) | git::https://github.com/defenseunicorns/terraform-aws-transit-gateway.git | v0.0.3 |
+| <a name="module_transit_gateway_attachment"></a> [transit\_gateway\_attachment](#module\_transit\_gateway\_attachment) | git::https://github.com/defenseunicorns/terraform-aws-transit-gateway.git | v0.0.3 |
 
 ## Resources
 

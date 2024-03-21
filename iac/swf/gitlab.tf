@@ -9,7 +9,7 @@ module "gitlab_s3_bucket" {
   source = "git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v4.1.0"
 
   bucket        = join("-", compact([local.prefix, each.key, local.suffix]))
-  tags    = local.tags
+  tags          = local.tags
   force_destroy = var.gitlab_s3_bucket_force_destroy
 
   server_side_encryption_configuration = {

@@ -27,11 +27,11 @@ locals {
     var.tags,
     {
       RootTFModule = replace(basename(path.cwd), "_", "-") # tag names based on the directory name
-      GithubRepo   = "github.com/defenseunicorns/narwhal-delivery-iac-swf-reference-deployment"
-      ID           = local.suffix
+      Env          = var.stage
     }
   )
   s3_bucket_polcy_name = join("-", compact([local.prefix, var.policy_name, "s3-access-policy", local.suffix]))
+  bucket_names         = [for bucket_name in var.bucket_names : join("-", compact([local.prefix, bucket_name, local.suffix]))]
 }
 
 ## This will create a policy for the S3 Buckets
@@ -50,8 +50,8 @@ resource "aws_iam_policy" "s3_bucket_policy" {
           "s3:ListBucketMultipartUploads"
         ]
         Resource = [
-          for bucket_name in var.bucket_names :
-          "arn:${data.aws_partition.current.partition}:s3:::${local.prefix}-${bucket_name}-${local.suffix}"
+          for bucket_name in local.bucket_names :
+          "arn:${data.aws_partition.current.partition}:s3:::${bucket_name}"
         ]
       },
       {
@@ -64,8 +64,8 @@ resource "aws_iam_policy" "s3_bucket_policy" {
           "s3:AbortMultipartUpload"
         ]
         Resource = [
-          for bucket_name in var.bucket_names :
-          "arn:${data.aws_partition.current.partition}:s3:::${local.prefix}-${bucket_name}-${local.suffix}/*"
+          for bucket_name in local.bucket_names :
+          "arn:${data.aws_partition.current.partition}:s3:::${bucket_name}/*"
         ]
       },
       {

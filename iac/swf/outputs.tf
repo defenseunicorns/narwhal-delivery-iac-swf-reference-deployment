@@ -10,6 +10,12 @@ output "eks" {
   sensitive   = true
 }
 
+output "bastion" {
+  description = "Bastion module output data"
+  value       = module.bastion
+  sensitive   = true
+}
+
 output "zarf" {
   description = "Zarf module output data"
   value       = module.zarf
