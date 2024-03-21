@@ -33,6 +33,8 @@ variables:
         value: "${var.region}"
       - name: REGISTRY_STORAGE_S3_BUCKET
         value: "${module.zarf.zarf_registry_s3_bucket_name}"
+  storageclass:
+    EBS_EXTRA_PARAMETERS: 'tagSpecification_1: "NamespaceAndId={{ .PVCNamespace }}-${lower(random_id.default.hex)}"'
   swf-deps-aws:
     gitlab_db_password: "${random_password.gitlab_db_password.result}"
     confluence_db_password: "${random_password.confluence_db_password.result}"
