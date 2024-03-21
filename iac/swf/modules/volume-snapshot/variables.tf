@@ -1,6 +1,6 @@
 variable "schedule_details" {
   description = "Details of the schedule - Cron reference https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-cron-expressions.html"
-  type = object({
+  type = list(object({
     name = string
     create_rule = object({
       cron_expression = string
@@ -8,8 +8,8 @@ variable "schedule_details" {
     retain_rule = object({
       count = number
     })
-  })
-  default = {
+  }))
+  default = [{
     name = "Daily"
     create_rule = {
       cron_expression = "cron(0 0 * * *)"
@@ -17,7 +17,7 @@ variable "schedule_details" {
     retain_rule = {
       count = 7
     }
-  }
+  }]
 }
 
 variable "target_tags" {
@@ -35,4 +35,10 @@ variable "tags" {
   description = "Tags to apply to lifecycle policy resources"
   type        = map(string)
   default     = {}
+}
+
+variable "dlm_role_name" {
+  description = "Name for the DLM IAM role policy"
+  type        = string
+  default     = ""
 }

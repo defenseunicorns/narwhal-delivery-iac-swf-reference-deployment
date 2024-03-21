@@ -1,6 +1,7 @@
 locals {
-  gitlab_db_secret_name            = join("-", compact([local.prefix, "gitlab-db-secret", local.suffix]))
-  gitlab_kms_key_alias_name_prefix = join("-", compact([local.prefix, var.gitlab_kms_key_alias, local.suffix]))
+  gitlab_db_secret_name                 = join("-", compact([local.prefix, "gitlab-db-secret", local.suffix]))
+  gitlab_kms_key_alias_name_prefix      = join("-", compact([local.prefix, var.gitlab_kms_key_alias, local.suffix]))
+  gitlab_dlm_role_name = join("-", compact([local.prefix, "dlm-lifecycle-gitlab", local.suffix]))
 }
 
 module "gitlab_s3_bucket" {
@@ -48,10 +49,11 @@ module "gitlab_irsa_s3" {
   oidc_provider_arn    = module.eks.oidc_provider_arn
 }
 
-module "gitlab_volume_snapshots_daily" {
+module "gitlab_volume_snapshots" {
   source = "./modules/volume-snapshot"
+  dlm_role_name   = local.gitlab_dlm_role_name
 
-  schedule_details = {
+  schedule_details = [{
     name = "Daily"
     create_rule = {
       cron_expression = "cron(0 0 * * ? *)"
@@ -59,18 +61,8 @@ module "gitlab_volume_snapshots_daily" {
     retain_rule = {
       count = 30
     }
-  }
-  target_tags = {
-    NamespaceAndId = "gitlab-${lower(random_id.default.hex)}"
-  }
-  lifecycle_policy_description = "Daily snapshots of GitLab volumes"
-  tags                         = local.tags
-}
-
-module "gitlab_volume_snapshots_weekly" {
-  source = "./modules/volume-snapshot"
-
-  schedule_details = {
+  },
+  {
     name = "Weekly"
     create_rule = {
       cron_expression = "cron(0 0 ? * 1 *)"
@@ -78,18 +70,8 @@ module "gitlab_volume_snapshots_weekly" {
     retain_rule = {
       count = 52
     }
-  }
-  target_tags = {
-    NamespaceAndId = "gitlab-${lower(random_id.default.hex)}"
-  }
-  lifecycle_policy_description = "Weekly snapshots of GitLab volumes"
-  tags                         = local.tags
-}
-
-module "gitlab_volume_snapshots_monthly" {
-  source = "./modules/volume-snapshot"
-
-  schedule_details = {
+  },
+  {
     name = "Monthly"
     create_rule = {
       cron_expression = "cron(0 0 1 * ? *)"
@@ -97,11 +79,11 @@ module "gitlab_volume_snapshots_monthly" {
     retain_rule = {
       count = 84
     }
-  }
+  }]
   target_tags = {
     NamespaceAndId = "gitlab-${lower(random_id.default.hex)}"
   }
-  lifecycle_policy_description = "Monthly snapshots of GitLab volumes"
+  lifecycle_policy_description = "Policy for Gitlab volume snapshots"
   tags                         = local.tags
 }
 

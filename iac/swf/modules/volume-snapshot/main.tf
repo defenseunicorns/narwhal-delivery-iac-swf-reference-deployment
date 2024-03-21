@@ -11,18 +11,10 @@ data "aws_iam_policy_document" "assume_role" {
   }
 }
 
-resource "random_id" "snapshot_id" {
-  byte_length = 2
-}
-
-locals {
-  suffix = lower(random_id.snapshot_id.hex)
-}
-
 data "aws_partition" "current" {}
 
 resource "aws_iam_role" "dlm_lifecycle_role" {
-  name               = "dlm-lifecycle-role-${local.suffix}"
+  name               = var.dlm_role_name
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
   tags               = var.tags
 }
@@ -51,7 +43,7 @@ data "aws_iam_policy_document" "dlm_lifecycle" {
 }
 
 resource "aws_iam_role_policy" "dlm_lifecycle" {
-  name   = "dlm-lifecycle-policy-${local.suffix}"
+  name   = var.dlm_role_name
   role   = aws_iam_role.dlm_lifecycle_role.id
   policy = data.aws_iam_policy_document.dlm_lifecycle.json
 }
@@ -60,24 +52,31 @@ resource "aws_dlm_lifecycle_policy" "this" {
   description        = var.lifecycle_policy_description
   execution_role_arn = aws_iam_role.dlm_lifecycle_role.arn
   state              = "ENABLED"
-  tags_all           = var.tags
-
+  tags               = merge(
+    var.tags,
+    {
+      Name = var.dlm_role_name
+    }
+  )
 
   policy_details {
     resource_types = ["VOLUME"]
 
-    schedule {
-      name = var.schedule_details.name
+    dynamic "schedule" {
+      for_each = var.schedule_details
+      content {
+        name = schedule.value.name
 
-      create_rule {
-        cron_expression = var.schedule_details.create_rule.cron_expression
+        create_rule {
+          cron_expression = schedule.value.create_rule.cron_expression
+        }
+
+        retain_rule {
+          count = schedule.value.retain_rule.count
+        }
+
+        copy_tags = true
       }
-
-      retain_rule {
-        count = var.schedule_details.retain_rule.count
-      }
-
-      copy_tags = true
     }
 
     target_tags = var.target_tags
