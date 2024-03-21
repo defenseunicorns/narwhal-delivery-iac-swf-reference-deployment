@@ -10,12 +10,7 @@ module "velero_s3_bucket" {
 
   bucket        = join("-", compact([local.prefix, each.key, local.suffix]))
   force_destroy = var.velero_s3_bucket_force_destroy
-  tags    = merge(
-    local.tags,
-    {
-      Backup = "true"
-    }
-  )
+  tags    = local.tags
 
   server_side_encryption_configuration = {
     rule = {

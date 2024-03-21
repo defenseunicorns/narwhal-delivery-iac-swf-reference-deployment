@@ -9,12 +9,7 @@ module "gitlab_s3_bucket" {
   source = "git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v4.1.0"
 
   bucket        = join("-", compact([local.prefix, each.key, local.suffix]))
-  tags    = merge(
-    local.tags,
-    {
-      Backup = "true"
-    }
-  )
+  tags    = local.tags
   force_destroy = var.gitlab_s3_bucket_force_destroy
 
   server_side_encryption_configuration = {
@@ -66,12 +61,7 @@ resource "aws_secretsmanager_secret" "gitlab_db_secret" {
 module "gitlab_db" {
   source  = "terraform-aws-modules/rds/aws"
   version = "6.1.1"
-  tags    = merge(
-    local.tags,
-    {
-      Backup = "true"
-    }
-  )
+  tags    = local.tags
 
   identifier                     = var.gitlab_db_idenitfier_prefix
   instance_use_identifier_prefix = true

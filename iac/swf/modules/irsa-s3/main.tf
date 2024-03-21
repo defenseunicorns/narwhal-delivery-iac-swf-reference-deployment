@@ -28,6 +28,7 @@ locals {
     {
       RootTFModule = replace(basename(path.cwd), "_", "-") # tag names based on the directory name
       GithubRepo   = "github.com/defenseunicorns/narwhal-delivery-iac-swf-reference-deployment"
+      ID           = local.suffix
     }
   )
   s3_bucket_polcy_name = join("-", compact([local.prefix, var.policy_name, "s3-access-policy", local.suffix]))
