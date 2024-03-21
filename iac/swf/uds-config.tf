@@ -1,12 +1,15 @@
 locals {
-  uds_config_secret_name = join("-", compact([local.prefix, "uds-config", local.suffix]))
+  uds_config_secret_name      = join("-", compact([local.prefix, "uds-config", local.suffix]))
+  uds_config_output_path      = var.uds_config_output_path != "" ? var.uds_config_output_path : "../env/${var.stage}/uds"
+  uds_config_output_file_name = var.uds_config_output_file_name != "" ? var.uds_config_output_file_name : "uds-config.yaml"
 }
+
 
 #template comments
 # roles: loop through the list of service account names and create a role for each, replacing dashes with underscores and removing the gitlab- prefix
 # buckets: loop through the list of bucket names and create a variable for each, replacing dashes with underscores and removing the gitlab- prefix
 resource "local_sensitive_file" "uds_config" {
-  filename = "uds-config.yaml"
+  filename = "${local.uds_config_output_path}/${local.uds_config_output_file_name}"
   content  = <<EOY
 variables:
   core:

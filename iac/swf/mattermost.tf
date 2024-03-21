@@ -10,7 +10,7 @@ module "mattermost_s3_bucket" {
 
   bucket        = join("-", compact([local.prefix, each.key, local.suffix]))
   force_destroy = var.mattermost_s3_bucket_force_destroy
-  tags    = local.tags
+  tags          = local.tags
 
   server_side_encryption_configuration = {
     rule = {

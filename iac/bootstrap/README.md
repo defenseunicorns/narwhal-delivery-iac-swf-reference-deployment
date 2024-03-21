@@ -10,10 +10,36 @@ Steps to use this module:
 2. Apply the bootstrap module using relevant tfvars files
 3. Re-init backend to use the newly created backend
 
-example usage:
+> [!WARNING]
+When bootstrapping multiple environments and the same root module, you'll need to remove your local `.terraform` directory and `backend.tf` file before re-initializing the backend since it will need to create the s3 bucket and dynamodb table for each environment as well as the `$root-module-backend.tfconfig` files.
+
+## Usage
+
+example uds runner usage (preferred):
 
 ``` bash
 # from the root of the repo
+
+export ENV=dev
+#initial runs
+uds run terraform-one-time-bootstrap-per-env --set ENV=$ENV
+
+#subsequent runs for $ENV
+uds run terraform-apply-aws-bootstrap --set ENV=$ENV
+
+# re-init to use a different ENV and also s3 backend
+export ENV=stg
+uds run terraform-backend-reconfigure-init-aws-bootstrap  --set ENV=$ENV
+
+```
+
+example terraform usage:
+
+> [!IMPORTANT]
+> This scenario assumes first time bootstrapping for ENV.
+
+``` bash
+# from the root of this module
 
 env=dev
 root_module=bootstrap
@@ -25,12 +51,9 @@ terraform init
 terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file ../env/${env}/tfvars/${root_module}.terraform.tfvars -auto-approve
 
 # init again to use the new s3 backend
-terraform init --reconfigure --force-copy --backend-config=../env/${env}/backends/${root_module}-backend.tfconfig
+# you can just run 'terraform init' on subsequent runs if you are not changing the backend or ENV context
+terraform init --reconfigure --backend-config=../env/${env}/backends/${root_module}-backend.tfconfig
 ```
-
-When bootstrapping multiple environments and the same root module, you'll need to remove your local `.terraform` directory `and backend.tf` file before re-initializing the backend since it will need to create the s3 bucket and dynamodb table for each environment as well as the `$root-module-backend.tfconfig` files.
-
-``` bash
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements

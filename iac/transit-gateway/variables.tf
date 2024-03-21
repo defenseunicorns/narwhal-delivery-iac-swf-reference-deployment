@@ -62,3 +62,18 @@ variable "tgw_name" {
   type        = string
   default     = "tgw"
 }
+
+# variable "route_transit_gateway_attachment_id" {
+#   description = "The ID of the route transit gateway attachment"
+#   type        = string
+# }
+
+# variable "existing_transit_gateway_id" {
+#   description = "The ID of the existing transit gateway"
+#   type        = string
+# }
+
+# variable "existing_ingress_transit_gateway_route_table_name" {
+#   description = "The name of the existing ingress transit gateway route table"
+#   type        = string
+# }
