@@ -12,6 +12,10 @@ module "gitlab_s3_bucket" {
   tags          = local.tags
   force_destroy = var.gitlab_s3_bucket_force_destroy
 
+  versioning = {
+    status = "Enabled"
+  }
+
   server_side_encryption_configuration = {
     rule = {
       apply_server_side_encryption_by_default = {
@@ -42,6 +46,63 @@ module "gitlab_irsa_s3" {
   bucket_names         = var.gitlab_bucket_names
   kms_key_arn          = module.gitlab_kms_key.kms_key_arn
   oidc_provider_arn    = module.eks.oidc_provider_arn
+}
+
+module "gitlab_volume_snapshots_daily" {
+  source = "./modules/volume-snapshot"
+
+  schedule_details = {
+    name = "Daily"
+    create_rule = {
+      cron_expression = "cron(0 0 * * ? *)"
+    }
+    retain_rule = {
+      count = 30
+    }
+  }
+  target_tags = {
+    NamespaceAndId = "gitlab-${lower(random_id.default.hex)}"
+  }
+  lifecycle_policy_description = "Daily snapshots of GitLab volumes"
+  tags                         = local.tags
+}
+
+module "gitlab_volume_snapshots_weekly" {
+  source = "./modules/volume-snapshot"
+
+  schedule_details = {
+    name = "Weekly"
+    create_rule = {
+      cron_expression = "cron(0 0 ? * 1 *)"
+    }
+    retain_rule = {
+      count = 52
+    }
+  }
+  target_tags = {
+    NamespaceAndId = "gitlab-${lower(random_id.default.hex)}"
+  }
+  lifecycle_policy_description = "Weekly snapshots of GitLab volumes"
+  tags                         = local.tags
+}
+
+module "gitlab_volume_snapshots_monthly" {
+  source = "./modules/volume-snapshot"
+
+  schedule_details = {
+    name = "Monthly"
+    create_rule = {
+      cron_expression = "cron(0 0 1 * ? *)"
+    }
+    retain_rule = {
+      count = 84
+    }
+  }
+  target_tags = {
+    NamespaceAndId = "gitlab-${lower(random_id.default.hex)}"
+  }
+  lifecycle_policy_description = "Monthly snapshots of GitLab volumes"
+  tags                         = local.tags
 }
 
 # RDS

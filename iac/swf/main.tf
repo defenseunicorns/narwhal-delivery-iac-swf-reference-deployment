@@ -61,7 +61,7 @@ locals {
     {
       RootTFModule = replace(basename(path.cwd), "_", "-") # tag names based on the directory name
       GithubRepo   = "github.com/defenseunicorns/narwhal-delivery-iac-swf-reference-deployment"
-      ID           = local.suffix
+      ID           = lower(random_id.default.hex)
     }
   )
 }
