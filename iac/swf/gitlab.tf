@@ -110,7 +110,8 @@ module "gitlab_db" {
   instance_use_identifier_prefix = true
 
   allocated_storage       = 20
-  backup_retention_period = 1
+  max_allocated_storage   = 500
+  backup_retention_period = 30
   backup_window           = "03:00-06:00"
   maintenance_window      = "Mon:00:00-Mon:03:00"
 
@@ -129,8 +130,19 @@ module "gitlab_db" {
   manage_master_user_password = false
   password                    = random_password.gitlab_db_password.result
 
+  multi_az = false
+
+  copy_tags_to_snapshot     = true
+
+  allow_major_version_upgrade = false
+  auto_minor_version_upgrade  = false
+
+  deletion_protection      = true
+
   vpc_security_group_ids = [aws_security_group.gitlab_rds_sg.id]
 }
+
+# If we want to replicate backups to another regionhttps://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/db_instance_automated_backups_replication
 
 resource "aws_security_group" "gitlab_rds_sg" {
   vpc_id = module.vpc.vpc_id
