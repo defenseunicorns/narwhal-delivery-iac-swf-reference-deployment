@@ -217,6 +217,8 @@ tasks:
 
   - name: bundle-create
     actions:
+      - description: "Create the zarf package"
+        task: swf:zarf-create
       - description: "Create the swf bundle"
         task: swf:bundle-create
 
@@ -224,6 +226,13 @@ tasks:
     actions:
       - description: "Deploy the swf bundle"
         task: swf:bundle-deploy
+
+  - name: bundle-dev
+    actions:
+      - task: swf:bundle-deploy
+        description: "Dev bundle create and deploy"
+        with:
+          config_path: ./iac/env/dev/uds/uds-config.yaml
 
   - name: echo
     actions:

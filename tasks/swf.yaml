@@ -16,8 +16,17 @@ tasks:
 
   - name: bundle-deploy
     description: "Deploys the swf bundle"
+    inputs:
+      config_path:
+        required: true
+        description: "The path to the uds-config.yaml file to use"
     actions:
-      - cmd: uds deploy bundles/swf/ --confirm --no-progress
+      - cmd: |
+          export UDS_CONFIG=${INPUT_CONFIG_PATH}
+          uds deploy $(ls -tr bundles/swf/uds-bundle-swf*.tar.zst | tail -1) --confirm --no-progress
+        shell:
+          linux: bash
+          darwin: bash
 
   - name: uds-config
     actions:
