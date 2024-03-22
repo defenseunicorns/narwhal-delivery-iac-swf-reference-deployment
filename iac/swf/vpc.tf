@@ -1,8 +1,8 @@
 locals {
   azs              = [for az_name in slice(data.aws_availability_zones.available.names, 0, min(length(data.aws_availability_zones.available.names), var.num_azs)) : az_name]
-  public_subnets   = length([for k, v in module.subnet_addrs.network_cidr_blocks : v if strcontains(k, "public")]) > 0 ? [for k, v in module.subnet_addrs.network_cidr_blocks : v if strcontains(k, "public")] : []
-  private_subnets  = length([for k, v in module.subnet_addrs.network_cidr_blocks : v if strcontains(k, "private")]) > 0 ? [for k, v in module.subnet_addrs.network_cidr_blocks : v if strcontains(k, "private")] : []
-  database_subnets = length([for k, v in module.subnet_addrs.network_cidr_blocks : v if strcontains(k, "database")]) > 0 ? [for k, v in module.subnet_addrs.network_cidr_blocks : v if strcontains(k, "database")] : []
+  public_subnets   = [for k, v in module.subnet_addrs.network_cidr_blocks : v if strcontains(k, "public")]
+  private_subnets  = [for k, v in module.subnet_addrs.network_cidr_blocks : v if strcontains(k, "private")]
+  database_subnets = [for k, v in module.subnet_addrs.network_cidr_blocks : v if strcontains(k, "database")]
 }
 
 module "subnet_addrs" {
@@ -13,7 +13,7 @@ module "subnet_addrs" {
 }
 
 module "vpc" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-vpc.git?ref=v0.1.6"
+  source = "git::https://github.com/defenseunicorns/terraform-aws-vpc.git?ref=v0.1.7"
 
   name                  = local.vpc_name
   vpc_cidr              = var.vpc_cidr

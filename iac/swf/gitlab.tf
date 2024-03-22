@@ -1,7 +1,7 @@
 locals {
-  gitlab_db_secret_name                 = join("-", compact([local.prefix, "gitlab-db-secret", local.suffix]))
-  gitlab_kms_key_alias_name_prefix      = join("-", compact([local.prefix, var.gitlab_kms_key_alias, local.suffix]))
-  gitlab_dlm_role_name = join("-", compact([local.prefix, "dlm-lifecycle-gitlab", local.suffix]))
+  gitlab_db_secret_name            = join("-", compact([local.prefix, "gitlab-db-secret", local.suffix]))
+  gitlab_kms_key_alias_name_prefix = join("-", compact([local.prefix, var.gitlab_kms_key_alias, local.suffix]))
+  gitlab_dlm_role_name             = join("-", compact([local.prefix, "dlm-lifecycle-gitlab", local.suffix]))
 }
 
 module "gitlab_s3_bucket" {
@@ -50,8 +50,8 @@ module "gitlab_irsa_s3" {
 }
 
 module "gitlab_volume_snapshots" {
-  source = "./modules/volume-snapshot"
-  dlm_role_name   = local.gitlab_dlm_role_name
+  source        = "./modules/volume-snapshot"
+  dlm_role_name = local.gitlab_dlm_role_name
 
   schedule_details = [{
     name = "Daily"
@@ -61,24 +61,24 @@ module "gitlab_volume_snapshots" {
     retain_rule = {
       count = 30
     }
-  },
-  {
-    name = "Weekly"
-    create_rule = {
-      cron_expression = "cron(0 0 ? * 1 *)"
-    }
-    retain_rule = {
-      count = 52
-    }
-  },
-  {
-    name = "Monthly"
-    create_rule = {
-      cron_expression = "cron(0 0 1 * ? *)"
-    }
-    retain_rule = {
-      count = 84
-    }
+    },
+    {
+      name = "Weekly"
+      create_rule = {
+        cron_expression = "cron(0 0 ? * 1 *)"
+      }
+      retain_rule = {
+        count = 52
+      }
+    },
+    {
+      name = "Monthly"
+      create_rule = {
+        cron_expression = "cron(0 0 1 * ? *)"
+      }
+      retain_rule = {
+        count = 84
+      }
   }]
   target_tags = {
     NamespaceAndId = "gitlab-${lower(random_id.default.hex)}"
