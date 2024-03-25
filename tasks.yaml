@@ -11,6 +11,8 @@ tasks:
           Welcome to the SWF IaC project!
           To get started, first you'll need to start an AWS session in your current terminal.
           After this, it's recommended to set an $ENV var correlating to a directory under ./iac/env and then run the UDS tasks relating to deploying IaC - for example 'export ENV=dev'
+          Alternatively you can use the `set-env` task to persistently set an environment you want to work from. Ex. `uds run set-env --set ENV=dev`
+          However `--set` will always take precedence over the environment set via `set-env`
           Please reference each root modules README for more information on the module and its purpose.
           The UDS tasks are here to provide wrappers on executing the modules with certain environment variables and state backend files.
           EOF
