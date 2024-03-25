@@ -132,13 +132,13 @@ packages:
               path: registry.serviceAccount.annotations.eks\.amazonaws\.com/role-arn
             - name: SIDEKIQ_ROLE_ARN
               description: "The ARN of the role to assume for the sidekiq pods"
-              path: sidekiq.serviceAccount.annotations.eks\.amazonaws\.com/role-arn
+              path: gitlab.sidekiq.serviceAccount.annotations.eks\.amazonaws\.com/role-arn
             - name: WEBSERVICE_ROLE_ARN
               description: "The ARN of the role to assume for the web service pods"
-              path: webservice.serviceAccount.annotations.eks\.amazonaws\.com/role-arn
+              path: gitlab.webservice.serviceAccount.annotations.eks\.amazonaws\.com/role-arn
             - name: TOOLBOX_ROLE_ARN
               description: "The ARN of the role to assume for the toolbox pods"
-              path: toolbox.serviceAccount.annotations.eks\.amazonaws\.com/role-arn
+              path: gitlab.toolbox.serviceAccount.annotations.eks\.amazonaws\.com/role-arn
             - name: LFS_BUCKET
               description: "The name of the S3 bucket to use for LFS storage"
               path: global.appConfig.lfs.bucket
@@ -202,7 +202,7 @@ packages:
         mattermost-enterprise-edition:
           variables:
             - name: MATTERMOST_ROLE_ARN
-              path: "serviceAccount.annotations.irsa/role-arn"
+              path: serviceAccount.annotations.eks\.amazonaws\.com/role-arn
 
   - name: jenkins
     repository: ghcr.io/defenseunicorns/packages/uds/jenkins
