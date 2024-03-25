@@ -142,7 +142,7 @@ module "gitlab_db" {
   vpc_security_group_ids = [aws_security_group.gitlab_rds_sg.id]
 }
 
-# If we want to replicate backups to another regionhttps://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/db_instance_automated_backups_replication
+# If we want to replicate backups to another region https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/db_instance_automated_backups_replication
 
 resource "aws_security_group" "gitlab_rds_sg" {
   vpc_id = module.vpc.vpc_id

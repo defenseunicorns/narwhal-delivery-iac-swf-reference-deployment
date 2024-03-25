@@ -4,11 +4,6 @@ tasks:
     actions:
       - cmd: uds zarf package create -a amd64 ./zarf/swf-deps-aws --confirm --no-progress
 
-  - name: zarf-deploy
-    description: "Creates the swf package"
-    actions:
-      - cmd: uds zarf package create -a amd64 ./zarf/swf-deps-aws --confirm --no-progress
-
   - name: bundle-create
     description: "Creates the swf bundle"
     actions:
@@ -16,19 +11,10 @@ tasks:
 
   - name: bundle-deploy
     description: "Deploys the swf bundle"
-    inputs:
-      config_path:
-        required: true
-        description: "The path to the uds-config.yaml file to use"
     actions:
       - cmd: |
-          export UDS_CONFIG=${INPUT_CONFIG_PATH}
+          export UDS_CONFIG=""./iac/env/${ENV}/uds/uds-config.yaml"
           uds deploy $(ls -tr bundles/swf/uds-bundle-swf*.tar.zst | tail -1) --confirm --no-progress
         shell:
           linux: bash
           darwin: bash
-
-  - name: uds-config
-    actions:
-      - description: "Moves the uds-config.yaml to an appropriate spot"
-        cmd: mv ./iac/swf/uds-config.yaml ./bundles/swf/

@@ -264,3 +264,23 @@ tasks:
       #   shell:
       #     linux: bash
       #     darwin: bash
+
+  - name: get-env
+    actions:
+      - description: "Get the environment from var or file"
+        shell:
+          linux: bash
+          darwin: bash
+        cmd: |
+          if [ ! -z "${ENV}" ]; then
+            printf "${ENV}"
+          else
+            if [ -f .current-env ]; then
+              cat .current-env
+            else
+              echo "No environment set"
+              exit 1
+            fi
+          fi
+        setVariables:
+          - name: ENV
