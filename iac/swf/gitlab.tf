@@ -27,6 +27,30 @@ module "gitlab_s3_bucket" {
   }
 }
 
+module "gitlab_s3_bucket_repl" {
+  for_each = toset(var.gitlab_bucket_names)
+
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v4.1.0"
+
+  bucket        = join("-", compact([local.prefix, each.key, "repl", local.suffix]))
+  tags          = local.tags
+  force_destroy = var.gitlab_s3_bucket_force_destroy
+  
+
+  versioning = {
+    status = "Enabled"
+  }
+
+  server_side_encryption_configuration = {
+    rule = {
+      apply_server_side_encryption_by_default = {
+        kms_master_key_id = module.gitlab_kms_key.kms_key_arn
+        sse_algorithm     = "aws:kms"
+      }
+    }
+  }
+}
+
 resource "aws_s3_bucket_lifecycle_configuration" "gitlab_s3_bucket" {
   for_each = toset(var.gitlab_bucket_names)
 
@@ -39,7 +63,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "gitlab_s3_bucket" {
 
     noncurrent_version_expiration {
       newer_noncurrent_versions = 5
-      noncurrent_days = 30
+      noncurrent_days           = 30
     }
 
     status = "Enabled"
@@ -49,19 +73,19 @@ resource "aws_s3_bucket_lifecycle_configuration" "gitlab_s3_bucket" {
 module "replication-s3" {
   for_each = toset(var.gitlab_bucket_names)
 
-  bucket = join("-", compact([local.prefix, each.key, local.suffix]))
-
   source = "./modules/replication-s3"
 
-  stage                = var.stage
-  policy_name          = "gitlab"
-  prefix               = local.prefix
-  suffix               = local.suffix
+  stage       = var.stage
+  policy_name = each.key
+  prefix      = local.prefix
+  suffix      = local.suffix
 
-  kms_key_arn = module.gitlab_kms_key.kms_key_arn
-  source_bucket_arn = 
-  source_bucket_name = 
-  destination_bucket_arn = 
+  kms_key_arn            = module.gitlab_kms_key.kms_key_arn
+  source_bucket_arn      = "arn:${data.aws_partition.current.partition}:s3:::${join("-", compact([local.prefix, each.key, local.suffix]))}"
+  source_bucket_name     = join("-", compact([local.prefix, each.key, local.suffix]))
+  destination_bucket_arn = "arn:${data.aws_partition.current.partition}:s3:::${join("-", compact([local.prefix, each.key, "repl", local.suffix]))}"
+
+  depends_on = [module.gitlab_s3_bucket, module.gitlab_s3_bucket_repl]
 }
 
 module "gitlab_kms_key" {
@@ -169,12 +193,12 @@ module "gitlab_db" {
 
   multi_az = false
 
-  copy_tags_to_snapshot     = true
+  copy_tags_to_snapshot = true
 
   allow_major_version_upgrade = false
   auto_minor_version_upgrade  = false
 
-  deletion_protection      = true
+  deletion_protection = true
 
   vpc_security_group_ids = [aws_security_group.gitlab_rds_sg.id]
 }
