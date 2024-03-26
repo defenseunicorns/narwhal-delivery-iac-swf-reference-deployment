@@ -35,7 +35,7 @@ module "gitlab_s3_bucket_repl" {
   bucket        = join("-", compact([local.prefix, each.key, "repl", local.suffix]))
   tags          = local.tags
   force_destroy = var.gitlab_s3_bucket_force_destroy
-  
+
 
   versioning = {
     status = "Enabled"

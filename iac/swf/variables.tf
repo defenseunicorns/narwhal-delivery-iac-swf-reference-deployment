@@ -84,11 +84,6 @@ variable "enable_sqs_events_on_access_log_access" {
   default     = false
 }
 
-variable "eks_use_mfa" {
-  description = "Use MFA for auth_eks_role"
-  type        = bool
-}
-
 ###########################################################
 #################### VPC Config ###########################
 variable "vpc_cidr" {
@@ -250,7 +245,7 @@ variable "enable_gp3_default_storage_class" {
   default     = false
 }
 
-variable "storageclass_reclaim_policy" {
+variable "ebs_storageclass_reclaim_policy" {
   description = "Reclaim policy for gp3 storage class, valid options are Delete and Retain"
   type        = string
   default     = "Delete"
@@ -302,13 +297,7 @@ variable "enable_amazon_eks_aws_efs_csi_driver" {
   default     = false
 }
 
-variable "aws_efs_csi_driver" {
-  description = "AWS EFS CSI Driver helm chart config"
-  type        = any
-  default     = {}
-}
-
-variable "reclaim_policy" {
+variable "efs_storageclass_reclaim_policy" {
   description = "Reclaim policy for EFS storage class, valid options are Delete and Retain"
   type        = string
   default     = "Delete"
@@ -338,6 +327,38 @@ variable "secrets_store_csi_driver" {
   description = "k8s Secret Store CSI Driver Helm Chart config"
   type        = any
   default     = {}
+}
+
+#----------------External Secrets-------------------------
+
+variable "enable_external_secrets" {
+  description = "Enable External Secrets add-on"
+  type        = bool
+  default     = false
+}
+
+variable "external_secrets" {
+  description = "External Secrets config for aws-ia/eks-blueprints-addon/aws"
+  type        = any
+  default     = {}
+}
+
+variable "external_secrets_ssm_parameter_arns" {
+  description = "List of Systems Manager Parameter ARNs that contain secrets to mount using External Secrets"
+  type        = list(string)
+  default     = [] # if not defined, ["arn:$partition:ssm:*:*:parameter/*"]
+}
+
+variable "external_secrets_secrets_manager_arns" {
+  description = "List of Secrets Manager ARNs that contain secrets to mount using External Secrets"
+  type        = list(string)
+  default     = [] # if not defined, ["arn:$partition:secretsmanager:*:*:secret:*"]
+}
+
+variable "external_secrets_kms_key_arns" {
+  description = "List of KMS Key ARNs that are used by Secrets Manager that contain secrets to mount using External Secrets"
+  type        = list(string)
+  default     = [] # if not defined, ["arn:$partition:kms:*:*:key/*"]
 }
 
 ###########################################################

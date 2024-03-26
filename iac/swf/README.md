@@ -78,11 +78,12 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="module_confluence_db"></a> [confluence\_db](#module\_confluence\_db) | terraform-aws-modules/rds/aws | 6.1.1 |
 | <a name="module_confluence_kms_key"></a> [confluence\_kms\_key](#module\_confluence\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.2 |
 | <a name="module_ebs_kms_key"></a> [ebs\_kms\_key](#module\_ebs\_kms\_key) | terraform-aws-modules/kms/aws | ~> 2.0 |
-| <a name="module_eks"></a> [eks](#module\_eks) | git::https://github.com/defenseunicorns/terraform-aws-eks.git | v0.0.16 |
+| <a name="module_eks"></a> [eks](#module\_eks) | git::https://github.com/defenseunicorns/terraform-aws-eks.git | v0.0.18 |
 | <a name="module_gitlab_db"></a> [gitlab\_db](#module\_gitlab\_db) | terraform-aws-modules/rds/aws | 6.1.1 |
 | <a name="module_gitlab_irsa_s3"></a> [gitlab\_irsa\_s3](#module\_gitlab\_irsa\_s3) | ./modules/irsa-s3 | n/a |
 | <a name="module_gitlab_kms_key"></a> [gitlab\_kms\_key](#module\_gitlab\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.2 |
 | <a name="module_gitlab_s3_bucket"></a> [gitlab\_s3\_bucket](#module\_gitlab\_s3\_bucket) | git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git | v4.1.0 |
+| <a name="module_gitlab_s3_bucket_repl"></a> [gitlab\_s3\_bucket\_repl](#module\_gitlab\_s3\_bucket\_repl) | git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git | v4.1.0 |
 | <a name="module_gitlab_volume_snapshots"></a> [gitlab\_volume\_snapshots](#module\_gitlab\_volume\_snapshots) | ./modules/volume-snapshot | n/a |
 | <a name="module_jira_db"></a> [jira\_db](#module\_jira\_db) | terraform-aws-modules/rds/aws | 6.1.1 |
 | <a name="module_jira_kms_key"></a> [jira\_kms\_key](#module\_jira\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.2 |
@@ -94,6 +95,7 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="module_mattermost_kms_key"></a> [mattermost\_kms\_key](#module\_mattermost\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.2 |
 | <a name="module_mattermost_s3_bucket"></a> [mattermost\_s3\_bucket](#module\_mattermost\_s3\_bucket) | git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git | v4.1.0 |
 | <a name="module_password_lambda"></a> [password\_lambda](#module\_password\_lambda) | git::https://github.com/defenseunicorns/terraform-aws-lambda.git//modules/password-rotation | v0.0.3 |
+| <a name="module_replication-s3"></a> [replication-s3](#module\_replication-s3) | ./modules/replication-s3 | n/a |
 | <a name="module_ssm_kms_key"></a> [ssm\_kms\_key](#module\_ssm\_kms\_key) | terraform-aws-modules/kms/aws | ~> 2.0 |
 | <a name="module_subnet_addrs"></a> [subnet\_addrs](#module\_subnet\_addrs) | git::https://github.com/hashicorp/terraform-cidr-subnets | v1.0.0 |
 | <a name="module_velero_irsa_s3"></a> [velero\_irsa\_s3](#module\_velero\_irsa\_s3) | ./modules/irsa-s3 | n/a |
@@ -113,6 +115,7 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | [aws_kms_key.default](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_key) | resource |
 | [aws_s3_bucket.access_log_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket) | resource |
 | [aws_s3_bucket_lifecycle_configuration.access_log_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_lifecycle_configuration) | resource |
+| [aws_s3_bucket_lifecycle_configuration.gitlab_s3_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_lifecycle_configuration) | resource |
 | [aws_s3_bucket_notification.access_log_bucket_notification](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_notification) | resource |
 | [aws_s3_bucket_public_access_block.access_log_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_public_access_block) | resource |
 | [aws_s3_bucket_server_side_encryption_configuration.access_log_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_server_side_encryption_configuration) | resource |
@@ -172,7 +175,6 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="input_artifactory_rds_instance_class"></a> [artifactory\_rds\_instance\_class](#input\_artifactory\_rds\_instance\_class) | The instance class to use for the RDS instance | `string` | `"db.t4g.large"` | no |
 | <a name="input_authentication_mode"></a> [authentication\_mode](#input\_authentication\_mode) | The authentication mode for the cluster. Valid values are `CONFIG_MAP`, `API` or `API_AND_CONFIG_MAP` | `string` | `"API"` | no |
 | <a name="input_aws_admin_usernames"></a> [aws\_admin\_usernames](#input\_aws\_admin\_usernames) | A list of one or more AWS usernames with authorized access to KMS and EKS resources, will automatically add the user running the terraform as an admin | `list(string)` | `[]` | no |
-| <a name="input_aws_efs_csi_driver"></a> [aws\_efs\_csi\_driver](#input\_aws\_efs\_csi\_driver) | AWS EFS CSI Driver helm chart config | `any` | `{}` | no |
 | <a name="input_aws_load_balancer_controller"></a> [aws\_load\_balancer\_controller](#input\_aws\_load\_balancer\_controller) | AWS Loadbalancer Controller Helm Chart config | `any` | `{}` | no |
 | <a name="input_aws_node_termination_handler"></a> [aws\_node\_termination\_handler](#input\_aws\_node\_termination\_handler) | AWS Node Termination Handler config for aws-ia/eks-blueprints-addon/aws | `any` | `{}` | no |
 | <a name="input_bastion_instance_type"></a> [bastion\_instance\_type](#input\_bastion\_instance\_type) | value for the instance type of the EKS worker nodes | `string` | `"m5.xlarge"` | no |
@@ -191,7 +193,8 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="input_create_ssm_parameters"></a> [create\_ssm\_parameters](#input\_create\_ssm\_parameters) | Create SSM parameters for values from eks blueprints addons | `bool` | `true` | no |
 | <a name="input_cron_schedule_password_rotation"></a> [cron\_schedule\_password\_rotation](#input\_cron\_schedule\_password\_rotation) | Schedule for password change function to run on | `string` | `"cron(0 0 1 * ? *)"` | no |
 | <a name="input_dataplane_wait_duration"></a> [dataplane\_wait\_duration](#input\_dataplane\_wait\_duration) | The duration to wait for the EKS cluster to be ready before creating the node groups | `string` | `"30s"` | no |
-| <a name="input_eks_use_mfa"></a> [eks\_use\_mfa](#input\_eks\_use\_mfa) | Use MFA for auth\_eks\_role | `bool` | n/a | yes |
+| <a name="input_ebs_storageclass_reclaim_policy"></a> [ebs\_storageclass\_reclaim\_policy](#input\_ebs\_storageclass\_reclaim\_policy) | Reclaim policy for gp3 storage class, valid options are Delete and Retain | `string` | `"Delete"` | no |
+| <a name="input_efs_storageclass_reclaim_policy"></a> [efs\_storageclass\_reclaim\_policy](#input\_efs\_storageclass\_reclaim\_policy) | Reclaim policy for EFS storage class, valid options are Delete and Retain | `string` | `"Delete"` | no |
 | <a name="input_eks_worker_tenancy"></a> [eks\_worker\_tenancy](#input\_eks\_worker\_tenancy) | The tenancy of the EKS worker nodes | `string` | `"dedicated"` | no |
 | <a name="input_enable_admin_roles_prefix_or_suffix"></a> [enable\_admin\_roles\_prefix\_or\_suffix](#input\_enable\_admin\_roles\_prefix\_or\_suffix) | Indicates whether or not to add the admin\_roles with a prefix or suffix | `bool` | `true` | no |
 | <a name="input_enable_amazon_eks_aws_ebs_csi_driver"></a> [enable\_amazon\_eks\_aws\_ebs\_csi\_driver](#input\_enable\_amazon\_eks\_aws\_ebs\_csi\_driver) | Enable EKS Managed AWS EBS CSI Driver add-on | `bool` | `false` | no |
@@ -200,11 +203,16 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="input_enable_aws_node_termination_handler"></a> [enable\_aws\_node\_termination\_handler](#input\_enable\_aws\_node\_termination\_handler) | Enable AWS Node Termination Handler add-on | `bool` | `false` | no |
 | <a name="input_enable_cluster_autoscaler"></a> [enable\_cluster\_autoscaler](#input\_enable\_cluster\_autoscaler) | Enable Cluster autoscaler add-on | `bool` | `false` | no |
 | <a name="input_enable_cluster_creator_admin_permissions"></a> [enable\_cluster\_creator\_admin\_permissions](#input\_enable\_cluster\_creator\_admin\_permissions) | Indicates whether or not to add the cluster creator (the identity used by Terraform) as an administrator via access entry | `bool` | `true` | no |
+| <a name="input_enable_external_secrets"></a> [enable\_external\_secrets](#input\_enable\_external\_secrets) | Enable External Secrets add-on | `bool` | `false` | no |
 | <a name="input_enable_gp3_default_storage_class"></a> [enable\_gp3\_default\_storage\_class](#input\_enable\_gp3\_default\_storage\_class) | Enable gp3 as default storage class | `bool` | `false` | no |
 | <a name="input_enable_metrics_server"></a> [enable\_metrics\_server](#input\_enable\_metrics\_server) | Enable metrics server add-on | `bool` | `false` | no |
 | <a name="input_enable_nat_gateway"></a> [enable\_nat\_gateway](#input\_enable\_nat\_gateway) | If true, NAT Gateways will be created | `bool` | `false` | no |
 | <a name="input_enable_secrets_store_csi_driver"></a> [enable\_secrets\_store\_csi\_driver](#input\_enable\_secrets\_store\_csi\_driver) | Enable k8s Secret Store CSI Driver add-on | `bool` | `false` | no |
 | <a name="input_enable_sqs_events_on_access_log_access"></a> [enable\_sqs\_events\_on\_access\_log\_access](#input\_enable\_sqs\_events\_on\_access\_log\_access) | If true, generates an SQS event whenever on object is created in the Access Log bucket, which happens whenever a server access log is generated by any entity. This will potentially generate a lot of events, so use with caution. | `bool` | `false` | no |
+| <a name="input_external_secrets"></a> [external\_secrets](#input\_external\_secrets) | External Secrets config for aws-ia/eks-blueprints-addon/aws | `any` | `{}` | no |
+| <a name="input_external_secrets_kms_key_arns"></a> [external\_secrets\_kms\_key\_arns](#input\_external\_secrets\_kms\_key\_arns) | List of KMS Key ARNs that are used by Secrets Manager that contain secrets to mount using External Secrets | `list(string)` | `[]` | no |
+| <a name="input_external_secrets_secrets_manager_arns"></a> [external\_secrets\_secrets\_manager\_arns](#input\_external\_secrets\_secrets\_manager\_arns) | List of Secrets Manager ARNs that contain secrets to mount using External Secrets | `list(string)` | `[]` | no |
+| <a name="input_external_secrets_ssm_parameter_arns"></a> [external\_secrets\_ssm\_parameter\_arns](#input\_external\_secrets\_ssm\_parameter\_arns) | List of Systems Manager Parameter ARNs that contain secrets to mount using External Secrets | `list(string)` | `[]` | no |
 | <a name="input_gitlab_bucket_names"></a> [gitlab\_bucket\_names](#input\_gitlab\_bucket\_names) | List of buckets to create for GitLab | `list(string)` | <pre>[<br>  "gitlab-artifacts",<br>  "gitlab-backups",<br>  "gitlab-ci-secure-files",<br>  "gitlab-dependency-proxy",<br>  "gitlab-lfs",<br>  "gitlab-mr-diffs",<br>  "gitlab-packages",<br>  "gitlab-pages",<br>  "gitlab-terraform-state",<br>  "gitlab-uploads",<br>  "gitlab-registry",<br>  "gitlab-runner-cache",<br>  "gitlab-tmp"<br>]</pre> | no |
 | <a name="input_gitlab_db_idenitfier_prefix"></a> [gitlab\_db\_idenitfier\_prefix](#input\_gitlab\_db\_idenitfier\_prefix) | The prefix to use for the RDS instance identifier | `string` | `"gitlab-db"` | no |
 | <a name="input_gitlab_db_name"></a> [gitlab\_db\_name](#input\_gitlab\_db\_name) | Name of the GitLab database. | `string` | `"gitlabdb"` | no |
@@ -238,7 +246,6 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="input_namespace"></a> [namespace](#input\_namespace) | Namespace, which could be your organization name or abbreviation, e.g. 'eg' or 'cp' | `string` | `"du"` | no |
 | <a name="input_num_azs"></a> [num\_azs](#input\_num\_azs) | The number of AZs to use | `number` | `3` | no |
 | <a name="input_prefix"></a> [prefix](#input\_prefix) | name prefix to prepend to most resources, if not defined, created as: 'namespace-stage-name' | `string` | `""` | no |
-| <a name="input_reclaim_policy"></a> [reclaim\_policy](#input\_reclaim\_policy) | Reclaim policy for EFS storage class, valid options are Delete and Retain | `string` | `"Delete"` | no |
 | <a name="input_recovery_window"></a> [recovery\_window](#input\_recovery\_window) | Number of days to wait before deleting the secret | `number` | `7` | no |
 | <a name="input_region"></a> [region](#input\_region) | The AWS region to deploy into | `string` | n/a | yes |
 | <a name="input_secondary_cidr_blocks"></a> [secondary\_cidr\_blocks](#input\_secondary\_cidr\_blocks) | A list of secondary CIDR blocks for the VPC | `list(string)` | `[]` | no |
@@ -247,7 +254,6 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="input_slack_notification_enabled"></a> [slack\_notification\_enabled](#input\_slack\_notification\_enabled) | enable slack notifications for password rotation function. If enabled a slack webhook url will also need to be provided for this to work | `bool` | `false` | no |
 | <a name="input_slack_webhook_url"></a> [slack\_webhook\_url](#input\_slack\_webhook\_url) | value | `string` | `null` | no |
 | <a name="input_stage"></a> [stage](#input\_stage) | Stage, e.g. 'prod', 'staging', 'dev', or 'test' | `string` | `"test"` | no |
-| <a name="input_storageclass_reclaim_policy"></a> [storageclass\_reclaim\_policy](#input\_storageclass\_reclaim\_policy) | Reclaim policy for gp3 storage class, valid options are Delete and Retain | `string` | `"Delete"` | no |
 | <a name="input_suffix"></a> [suffix](#input\_suffix) | name suffix to append to most resources, if not defined, randomly generated | `string` | `""` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to apply to all resources | `map(string)` | `{}` | no |
 | <a name="input_uds_config_output_file_name"></a> [uds\_config\_output\_file\_name](#input\_uds\_config\_output\_file\_name) | The name of the UDS config file when templating | `string` | `""` | no |
