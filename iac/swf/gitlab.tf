@@ -27,6 +27,43 @@ module "gitlab_s3_bucket" {
   }
 }
 
+resource "aws_s3_bucket_lifecycle_configuration" "gitlab_s3_bucket" {
+  for_each = toset(var.gitlab_bucket_names)
+
+  bucket = join("-", compact([local.prefix, each.key, local.suffix]))
+
+  rule {
+    id = join("-", compact([local.prefix, each.key, "version-retention", local.suffix]))
+
+    filter {}
+
+    noncurrent_version_expiration {
+      newer_noncurrent_versions = 5
+      noncurrent_days = 30
+    }
+
+    status = "Enabled"
+  }
+}
+
+module "replication-s3" {
+  for_each = toset(var.gitlab_bucket_names)
+
+  bucket = join("-", compact([local.prefix, each.key, local.suffix]))
+
+  source = "./modules/replication-s3"
+
+  stage                = var.stage
+  policy_name          = "gitlab"
+  prefix               = local.prefix
+  suffix               = local.suffix
+
+  kms_key_arn = module.gitlab_kms_key.kms_key_arn
+  source_bucket_arn = 
+  source_bucket_name = 
+  destination_bucket_arn = 
+}
+
 module "gitlab_kms_key" {
   source = "github.com/defenseunicorns/terraform-aws-uds-kms?ref=v0.0.2"
 
