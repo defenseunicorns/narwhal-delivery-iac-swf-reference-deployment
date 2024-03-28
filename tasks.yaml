@@ -247,6 +247,8 @@ tasks:
   - name: bundle-all
     description: "Creates the zarf package, then builds and deploys the bundle"
     actions:
+      - description: "Get the current environment"
+        task: deploy:get-env
       - task: swf:zarf-create
       - task: swf:bundle-create
       - task: swf:bundle-deploy
