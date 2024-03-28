@@ -47,6 +47,7 @@ variables:
     artifactory_db_name: "${var.artifactory_db_name}"
     redis_password: "${random_password.gitlab_elasticache_password.result}"
     region: "${var.region}"
+    registry_bucket: ${join("-", compact([local.prefix, "gitlab-registry", local.suffix]))}
   gitlab:
     gitlab_db_endpoint: "${element(split(":", module.gitlab_db.db_instance_endpoint), 0)}"
     gitlab_redis_endpoint: "${aws_elasticache_replication_group.gitlab_redis.primary_endpoint_address}"

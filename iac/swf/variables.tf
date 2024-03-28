@@ -188,7 +188,7 @@ variable "cluster_version" {
   description = "Kubernetes version to use for EKS cluster"
   type        = string
   # renovate: datasource=endoflife-date depName=amazon-eks versioning=loose extractVersion=^(?<version>.*)-eks.+$
-  default = "1.27"
+  default = "1.29"
 }
 
 variable "cluster_endpoint_public_access" {
@@ -491,6 +491,12 @@ variable "gitlab_db_idenitfier_prefix" {
   default     = "gitlab-db"
 }
 
+variable "gitlab_db_snapshot" {
+  description = "The snapshot to restore the RDS instance from"
+  type        = string
+  default     = ""
+}
+
 variable "gitlab_rds_instance_class" {
   description = "The instance class to use for the RDS instance"
   type        = string
@@ -526,6 +532,12 @@ variable "confluence_db_idenitfier_prefix" {
   default     = "confluence-db"
 }
 
+variable "confluence_db_snapshot" {
+  description = "The snapshot to restore the RDS instance from"
+  type        = string
+  default     = ""
+}
+
 variable "confluence_rds_instance_class" {
   description = "The instance class to use for the RDS instance"
   type        = string
@@ -553,6 +565,12 @@ variable "jira_db_idenitfier_prefix" {
   description = "The prefix to use for the RDS instance identifier"
   type        = string
   default     = "jira-db"
+}
+
+variable "jira_db_snapshot" {
+  description = "The snapshot to restore the RDS instance from"
+  type        = string
+  default     = ""
 }
 
 variable "jira_rds_instance_class" {
@@ -584,6 +602,12 @@ variable "artifactory_db_idenitfier_prefix" {
   default     = "artifactory-db"
 }
 
+variable "artifactory_db_snapshot" {
+  description = "The snapshot to restore the RDS instance from"
+  type        = string
+  default     = ""
+}
+
 variable "artifactory_rds_instance_class" {
   description = "The instance class to use for the RDS instance"
   type        = string
@@ -611,6 +635,12 @@ variable "keycloak_db_idenitfier_prefix" {
   description = "The prefix to use for the RDS instance identifier"
   type        = string
   default     = "keycloak-db"
+}
+
+variable "keycloak_db_snapshot" {
+  description = "The snapshot to restore the RDS instance from"
+  type        = string
+  default     = ""
 }
 
 variable "keycloak_rds_instance_class" {
@@ -658,6 +688,12 @@ variable "mattermost_db_idenitfier_prefix" {
   description = "The prefix to use for the RDS instance identifier"
   type        = string
   default     = "mattermost-db"
+}
+
+variable "mattermost_db_snapshot" {
+  description = "The snapshot to restore the RDS instance from"
+  type        = string
+  default     = ""
 }
 
 variable "mattermost_rds_instance_class" {

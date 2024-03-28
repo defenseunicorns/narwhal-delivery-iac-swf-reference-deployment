@@ -148,6 +148,20 @@ tasks:
           root_module: swf
           var_files: '["common.terraform.tfvars", "swf.terraform.tfvars"]'
 
+  - name: destroy-swf
+    description: |
+      Terraform destroy AWS SWF IaC swf module
+      example: uds run destroy-swf --set ENV=$ENV
+    actions:
+      - description: "Get the current environment"
+        task: deploy:get-env
+      - description: "Terraform destroy AWS SWF IaC swf module"
+        task: deploy:terraform-destroy
+        with:
+          env: ${ENV}
+          root_module: swf
+          var_files: '["common.terraform.tfvars", "swf.terraform.tfvars"]'
+
   - name: init-transit-gateway
     description: |
       terraform init AWS SWF IaC transit-gateway module

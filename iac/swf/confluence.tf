@@ -34,12 +34,13 @@ module "confluence_db" {
   instance_use_identifier_prefix = true
 
   allocated_storage       = 20
-  backup_retention_period = 1
+  max_allocated_storage   = 500
+  backup_retention_period = 30
   backup_window           = "03:00-06:00"
   maintenance_window      = "Mon:00:00-Mon:03:00"
 
   engine               = "postgres"
-  engine_version       = "15.5"
+  engine_version       = "15.6"
   major_engine_version = "15"
   family               = "postgres15"
   instance_class       = var.confluence_rds_instance_class
@@ -48,10 +49,22 @@ module "confluence_db" {
   username = "confluence"
   port     = "5432"
 
+  # Restoring from a snapshot
+  snapshot_identifier = var.confluence_db_snapshot
+
   subnet_ids                  = module.vpc.database_subnets
   db_subnet_group_name        = module.vpc.database_subnet_group_name
   manage_master_user_password = false
   password                    = random_password.confluence_db_password.result
+
+  multi_az = false
+
+  copy_tags_to_snapshot = true
+
+  allow_major_version_upgrade = false
+  auto_minor_version_upgrade  = false
+
+  deletion_protection = true
 
   vpc_security_group_ids = [aws_security_group.confluence_rds_sg.id]
 }

@@ -11,6 +11,10 @@ module "velero_s3_bucket" {
   force_destroy = var.velero_s3_bucket_force_destroy
   tags          = local.tags
 
+  versioning = {
+    status = "Enabled"
+  }
+
   server_side_encryption_configuration = {
     rule = {
       apply_server_side_encryption_by_default = {
@@ -18,6 +22,30 @@ module "velero_s3_bucket" {
         sse_algorithm     = "aws:kms"
       }
     }
+  }
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "velero_s3_bucket" {
+  for_each = toset(var.velero_bucket_names)
+
+  bucket = join("-", compact([local.prefix, each.key, local.suffix]))
+
+  rule {
+    id = join("-", compact([local.prefix, each.key, "version-retention", local.suffix]))
+
+    filter {}
+
+    noncurrent_version_expiration {
+      newer_noncurrent_versions = 5
+      noncurrent_days           = 90
+    }
+
+    noncurrent_version_transition {
+      newer_noncurrent_versions = 2
+      storage_class   = "GLACIER_IR"
+    }
+
+    status = "Enabled"
   }
 }
 

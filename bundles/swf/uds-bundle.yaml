@@ -25,7 +25,7 @@ packages:
 
   - name: core
     repository: ghcr.io/defenseunicorns/packages/uds/core
-    ref: 0.16.1-registry1
+    ref: 0.17.0-registry1
     overrides:
       kube-prometheus-stack:
             kube-prometheus-stack:

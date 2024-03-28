@@ -2,10 +2,6 @@ locals {
   gitlab_db_secret_name            = join("-", compact([local.prefix, "gitlab-db-secret", local.suffix]))
   gitlab_kms_key_alias_name_prefix = join("-", compact([local.prefix, var.gitlab_kms_key_alias, local.suffix]))
   gitlab_dlm_role_name             = join("-", compact([local.prefix, "dlm-lifecycle-gitlab", local.suffix]))
-  bucket_replication_role_arns = formatlist(
-    "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/${join("-", compact([local.prefix, "%s", "replication", local.suffix]))}",
-    var.gitlab_bucket_names
-  )
 }
 
 module "gitlab_s3_bucket" {
@@ -16,30 +12,6 @@ module "gitlab_s3_bucket" {
   bucket        = join("-", compact([local.prefix, each.key, local.suffix]))
   tags          = local.tags
   force_destroy = var.gitlab_s3_bucket_force_destroy
-
-  versioning = {
-    status = "Enabled"
-  }
-
-  server_side_encryption_configuration = {
-    rule = {
-      apply_server_side_encryption_by_default = {
-        kms_master_key_id = module.gitlab_kms_key.kms_key_arn
-        sse_algorithm     = "aws:kms"
-      }
-    }
-  }
-}
-
-module "gitlab_s3_bucket_repl" {
-  for_each = toset(var.gitlab_bucket_names)
-
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v4.1.0"
-
-  bucket        = join("-", compact([local.prefix, each.key, "repl", local.suffix]))
-  tags          = local.tags
-  force_destroy = var.gitlab_s3_bucket_force_destroy
-
 
   versioning = {
     status = "Enabled"
@@ -79,32 +51,12 @@ resource "aws_s3_bucket_lifecycle_configuration" "gitlab_s3_bucket" {
   }
 }
 
-module "replication-s3" {
-  for_each = toset(var.gitlab_bucket_names)
-
-  source = "./modules/replication-s3"
-
-  stage       = var.stage
-  policy_name = each.key
-  prefix      = local.prefix
-  suffix      = local.suffix
-
-  kms_key_arn            = module.gitlab_kms_key.kms_key_arn
-  source_bucket_arn      = "arn:${data.aws_partition.current.partition}:s3:::${join("-", compact([local.prefix, each.key, local.suffix]))}"
-  source_bucket_name     = join("-", compact([local.prefix, each.key, local.suffix]))
-  destination_bucket_arn = "arn:${data.aws_partition.current.partition}:s3:::${join("-", compact([local.prefix, each.key, "repl", local.suffix]))}"
-
-  depends_on = [module.gitlab_s3_bucket, module.gitlab_s3_bucket_repl]
-}
-
 module "gitlab_kms_key" {
   source = "github.com/defenseunicorns/terraform-aws-uds-kms?ref=v0.0.3"
 
   kms_key_alias_name_prefix         = local.gitlab_kms_key_alias_name_prefix
   kms_key_deletion_window           = 7
   kms_key_description               = "GitLab Key"
-  kms_key_policy_default_identities = local.bucket_replication_role_arns
-  kms_key_policy_default_services   = ["s3.amazonaws.com"]
 }
 
 module "gitlab_irsa_s3" {
@@ -188,7 +140,7 @@ module "gitlab_db" {
   maintenance_window      = "Mon:00:00-Mon:03:00"
 
   engine               = "postgres"
-  engine_version       = "15.5"
+  engine_version       = "15.6"
   major_engine_version = "15"
   family               = "postgres15"
   instance_class       = var.gitlab_rds_instance_class
@@ -196,6 +148,9 @@ module "gitlab_db" {
   db_name  = var.gitlab_db_name
   username = "gitlab"
   port     = "5432"
+
+  # Restoring from a snapshot
+  snapshot_identifier = var.gitlab_db_snapshot
 
   subnet_ids                  = module.vpc.database_subnets
   db_subnet_group_name        = module.vpc.database_subnet_group_name

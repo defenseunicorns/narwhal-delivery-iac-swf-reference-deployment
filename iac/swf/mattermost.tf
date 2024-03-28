@@ -12,6 +12,10 @@ module "mattermost_s3_bucket" {
   force_destroy = var.mattermost_s3_bucket_force_destroy
   tags          = local.tags
 
+  versioning = {
+    status = "Enabled"
+  }
+
   server_side_encryption_configuration = {
     rule = {
       apply_server_side_encryption_by_default = {
@@ -19,6 +23,30 @@ module "mattermost_s3_bucket" {
         sse_algorithm     = "aws:kms"
       }
     }
+  }
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "mattermost_s3_bucket" {
+  for_each = toset(var.mattermost_bucket_names)
+
+  bucket = join("-", compact([local.prefix, each.key, local.suffix]))
+
+  rule {
+    id = join("-", compact([local.prefix, each.key, "version-retention", local.suffix]))
+
+    filter {}
+
+    noncurrent_version_expiration {
+      newer_noncurrent_versions = 5
+      noncurrent_days           = 90
+    }
+
+    noncurrent_version_transition {
+      newer_noncurrent_versions = 2
+      storage_class   = "GLACIER_IR"
+    }
+
+    status = "Enabled"
   }
 }
 
@@ -67,12 +95,13 @@ module "mattermost_db" {
   instance_use_identifier_prefix = true
 
   allocated_storage       = 20
-  backup_retention_period = 1
+  max_allocated_storage   = 500
+  backup_retention_period = 30
   backup_window           = "03:00-06:00"
   maintenance_window      = "Mon:00:00-Mon:03:00"
 
   engine               = "postgres"
-  engine_version       = "15.5"
+  engine_version       = "15.6"
   major_engine_version = "15"
   family               = "postgres15"
   instance_class       = var.mattermost_rds_instance_class
@@ -81,10 +110,22 @@ module "mattermost_db" {
   username = "mattermost"
   port     = "5432"
 
+  # Restoring from a snapshot
+  snapshot_identifier = var.mattermost_db_snapshot
+
   subnet_ids                  = module.vpc.database_subnets
   db_subnet_group_name        = module.vpc.database_subnet_group_name
   manage_master_user_password = false
   password                    = random_password.mattermost_db_password.result
+
+  multi_az = false
+
+  copy_tags_to_snapshot = true
+
+  allow_major_version_upgrade = false
+  auto_minor_version_upgrade  = false
+
+  deletion_protection = true
 
   vpc_security_group_ids = [aws_security_group.mattermost_rds_sg.id]
 }
