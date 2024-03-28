@@ -2,6 +2,10 @@ locals {
   gitlab_db_secret_name            = join("-", compact([local.prefix, "gitlab-db-secret", local.suffix]))
   gitlab_kms_key_alias_name_prefix = join("-", compact([local.prefix, var.gitlab_kms_key_alias, local.suffix]))
   gitlab_dlm_role_name             = join("-", compact([local.prefix, "dlm-lifecycle-gitlab", local.suffix]))
+  bucket_replication_role_arns = formatlist(
+    "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/${join("-", compact([local.prefix, "%s", "replication", local.suffix]))}",
+    var.gitlab_bucket_names
+  )
 }
 
 module "gitlab_s3_bucket" {
@@ -89,11 +93,13 @@ module "replication-s3" {
 }
 
 module "gitlab_kms_key" {
-  source = "github.com/defenseunicorns/terraform-aws-uds-kms?ref=v0.0.2"
+  source = "github.com/defenseunicorns/terraform-aws-uds-kms?ref=v0.0.3"
 
-  kms_key_alias_name_prefix = local.gitlab_kms_key_alias_name_prefix
-  kms_key_deletion_window   = 7
-  kms_key_description       = "GitLab Key"
+  kms_key_alias_name_prefix         = local.gitlab_kms_key_alias_name_prefix
+  kms_key_deletion_window           = 7
+  kms_key_description               = "GitLab Key"
+  kms_key_policy_default_identities = local.bucket_replication_role_arns
+  kms_key_policy_default_services   = ["s3.amazonaws.com"]
 }
 
 module "gitlab_irsa_s3" {
