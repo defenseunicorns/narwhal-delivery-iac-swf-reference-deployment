@@ -21,6 +21,18 @@ variable "name" {
   default     = "narwhal-delivery-iac-swf"
 }
 
+variable "backends" {
+  type        = list(string)
+  description = "List of root module backends to template"
+  default     = ["bootstrap", "swf"]
+}
+
+variable "tfstate_backend_name" {
+  type        = string
+  description = "The naming convention for the tfstate backend"
+  default     = "tfstate"
+}
+
 variable "prefix" {
   type        = string
   description = "name prefix to prepend to most resources, if not defined, created as: 'namespace-stage-name'"
@@ -61,6 +73,25 @@ variable "profile" {
   type        = string
   description = "for the s3 backend config file"
   default     = ""
+}
+
+# variable "terraform_templates_files_path_prefix" {
+#   type        = string
+#   description = "This is a path prefix variable to the templates directory"
+#   default     = "../templates"
+# }
+
+variable "terraform_context_tfvars_template_file" {
+  type        = string
+  description = "The path to the context tfvars template file, this a backend Partial Configuration that is scalable across multiple environments"
+  default     = "../templates/context.tf.tpl"
+}
+
+variable "create_context_tfvars" {
+  type        = bool
+  description = "A boolean that indicates whether to create the context.tfvars file"
+  default     = true
+
 }
 
 variable "terraform_backend_config_template_file" {

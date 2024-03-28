@@ -3,6 +3,62 @@
 
 vpc_cidr              = "10.200.0.0/16"
 secondary_cidr_blocks = ["100.64.0.0/16"] #https://aws.amazon.com/blogs/containers/optimize-ip-addresses-usage-by-pods-in-your-amazon-eks-cluster/
+enable_public_subnets = true
+single_nat_gateway    = true
+enable_nat_gateway    = true
+admin_role_name       = "unicorn-admin"
+
+
+# new_bits is added to the cidr of vpc_cidr to chunk the subnets up
+# public-a - 10.200.0.0/22 - 1,022 hosts
+# public-b - 10.200.4.0/22 - 1,022 hosts
+# public-c - 10.200.8.0/22 - 1,022 hosts
+# private-a - 10.200.12.0/22 - 1,022 hosts
+# private-b - 10.200.16.0/22 - 1,022 hosts
+# private-c - 10.200.20.0/22 - 1,022 hosts
+# database-a - 10.200.24.0/27 - 30 hosts
+# database-b - 10.200.24.32/27 - 30 hosts
+# database-c - 10.200.24.64/27 - 30 hosts
+vpc_subnets = [
+  {
+    name     = "public-a"
+    new_bits = 6
+  },
+  {
+    name     = "public-b"
+    new_bits = 6
+  },
+  {
+    name     = "public-c"
+    new_bits = 6
+  },
+  {
+    name     = "private-a"
+    new_bits = 6
+  },
+  {
+    name     = "private-b"
+    new_bits = 6
+  },
+  {
+    name     = "private-c"
+    new_bits = 6
+  },
+  {
+    name     = "database-a"
+    new_bits = 11
+  },
+  {
+    name     = "database-b"
+    new_bits = 11
+  },
+  {
+    name     = "database-c"
+    new_bits = 11
+  },
+]
+
+recovery_window = 0 # secretsmanager secrets
 
 ###########################################################
 ################## Bastion Config #########################
@@ -10,12 +66,12 @@ secondary_cidr_blocks = ["100.64.0.0/16"] #https://aws.amazon.com/blogs/containe
 bastion_ssh_user     = "ec2-user" # local user in bastion used to ssh
 bastion_ssh_password = "my-password"
 # renovate: datasource=github-tags depName=defenseunicorns/zarf
-zarf_version = "v0.32.3"
+zarf_version = "v0.32.4"
 
 ###########################################################
 #################### EKS Config ###########################
 # renovate: datasource=endoflife-date depName=amazon-eks versioning=loose extractVersion=^(?<version>.*)-eks.+$
-cluster_version                = "1.27"
+cluster_version                = "1.29"
 eks_use_mfa                    = false
 cluster_endpoint_public_access = true
 
@@ -113,6 +169,8 @@ metrics_server = {
   chart_version = "v3.11.0"
 }
 
+enable_aws_load_balancer_controller = true
+
 ######################################################
 ################## Lambda Config #####################
 
@@ -130,3 +188,22 @@ slack_webhook_url = ""
 ################ Zarf AWS Dependencies ####################
 
 zarf_s3_bucket_force_destroy = true
+
+###########################################################
+################ Gitlab AWS Dependencies ####################
+gitlab_s3_bucket_force_destroy = true
+velero_s3_bucket_force_destroy = true
+
+enable_cluster_creator_admin_permissions = false
+
+admin_users = [
+  "Michael.Kruggel",
+  "Jordan.McClintock",
+  "Zack.Annexstein",
+  "matt.bunch"
+]
+
+enable_admin_roles_prefix_or_suffix = false
+admin_roles = [
+  "unicorn-admin"
+]

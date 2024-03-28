@@ -1,0 +1,20 @@
+tasks:
+  - name: zarf-create
+    description: "Creates the swf package"
+    actions:
+      - cmd: uds zarf package create -a amd64 ./zarf/swf-deps-aws --confirm --no-progress
+
+  - name: bundle-create
+    description: "Creates the swf bundle"
+    actions:
+      - cmd: uds create bundles/swf/ -a amd64 --confirm --no-progress
+
+  - name: bundle-deploy
+    description: "Deploys the swf bundle"
+    actions:
+      - cmd: |
+          export UDS_CONFIG="./iac/env/${ENV}/uds/uds-config.yaml"
+          uds deploy $(ls -tr bundles/swf/uds-bundle-swf*.tar.zst | tail -1) --confirm --no-tea --no-progress
+        shell:
+          linux: bash
+          darwin: bash

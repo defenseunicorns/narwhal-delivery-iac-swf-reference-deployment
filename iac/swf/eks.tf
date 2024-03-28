@@ -13,7 +13,7 @@ locals {
     use_mixed_instances_policy = true
 
     instance_requirements = {
-      allowed_instance_types = ["m7i.4xlarge", "m6a.4xlarge", "m5a.4xlarge"] #this should be adjusted to the appropriate instance family if reserved instances are being utilized
+      allowed_instance_types = ["m6i.4xlarge", "m5a.4xlarge"] #this should be adjusted to the appropriate instance family if reserved instances are being utilized
       memory_mib = {
         min = 64000
       }
@@ -46,7 +46,6 @@ locals {
 
     # enable discovery of autoscaling groups by cluster-autoscaler
     autoscaling_group_tags = merge(
-      local.tags,
       {
         "k8s.io/cluster-autoscaler/enabled" : true,
         "k8s.io/cluster-autoscaler/${local.cluster_name}" : "owned"
@@ -60,8 +59,9 @@ locals {
     }
 
     tags = {
-      subnet_type = "private",
-      cluster     = local.cluster_name
+      subnet_type                            = "private",
+      cluster                                = local.cluster_name
+      "aws-node-termination-handler/managed" = true # only need this if NTH is enabled. This is due to aws blueprints using this resource and causing the tags to flap on every apply https://github.com/aws-ia/terraform-aws-eks-blueprints-addons/blob/257677adeed1be54326637cf919cf24df6ad7c06/main.tf#L1554-L1564
     }
   }
 
@@ -79,8 +79,16 @@ locals {
         xvda = {
           device_name = "/dev/xvda"
           ebs = {
-            volume_size = 50
+            volume_size = 100
             volume_type = "gp3"
+          }
+        }
+        xvdb = {
+          device_name = "/dev/xvdb"
+          ebs = {
+            volume_size = 100
+            volume_type = "gp3"
+            #need to add and create EBS key
           }
         }
       }
@@ -161,7 +169,7 @@ module "ssm_kms_key" {
   description = "KMS key for SecureString SSM parameters"
 
   key_administrators = [
-    data.aws_caller_identity.current.arn
+    data.aws_iam_session_context.current.issuer_arn
   ]
 
   computed_aliases = {
@@ -195,11 +203,46 @@ module "ssm_kms_key" {
 }
 
 locals {
-  ssm_parameter_key_arn = var.create_ssm_parameters ? module.ssm_kms_key.key_arn : ""
+  ssm_parameter_kms_key_arn = var.create_ssm_parameters ? module.ssm_kms_key.key_arn : ""
 
-  access_entries = merge(
-    var.access_entries,
-    { bastion = {
+  # If the `enable_admin_roles_prefix_or_suffix` variable is set to true, it will generate a new list by concatenating the `local.prefix`, `role`, and `local.suffix` with a hyphen separator.
+  admin_roles = var.enable_admin_roles_prefix_or_suffix ? [for role in var.admin_roles : join("-", compact([local.prefix, role, local.suffix]))] : var.admin_roles
+
+
+  admin_user_access_entries = {
+    for user in var.admin_users :
+    user => {
+      principal_arn = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:user/${user}"
+      type          = "STANDARD"
+      policy_associations = {
+        admin = {
+          policy_arn = "arn:${data.aws_partition.current.partition}:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          access_scope = {
+            type = "cluster"
+          }
+        }
+      }
+    }
+  }
+
+  admin_role_access_entries = {
+    for role in local.admin_roles :
+    role => {
+      principal_arn = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/${role}"
+      type          = "STANDARD"
+      policy_associations = {
+        admin = {
+          policy_arn = "arn:${data.aws_partition.current.partition}:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          access_scope = {
+            type = "cluster"
+          }
+        }
+      }
+    }
+  }
+
+  bastion_role_access_entry = {
+    bastion = {
       principal_arn = module.bastion.bastion_role_arn
       type          = "STANDARD"
       policy_associations = {
@@ -210,29 +253,37 @@ locals {
           }
         }
       }
-    } },
+    }
+  }
+
+  access_entries = merge(
+    local.admin_user_access_entries,
+    local.admin_role_access_entries,
+    local.bastion_role_access_entry,
+    var.access_entries
   )
+
 }
 
 module "eks" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-eks.git?ref=v0.0.14"
+  source = "git::https://github.com/defenseunicorns/terraform-aws-eks.git?ref=v0.0.18"
 
-  name                                     = local.cluster_name
-  aws_region                               = var.region
-  azs                                      = module.vpc.azs
-  vpc_id                                   = module.vpc.vpc_id
-  private_subnet_ids                       = module.vpc.private_subnets
-  control_plane_subnet_ids                 = module.vpc.private_subnets
-  iam_role_permissions_boundary            = var.iam_role_permissions_boundary
-  cluster_security_group_additional_rules  = local.cluster_security_group_additional_rules
-  cluster_endpoint_public_access           = var.cluster_endpoint_public_access
-  cluster_endpoint_private_access          = true
-  vpc_cni_custom_subnet                    = module.vpc.intra_subnets
-  aws_admin_usernames                      = var.aws_admin_usernames
-  cluster_version                          = var.cluster_version
-  cidr_blocks                              = module.vpc.private_subnets_cidr_blocks
-  eks_use_mfa                              = var.eks_use_mfa
-  dataplane_wait_duration                  = var.dataplane_wait_duration
+  name                                    = local.cluster_name
+  aws_region                              = var.region
+  azs                                     = module.vpc.azs
+  vpc_id                                  = module.vpc.vpc_id
+  private_subnet_ids                      = module.vpc.private_subnets
+  control_plane_subnet_ids                = module.vpc.private_subnets
+  iam_role_permissions_boundary           = var.iam_role_permissions_boundary
+  cluster_security_group_additional_rules = local.cluster_security_group_additional_rules
+  cluster_endpoint_public_access          = var.cluster_endpoint_public_access
+  cluster_endpoint_private_access         = true
+  vpc_cni_custom_subnet                   = module.vpc.intra_subnets
+  aws_admin_usernames                     = var.aws_admin_usernames
+  cluster_version                         = var.cluster_version
+  dataplane_wait_duration                 = var.dataplane_wait_duration
+
+  ######################## EKS Authentication ###################################
   access_entries                           = local.access_entries
   authentication_mode                      = var.authentication_mode
   enable_cluster_creator_admin_permissions = var.enable_cluster_creator_admin_permissions
@@ -242,8 +293,6 @@ module "eks" {
   self_managed_node_groups         = local.self_managed_node_groups
 
   tags = local.tags
-
-
 
   #---------------------------------------------------------------
   #"native" EKS Add-Ons
@@ -256,18 +305,17 @@ module "eks" {
   #---------------------------------------------------------------
   create_kubernetes_resources = var.create_kubernetes_resources
   create_ssm_parameters       = var.create_ssm_parameters
-  ssm_parameter_key_arn       = local.ssm_parameter_key_arn
+  ssm_parameter_kms_key_arn   = local.ssm_parameter_kms_key_arn
 
   # AWS EKS EBS CSI Driver
   enable_amazon_eks_aws_ebs_csi_driver = var.enable_amazon_eks_aws_ebs_csi_driver
   enable_gp3_default_storage_class     = var.enable_gp3_default_storage_class
-  storageclass_reclaim_policy          = var.storageclass_reclaim_policy
+  ebs_storageclass_reclaim_policy      = var.ebs_storageclass_reclaim_policy
 
   # AWS EKS EFS CSI Driver
   enable_amazon_eks_aws_efs_csi_driver = var.enable_amazon_eks_aws_efs_csi_driver
-  aws_efs_csi_driver                   = var.aws_efs_csi_driver
-
-  reclaim_policy = var.reclaim_policy
+  efs_vpc_cidr_blocks                  = module.vpc.private_subnets_cidr_blocks
+  efs_storageclass_reclaim_policy      = var.efs_storageclass_reclaim_policy
 
   # AWS EKS node termination handler
   enable_aws_node_termination_handler = var.enable_aws_node_termination_handler
@@ -288,6 +336,13 @@ module "eks" {
   # k8s Secrets Store CSI Driver
   enable_secrets_store_csi_driver = var.enable_secrets_store_csi_driver
   secrets_store_csi_driver        = var.secrets_store_csi_driver
+
+  # External Secrets
+  enable_external_secrets               = var.enable_external_secrets
+  external_secrets                      = var.external_secrets
+  external_secrets_ssm_parameter_arns   = var.external_secrets_ssm_parameter_arns
+  external_secrets_secrets_manager_arns = var.external_secrets_secrets_manager_arns
+  external_secrets_kms_key_arns         = var.external_secrets_kms_key_arns
 }
 
 #---------------------------------------------------------------
@@ -316,7 +371,7 @@ module "ebs_kms_key" {
 
   # Policy
   key_administrators = [
-    data.aws_caller_identity.current.arn
+    data.aws_iam_session_context.current.issuer_arn
   ]
 
   key_service_roles_for_autoscaling = [
