@@ -175,6 +175,10 @@ packages:
             - name: PAGES_BUCKET
               description: "The name of the S3 bucket to use for pages storage"
               path: global.pages.objectStore.bucket
+            #  For Backup & Restore
+            - name: GITALY_PV_MATCH_LABELS
+              description: "The labels to provide to the gitaly PVC to match to an existing PV"
+              path: gitlab.gitaly.persistence.matchLabels
 
   - name: gitlab-runner
     repository: ghcr.io/defenseunicorns/packages/uds/gitlab-runner

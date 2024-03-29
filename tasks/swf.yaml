@@ -14,7 +14,7 @@ tasks:
     actions:
       - cmd: |
           export UDS_CONFIG="./iac/env/${ENV}/uds/uds-config.yaml"
-          uds deploy $(ls -tr bundles/swf/uds-bundle-swf*.tar.zst | tail -1) --confirm --no-tea --no-progress
+          uds deploy $(ls -tr bundles/swf/uds-bundle-swf*.tar.zst | tail -1) --confirm --no-progress
         shell:
           linux: bash
           darwin: bash

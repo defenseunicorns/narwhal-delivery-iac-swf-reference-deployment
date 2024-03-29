@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: sleep-forever
+spec:
+  serviceName: "sleep"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sleep
+      environment: production
+  template:
+    metadata:
+      labels:
+        app: sleep
+        environment: production
+    spec:
+      containers:
+      - name: sleep
+        image: alpine
+        command: ["sleep", "infinity"]
+        volumeMounts:
+          - name: repo-data
+            mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: repo-data
+        labels:
+          app: sleep
+          environment: production
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: "20Gi"
+        storageClassName: "gp3"
+        selector:
+          matchLabels:
+            kruggel: badass
