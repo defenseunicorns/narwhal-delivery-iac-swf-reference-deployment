@@ -297,3 +297,13 @@ tasks:
       - task: deploy:get-env
       - description: "Read the environment"
         cmd: 'echo "Current Environment: ${ENV}"'
+
+  - name: update-uds-config
+    description: "Update the UDS config file for the current environment locally"
+    actions:
+      - task: deploy:get-env
+      - task: deploy:update-uds-config
+        with:
+          env: ${ENV}
+          root_module: swf
+          var_files: '["common.terraform.tfvars", "swf.terraform.tfvars"]'
