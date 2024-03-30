@@ -28,10 +28,10 @@ packages:
     ref: 0.17.0-registry1
     overrides:
       kube-prometheus-stack:
-            kube-prometheus-stack:
-              values:
-                - path: kube-state-metrics.resources.limits.memory
-                  value: 512Mi
+        kube-prometheus-stack:
+          values:
+            - path: kube-state-metrics.resources.limits.memory
+              value: 512Mi
       keycloak:
         keycloak:
           values:
@@ -60,19 +60,23 @@ packages:
       velero:
         velero:
           values:
-            - path: credentials.useSecret
-              value: false
-            - path: credentials.name
-              value: ""
-            - path: credentials.secretContents.cloud
-              value: ""
+            - path: snapshotsEnabled # This is required for EBS
+              value: true
+            # - path: deployNodeAgent # This is required for EFS
+            #   value: true
+            - path: credentials
+              value: {}
             - path: schedules.udsbackup.disabled
               value: true
           variables:
-            - path: serviceAccount.server.annotations.eks\.amazonaws\.com/role-arn
-              name: VELERO_ROLE_ARN
-            - path: configuration.backupStorageLocation
-              name: VELERO_BACKUP_STORAGE_LOCATION
+            - name: VELERO_ROLE_ARN
+              path: serviceAccount.server.annotations.eks\.amazonaws\.com/role-arn
+            - name: VELERO_BACKUP_STORAGE_LOCATION
+              path: configuration.backupStorageLocation
+            - name: VELERO_VOLUME_SNAPSHOT_LOCATION
+              path: configuration.volumeSnapshotLocation
+            - name: VELERO_BACKUP_SCHEDULES
+              path: schedules
       istio-admin-gateway:
         gateway:
           values:

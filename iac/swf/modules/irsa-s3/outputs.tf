@@ -1,3 +1,3 @@
-output "bucket_roles" {
+output "irsa_role" {
   value = module.irsa_role
 }

@@ -43,7 +43,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "mattermost_s3_bucket" {
 
     noncurrent_version_transition {
       newer_noncurrent_versions = 2
-      storage_class   = "GLACIER_IR"
+      storage_class             = "GLACIER_IR"
     }
 
     status = "Enabled"

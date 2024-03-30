@@ -2,6 +2,8 @@ locals {
   uds_config_secret_name      = join("-", compact([local.prefix, "uds-config", local.suffix]))
   uds_config_output_path      = var.uds_config_output_path != "" ? var.uds_config_output_path : "../env/${var.stage}/uds"
   uds_config_output_file_name = var.uds_config_output_file_name != "" ? var.uds_config_output_file_name : "uds-config.yaml"
+
+  namespaces_to_backup_with_velero = ["gitlab", "jenkins"]
 }
 
 
@@ -15,13 +17,35 @@ variables:
   core:
     KC_DB_PASSWORD: "${random_password.keycloak_db_password.result}"
     KC_DB_HOST: "${element(split(":", module.keycloak_db.db_instance_endpoint), 0)}"
-    VELERO_ROLE_ARN: "${module.velero_irsa_s3.bucket_roles[var.velero_service_account_names[0]].iam_role_arn}"
+    VELERO_ROLE_ARN: "${module.velero_irsa_s3.irsa_role[var.velero_service_account_names[0]].iam_role_arn}"
+    # https://github.com/vmware-tanzu/velero-plugin-for-aws/blob/main/backupstoragelocation.md
     VELERO_BACKUP_STORAGE_LOCATION:
       - name: default
         provider: aws
         bucket: "${module.velero_s3_bucket[var.velero_bucket_names[0]].s3_bucket_id}"
         config:
           region: "${var.region}"
+          kmsKeyId: "${module.velero_kms_key.kms_key_alias}"
+    # https://github.com/vmware-tanzu/velero-plugin-for-aws/blob/main/volumesnapshotlocation.md
+    VELERO_VOLUME_SNAPSHOT_LOCATION:
+      - name: default
+        provider: aws
+        config:
+          region: "${var.region}"
+    VELERO_BACKUP_SCHEDULES:
+      %{~for backup_name in local.namespaces_to_backup_with_velero~}
+      uds-${backup_name}-backup:
+        disabled: false
+        schedule: "0 3 * * *"
+        useOwnerReferencesInBackup: false
+        template:
+          csiSnapshotTimeout: 0s
+          includeClusterResources: true
+          snapshotVolumes: true
+          includedNamespaces:
+            - ${backup_name}
+          ttl: "840h" #35 days
+      %{~endfor~}
   zarf-init-s3-backend:
     registry_pc_enabled: "false"
     registry_hpa_min: "2"
@@ -53,7 +77,7 @@ variables:
     gitlab_redis_endpoint: "${aws_elasticache_replication_group.gitlab_redis.primary_endpoint_address}"
     gitlab_redis_scheme: "rediss"
     %{~for role in var.gitlab_service_account_names~}
-    ${replace(trimprefix(role, "gitlab-"), "-", "_")}_role_arn: "${module.gitlab_irsa_s3.bucket_roles[role].iam_role_arn}"
+    ${replace(trimprefix(role, "gitlab-"), "-", "_")}_role_arn: "${module.gitlab_irsa_s3.irsa_role[role].iam_role_arn}"
     %{~endfor~}
     %{~for bucket in var.gitlab_bucket_names~}
     ${replace(trimprefix(bucket, "gitlab-"), "-", "_")}_bucket: "${module.gitlab_s3_bucket[bucket].s3_bucket_id}"
@@ -70,7 +94,7 @@ variables:
     mattermost_bucket: "${module.mattermost_s3_bucket[var.mattermost_bucket_names[0]].s3_bucket_id}"
     mattermost_region: "${var.region}"
     mattermost_s3_endpoint: "s3.${var.region}.amazonaws.com"
-    mattermost_role_arn: "${module.mattermost_irsa_s3.bucket_roles[var.mattermost_service_account_names[0]].iam_role_arn}"
+    mattermost_role_arn: "${module.mattermost_irsa_s3.irsa_role[var.mattermost_service_account_names[0]].iam_role_arn}"
 EOY
 }
 

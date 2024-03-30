@@ -42,7 +42,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "velero_s3_bucket" {
 
     noncurrent_version_transition {
       newer_noncurrent_versions = 2
-      storage_class   = "GLACIER_IR"
+      storage_class             = "GLACIER_IR"
     }
 
     status = "Enabled"
@@ -50,11 +50,50 @@ resource "aws_s3_bucket_lifecycle_configuration" "velero_s3_bucket" {
 }
 
 module "velero_kms_key" {
-  source = "github.com/defenseunicorns/terraform-aws-uds-kms?ref=v0.0.2"
+  source                            = "github.com/defenseunicorns/terraform-aws-uds-kms?ref=v0.0.3"
+  kms_key_policy_default_identities = [for role in var.velero_service_account_names : join("", ["arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/", (join("-", compact([local.prefix, role, "s3-role", local.suffix])))])]
+  kms_key_alias_name_prefix         = local.velero_kms_key_alias_name_prefix
+  kms_key_deletion_window           = 7
+  kms_key_description               = "Velero Key"
+}
 
-  kms_key_alias_name_prefix = local.velero_kms_key_alias_name_prefix
-  kms_key_deletion_window   = 7
-  kms_key_description       = "Velero Key"
+data "aws_iam_policy_document" "velero_irsa_iam_policy" {
+  statement {
+    actions = [
+      "ec2:DescribeVolumes",
+      "ec2:DescribeSnapshots",
+      "ec2:CreateTags",
+      "ec2:CreateVolume",
+      "ec2:CreateSnapshot",
+      "ec2:DeleteSnapshot"
+    ]
+
+    resources = ["*"]
+  }
+
+  statement {
+    actions = [
+      "s3:GetObject",
+      "s3:DeleteObject",
+      "s3:PutObject",
+      "s3:AbortMultipartUpload",
+      "s3:ListMultipartUploadParts"
+    ]
+
+    resources = [
+      for _, bucket in module.velero_s3_bucket : "${bucket.s3_bucket_arn}/*"
+    ]
+  }
+
+  statement {
+    actions = [
+      "s3:ListBucket"
+    ]
+
+    resources = [
+      for _, bucket in module.velero_s3_bucket : bucket.s3_bucket_arn
+    ]
+  }
 }
 
 module "velero_irsa_s3" {
@@ -69,4 +108,5 @@ module "velero_irsa_s3" {
   bucket_names         = var.velero_bucket_names
   kms_key_arn          = module.velero_kms_key.kms_key_arn
   oidc_provider_arn    = module.eks.oidc_provider_arn
+  irsa_iam_policy      = data.aws_iam_policy_document.velero_irsa_iam_policy.json
 }

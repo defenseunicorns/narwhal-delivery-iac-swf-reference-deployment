@@ -44,7 +44,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "gitlab_s3_bucket" {
 
     noncurrent_version_transition {
       newer_noncurrent_versions = 2
-      storage_class   = "GLACIER_IR"
+      storage_class             = "GLACIER_IR"
     }
 
     status = "Enabled"
@@ -54,9 +54,9 @@ resource "aws_s3_bucket_lifecycle_configuration" "gitlab_s3_bucket" {
 module "gitlab_kms_key" {
   source = "github.com/defenseunicorns/terraform-aws-uds-kms?ref=v0.0.3"
 
-  kms_key_alias_name_prefix         = local.gitlab_kms_key_alias_name_prefix
-  kms_key_deletion_window           = 7
-  kms_key_description               = "GitLab Key"
+  kms_key_alias_name_prefix = local.gitlab_kms_key_alias_name_prefix
+  kms_key_deletion_window   = 7
+  kms_key_description       = "GitLab Key"
 }
 
 module "gitlab_irsa_s3" {

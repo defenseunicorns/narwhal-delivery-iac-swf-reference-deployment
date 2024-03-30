@@ -81,9 +81,8 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="module_eks"></a> [eks](#module\_eks) | git::https://github.com/defenseunicorns/terraform-aws-eks.git | v0.0.18 |
 | <a name="module_gitlab_db"></a> [gitlab\_db](#module\_gitlab\_db) | terraform-aws-modules/rds/aws | 6.1.1 |
 | <a name="module_gitlab_irsa_s3"></a> [gitlab\_irsa\_s3](#module\_gitlab\_irsa\_s3) | ./modules/irsa-s3 | n/a |
-| <a name="module_gitlab_kms_key"></a> [gitlab\_kms\_key](#module\_gitlab\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.2 |
+| <a name="module_gitlab_kms_key"></a> [gitlab\_kms\_key](#module\_gitlab\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.3 |
 | <a name="module_gitlab_s3_bucket"></a> [gitlab\_s3\_bucket](#module\_gitlab\_s3\_bucket) | git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git | v4.1.0 |
-| <a name="module_gitlab_s3_bucket_repl"></a> [gitlab\_s3\_bucket\_repl](#module\_gitlab\_s3\_bucket\_repl) | git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git | v4.1.0 |
 | <a name="module_gitlab_volume_snapshots"></a> [gitlab\_volume\_snapshots](#module\_gitlab\_volume\_snapshots) | ./modules/volume-snapshot | n/a |
 | <a name="module_jira_db"></a> [jira\_db](#module\_jira\_db) | terraform-aws-modules/rds/aws | 6.1.1 |
 | <a name="module_jira_kms_key"></a> [jira\_kms\_key](#module\_jira\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.2 |
@@ -95,11 +94,10 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="module_mattermost_kms_key"></a> [mattermost\_kms\_key](#module\_mattermost\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.2 |
 | <a name="module_mattermost_s3_bucket"></a> [mattermost\_s3\_bucket](#module\_mattermost\_s3\_bucket) | git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git | v4.1.0 |
 | <a name="module_password_lambda"></a> [password\_lambda](#module\_password\_lambda) | git::https://github.com/defenseunicorns/terraform-aws-lambda.git//modules/password-rotation | v0.0.3 |
-| <a name="module_replication-s3"></a> [replication-s3](#module\_replication-s3) | ./modules/replication-s3 | n/a |
 | <a name="module_ssm_kms_key"></a> [ssm\_kms\_key](#module\_ssm\_kms\_key) | terraform-aws-modules/kms/aws | ~> 2.0 |
 | <a name="module_subnet_addrs"></a> [subnet\_addrs](#module\_subnet\_addrs) | git::https://github.com/hashicorp/terraform-cidr-subnets | v1.0.0 |
 | <a name="module_velero_irsa_s3"></a> [velero\_irsa\_s3](#module\_velero\_irsa\_s3) | ./modules/irsa-s3 | n/a |
-| <a name="module_velero_kms_key"></a> [velero\_kms\_key](#module\_velero\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.2 |
+| <a name="module_velero_kms_key"></a> [velero\_kms\_key](#module\_velero\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.3 |
 | <a name="module_velero_s3_bucket"></a> [velero\_s3\_bucket](#module\_velero\_s3\_bucket) | git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git | v4.1.0 |
 | <a name="module_vpc"></a> [vpc](#module\_vpc) | git::https://github.com/defenseunicorns/terraform-aws-vpc.git | v0.1.7 |
 | <a name="module_zarf"></a> [zarf](#module\_zarf) | ./modules/zarf | n/a |
@@ -116,6 +114,8 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | [aws_s3_bucket.access_log_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket) | resource |
 | [aws_s3_bucket_lifecycle_configuration.access_log_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_lifecycle_configuration) | resource |
 | [aws_s3_bucket_lifecycle_configuration.gitlab_s3_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_lifecycle_configuration) | resource |
+| [aws_s3_bucket_lifecycle_configuration.mattermost_s3_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_lifecycle_configuration) | resource |
+| [aws_s3_bucket_lifecycle_configuration.velero_s3_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_lifecycle_configuration) | resource |
 | [aws_s3_bucket_notification.access_log_bucket_notification](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_notification) | resource |
 | [aws_s3_bucket_public_access_block.access_log_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_public_access_block) | resource |
 | [aws_s3_bucket_server_side_encryption_configuration.access_log_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_server_side_encryption_configuration) | resource |
@@ -158,6 +158,7 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | [aws_availability_zones.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_iam_policy_document.kms_access](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.velero_irsa_iam_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_session_context.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_session_context) | data source |
 | [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |
 
@@ -171,6 +172,7 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="input_admin_users"></a> [admin\_users](#input\_admin\_users) | List of IAM users to add as administrators to the EKS cluster via access entry | `list(string)` | `[]` | no |
 | <a name="input_artifactory_db_idenitfier_prefix"></a> [artifactory\_db\_idenitfier\_prefix](#input\_artifactory\_db\_idenitfier\_prefix) | The prefix to use for the RDS instance identifier | `string` | `"artifactory-db"` | no |
 | <a name="input_artifactory_db_name"></a> [artifactory\_db\_name](#input\_artifactory\_db\_name) | Name of the artifactory database. | `string` | `"artifactorydb"` | no |
+| <a name="input_artifactory_db_snapshot"></a> [artifactory\_db\_snapshot](#input\_artifactory\_db\_snapshot) | The snapshot to restore the RDS instance from | `string` | `""` | no |
 | <a name="input_artifactory_kms_key_alias"></a> [artifactory\_kms\_key\_alias](#input\_artifactory\_kms\_key\_alias) | KMS Key Alias name prefix | `string` | `"artifactory"` | no |
 | <a name="input_artifactory_rds_instance_class"></a> [artifactory\_rds\_instance\_class](#input\_artifactory\_rds\_instance\_class) | The instance class to use for the RDS instance | `string` | `"db.t4g.large"` | no |
 | <a name="input_authentication_mode"></a> [authentication\_mode](#input\_authentication\_mode) | The authentication mode for the cluster. Valid values are `CONFIG_MAP`, `API` or `API_AND_CONFIG_MAP` | `string` | `"API"` | no |
@@ -184,9 +186,10 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="input_cluster_addons"></a> [cluster\_addons](#input\_cluster\_addons) | Nested of eks native add-ons and their associated parameters.<br>See https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_add-on for supported values.<br>See https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/examples/complete/main.tf#L44-L60 for upstream example.<br><br>to see available eks marketplace addons available for your cluster's version run:<br>aws eks describe-addon-versions --kubernetes-version $k8s\_cluster\_version --query 'addons[].{MarketplaceProductUrl: marketplaceInformation.productUrl, Name: addonName, Owner: owner Publisher: publisher, Type: type}' --output table | `any` | `{}` | no |
 | <a name="input_cluster_autoscaler"></a> [cluster\_autoscaler](#input\_cluster\_autoscaler) | Cluster Autoscaler Helm Chart config | `any` | `{}` | no |
 | <a name="input_cluster_endpoint_public_access"></a> [cluster\_endpoint\_public\_access](#input\_cluster\_endpoint\_public\_access) | Whether to enable public access to the EKS cluster | `bool` | `false` | no |
-| <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | Kubernetes version to use for EKS cluster | `string` | `"1.27"` | no |
+| <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | Kubernetes version to use for EKS cluster | `string` | `"1.29"` | no |
 | <a name="input_confluence_db_idenitfier_prefix"></a> [confluence\_db\_idenitfier\_prefix](#input\_confluence\_db\_idenitfier\_prefix) | The prefix to use for the RDS instance identifier | `string` | `"confluence-db"` | no |
 | <a name="input_confluence_db_name"></a> [confluence\_db\_name](#input\_confluence\_db\_name) | Name of the Confluence database. | `string` | `"confluencedb"` | no |
+| <a name="input_confluence_db_snapshot"></a> [confluence\_db\_snapshot](#input\_confluence\_db\_snapshot) | The snapshot to restore the RDS instance from | `string` | `""` | no |
 | <a name="input_confluence_kms_key_alias"></a> [confluence\_kms\_key\_alias](#input\_confluence\_kms\_key\_alias) | KMS Key Alias name prefix | `string` | `"confluence"` | no |
 | <a name="input_confluence_rds_instance_class"></a> [confluence\_rds\_instance\_class](#input\_confluence\_rds\_instance\_class) | The instance class to use for the RDS instance | `string` | `"db.t4g.large"` | no |
 | <a name="input_create_kubernetes_resources"></a> [create\_kubernetes\_resources](#input\_create\_kubernetes\_resources) | If true, kubernetes resources related to non-marketplace addons to will be created | `bool` | `false` | no |
@@ -216,6 +219,7 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="input_gitlab_bucket_names"></a> [gitlab\_bucket\_names](#input\_gitlab\_bucket\_names) | List of buckets to create for GitLab | `list(string)` | <pre>[<br>  "gitlab-artifacts",<br>  "gitlab-backups",<br>  "gitlab-ci-secure-files",<br>  "gitlab-dependency-proxy",<br>  "gitlab-lfs",<br>  "gitlab-mr-diffs",<br>  "gitlab-packages",<br>  "gitlab-pages",<br>  "gitlab-terraform-state",<br>  "gitlab-uploads",<br>  "gitlab-registry",<br>  "gitlab-runner-cache",<br>  "gitlab-tmp"<br>]</pre> | no |
 | <a name="input_gitlab_db_idenitfier_prefix"></a> [gitlab\_db\_idenitfier\_prefix](#input\_gitlab\_db\_idenitfier\_prefix) | The prefix to use for the RDS instance identifier | `string` | `"gitlab-db"` | no |
 | <a name="input_gitlab_db_name"></a> [gitlab\_db\_name](#input\_gitlab\_db\_name) | Name of the GitLab database. | `string` | `"gitlabdb"` | no |
+| <a name="input_gitlab_db_snapshot"></a> [gitlab\_db\_snapshot](#input\_gitlab\_db\_snapshot) | The snapshot to restore the RDS instance from | `string` | `""` | no |
 | <a name="input_gitlab_elasticache_cluster_name"></a> [gitlab\_elasticache\_cluster\_name](#input\_gitlab\_elasticache\_cluster\_name) | ElastiCache Cluster Name | `string` | `"gitlab"` | no |
 | <a name="input_gitlab_kms_key_alias"></a> [gitlab\_kms\_key\_alias](#input\_gitlab\_kms\_key\_alias) | KMS Key Alias name prefix | `string` | `"gitlab"` | no |
 | <a name="input_gitlab_namespace"></a> [gitlab\_namespace](#input\_gitlab\_namespace) | Namespace GitLab is deployed to | `string` | `"gitlab"` | no |
@@ -225,10 +229,12 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="input_iam_role_permissions_boundary"></a> [iam\_role\_permissions\_boundary](#input\_iam\_role\_permissions\_boundary) | ARN of the policy that is used to set the permissions boundary for IAM roles | `string` | `null` | no |
 | <a name="input_jira_db_idenitfier_prefix"></a> [jira\_db\_idenitfier\_prefix](#input\_jira\_db\_idenitfier\_prefix) | The prefix to use for the RDS instance identifier | `string` | `"jira-db"` | no |
 | <a name="input_jira_db_name"></a> [jira\_db\_name](#input\_jira\_db\_name) | Name of the Jira database. | `string` | `"jiradb"` | no |
+| <a name="input_jira_db_snapshot"></a> [jira\_db\_snapshot](#input\_jira\_db\_snapshot) | The snapshot to restore the RDS instance from | `string` | `""` | no |
 | <a name="input_jira_kms_key_alias"></a> [jira\_kms\_key\_alias](#input\_jira\_kms\_key\_alias) | KMS Key Alias name prefix | `string` | `"jira"` | no |
 | <a name="input_jira_rds_instance_class"></a> [jira\_rds\_instance\_class](#input\_jira\_rds\_instance\_class) | The instance class to use for the RDS instance | `string` | `"db.t4g.large"` | no |
 | <a name="input_keycloak_db_idenitfier_prefix"></a> [keycloak\_db\_idenitfier\_prefix](#input\_keycloak\_db\_idenitfier\_prefix) | The prefix to use for the RDS instance identifier | `string` | `"keycloak-db"` | no |
 | <a name="input_keycloak_db_name"></a> [keycloak\_db\_name](#input\_keycloak\_db\_name) | Name of the Keycloak database. | `string` | `"keycloakdb"` | no |
+| <a name="input_keycloak_db_snapshot"></a> [keycloak\_db\_snapshot](#input\_keycloak\_db\_snapshot) | The snapshot to restore the RDS instance from | `string` | `""` | no |
 | <a name="input_keycloak_enabled"></a> [keycloak\_enabled](#input\_keycloak\_enabled) | Enable Keycloak dedicated nodegroup | `bool` | `false` | no |
 | <a name="input_keycloak_kms_key_alias"></a> [keycloak\_kms\_key\_alias](#input\_keycloak\_kms\_key\_alias) | KMS Key Alias name prefix | `string` | `"keycloak"` | no |
 | <a name="input_keycloak_rds_instance_class"></a> [keycloak\_rds\_instance\_class](#input\_keycloak\_rds\_instance\_class) | The instance class to use for the RDS instance | `string` | `"db.t4g.large"` | no |
@@ -236,6 +242,7 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="input_mattermost_bucket_names"></a> [mattermost\_bucket\_names](#input\_mattermost\_bucket\_names) | List of buckets to create for Mattermost | `list(string)` | <pre>[<br>  "mattermost"<br>]</pre> | no |
 | <a name="input_mattermost_db_idenitfier_prefix"></a> [mattermost\_db\_idenitfier\_prefix](#input\_mattermost\_db\_idenitfier\_prefix) | The prefix to use for the RDS instance identifier | `string` | `"mattermost-db"` | no |
 | <a name="input_mattermost_db_name"></a> [mattermost\_db\_name](#input\_mattermost\_db\_name) | Name of the Mattermost database. | `string` | `"mattermostdb"` | no |
+| <a name="input_mattermost_db_snapshot"></a> [mattermost\_db\_snapshot](#input\_mattermost\_db\_snapshot) | The snapshot to restore the RDS instance from | `string` | `""` | no |
 | <a name="input_mattermost_kms_key_alias"></a> [mattermost\_kms\_key\_alias](#input\_mattermost\_kms\_key\_alias) | KMS Key Alias name prefix | `string` | `"mattermost"` | no |
 | <a name="input_mattermost_namespace"></a> [mattermost\_namespace](#input\_mattermost\_namespace) | Namespace Mattermost is deployed to | `string` | `"mattermost"` | no |
 | <a name="input_mattermost_rds_instance_class"></a> [mattermost\_rds\_instance\_class](#input\_mattermost\_rds\_instance\_class) | The instance class to use for the RDS instance | `string` | `"db.t4g.large"` | no |

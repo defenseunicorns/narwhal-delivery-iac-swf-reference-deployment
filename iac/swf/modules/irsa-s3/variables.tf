@@ -1,8 +1,8 @@
-variable "namespace" {
-  type        = string
-  default     = "du"
-  description = "Namespace, which could be your organization name or abbreviation, e.g. 'eg' or 'cp'"
-}
+# variable "namespace" {
+#   type        = string
+#   default     = "du"
+#   description = "Namespace, which could be your organization name or abbreviation, e.g. 'eg' or 'cp'"
+# }
 
 variable "stage" {
   type        = string
@@ -10,11 +10,11 @@ variable "stage" {
   description = "Stage, e.g. 'prod', 'staging', 'dev', or 'test'"
 }
 
-variable "name" {
-  type        = string
-  description = "Name, e.g. 'app' or 'jenkins'"
-  default     = "zarf-registry"
-}
+# variable "name" {
+#   type        = string
+#   description = "Name, e.g. 'app' or 'jenkins'"
+#   default     = "zarf-registry"
+# }
 
 variable "tags" {
   description = "A map of tags to apply to all resources"
@@ -51,6 +51,12 @@ variable "policy_name" {
 variable "k8s_namespace" {
   description = "Namespace for the IAM S3 Bucket Role"
   type        = string
+}
+
+variable "irsa_iam_policy" {
+  description = "Override for default irsa policy. This value needs to be a json encoded string."
+  type        = string
+  default     = ""
 }
 
 variable "bucket_names" {

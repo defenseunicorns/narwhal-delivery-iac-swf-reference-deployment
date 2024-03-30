@@ -7,22 +7,6 @@ resource "random_id" "default" {
 
 
 locals {
-  # If 'var.prefix' is explicitly null, allow it to be empty
-  # If 'var.prefix' is an empty string, generate a prefix
-  # If 'var.prefix' is neither null nor an empty string, assign the value of 'var.prefix' itself
-  prefix = var.prefix == null ? "" : (
-    var.prefix == "" ? join("-", compact([var.namespace, var.stage, var.name])) :
-    var.prefix
-  )
-
-  # If 'var.suffix' is null, assign an empty string
-  # If 'var.suffix' is an empty string, assign a randomly generated hexadecimal value
-  # If 'var.suffix' is neither null nor an empty string, assign the value of 'var.suffix' itself
-  suffix = var.suffix == null ? "" : (
-    var.suffix == "" ? lower(random_id.default.hex) :
-    var.suffix
-  )
-
   tags = merge(
     var.tags,
     {
@@ -30,55 +14,55 @@ locals {
       Env          = var.stage
     }
   )
-  s3_bucket_polcy_name = join("-", compact([local.prefix, var.policy_name, "s3-access-policy", local.suffix]))
-  bucket_names         = [for bucket_name in var.bucket_names : join("-", compact([local.prefix, bucket_name, local.suffix]))]
+  s3_bucket_polcy_name = join("-", compact([var.prefix, var.policy_name, "s3-access-policy", var.suffix]))
+  bucket_names         = [for bucket_name in var.bucket_names : join("-", compact([var.prefix, bucket_name, var.suffix]))]
 }
 
-## This will create a policy for the S3 Buckets
+data "aws_iam_policy_document" "s3_bucket_default" {
+  statement {
+    actions = [
+      "s3:ListBucket",
+      "s3:GetBucketLocation",
+      "s3:ListBucketMultipartUploads"
+    ]
+
+    resources = [
+      for bucket_name in local.bucket_names :
+      "arn:${data.aws_partition.current.partition}:s3:::${bucket_name}"
+    ]
+  }
+
+  statement {
+    actions = [
+      "s3:PutObject",
+      "s3:GetObject",
+      "s3:DeleteObject",
+      "s3:ListMultipartUploadParts",
+      "s3:AbortMultipartUpload"
+    ]
+
+    resources = [
+      for bucket_name in local.bucket_names :
+      "arn:${data.aws_partition.current.partition}:s3:::${bucket_name}/*"
+    ]
+  }
+
+  statement {
+    actions = [
+      "kms:GenerateDataKey",
+      "kms:Decrypt"
+    ]
+
+    resources = [var.kms_key_arn]
+  }
+}
+
 resource "aws_iam_policy" "s3_bucket_policy" {
   name        = local.s3_bucket_polcy_name
   path        = "/"
   description = "IRSA policy to access buckets."
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "s3:ListBucket",
-          "s3:GetBucketLocation",
-          "s3:ListBucketMultipartUploads"
-        ]
-        Resource = [
-          for bucket_name in local.bucket_names :
-          "arn:${data.aws_partition.current.partition}:s3:::${bucket_name}"
-        ]
-      },
-      {
-        Effect = "Allow"
-        Action = [
-          "s3:PutObject",
-          "s3:GetObject",
-          "s3:DeleteObject",
-          "s3:ListMultipartUploadParts",
-          "s3:AbortMultipartUpload"
-        ]
-        Resource = [
-          for bucket_name in local.bucket_names :
-          "arn:${data.aws_partition.current.partition}:s3:::${bucket_name}/*"
-        ]
-      },
-      {
-        Effect = "Allow"
-        Action = [
-          "kms:GenerateDataKey",
-          "kms:Decrypt"
-        ]
-        Resource = [var.kms_key_arn]
-      }
-    ]
-  })
-  tags = local.tags
+  policy      = coalesce(var.irsa_iam_policy, data.aws_iam_policy_document.s3_bucket_default.json)
+  tags        = local.tags
 }
 
 module "irsa_role" {
@@ -86,7 +70,7 @@ module "irsa_role" {
 
   source = "git::https://github.com/terraform-aws-modules/terraform-aws-iam.git//modules/iam-role-for-service-accounts-eks?ref=v5.34.0"
 
-  role_name = join("-", compact([local.prefix, each.value, "s3-role", local.suffix]))
+  role_name = join("-", compact([var.prefix, each.value, "s3-role", var.suffix]))
 
   role_policy_arns = {
     policy = aws_iam_policy.s3_bucket_policy.arn
@@ -104,7 +88,7 @@ module "irsa_role" {
 resource "aws_iam_role_policy_attachment" "s3_policy_attach" {
   for_each = toset(var.serviceaccount_names)
 
-  role       = join("-", compact([local.prefix, each.value, "s3-role", local.suffix]))
+  role       = join("-", compact([var.prefix, each.value, "s3-role", var.suffix]))
   policy_arn = aws_iam_policy.s3_bucket_policy.arn
 
   depends_on = [module.irsa_role]
