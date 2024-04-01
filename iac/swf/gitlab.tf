@@ -231,7 +231,7 @@ resource "aws_elasticache_replication_group" "gitlab_redis" {
 }
 
 resource "aws_elasticache_subnet_group" "gitlab_redis" {
-  name       = "gitlab-redis-cache-subnet"
+  name       = join("-", compact([local.prefix, "gitlab-redis-cache-subnet", local.suffix]))
   subnet_ids = concat(module.vpc.public_subnets, module.vpc.private_subnets, module.vpc.database_subnets)
 }
 
