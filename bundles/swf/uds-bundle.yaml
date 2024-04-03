@@ -214,7 +214,14 @@ packages:
 
   - name: jenkins
     repository: ghcr.io/defenseunicorns/packages/uds/jenkins
-    ref: 5.1.0-uds.0
+    ref: 5.1.0-uds.1
+    overrides:
+      jenkins:
+        jenkins:
+          variables:
+            - name: JENKINS_PERSISTENCE_EXISTING_CLAIM
+              description: "Name of the pre-existing PVC that jenkins will be restored from"
+              path: persistence.existingClaim
 
   - name: jira
     repository: ghcr.io/defenseunicorns/packages/uds/jira

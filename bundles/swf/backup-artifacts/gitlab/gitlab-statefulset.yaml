@@ -37,4 +37,5 @@ spec:
         storageClassName: "gp3"
         selector:
           matchLabels:
-            kruggel: badass
+            app: gitaly
+            restored: yup

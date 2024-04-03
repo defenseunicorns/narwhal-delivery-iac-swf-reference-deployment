@@ -748,3 +748,11 @@ variable "velero_service_account_names" {
   type        = list(string)
   default     = ["velero-server"]
 }
+
+###########################################################
+################### Jenkins Config ########################
+variable "jenkins_persistence_existing_claim" {
+  description = "Name of the pre-existing PVC that jenkins will be restored from"
+  type        = string
+  default     = ""
+}

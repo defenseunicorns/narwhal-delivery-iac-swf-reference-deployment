@@ -209,3 +209,5 @@ admin_roles = [
 ]
 
 gitaly_pv_match_labels = []
+
+jenkins_persistence_existing_claim = ""
