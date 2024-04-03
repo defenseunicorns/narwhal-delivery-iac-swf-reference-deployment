@@ -189,7 +189,7 @@ slack_webhook_url = ""
 
 zarf_s3_bucket_force_destroy = true
 
-###########################################################
+#############################################################
 ################ Gitlab AWS Dependencies ####################
 gitlab_s3_bucket_force_destroy = true
 velero_s3_bucket_force_destroy = true
@@ -207,3 +207,5 @@ enable_admin_roles_prefix_or_suffix = false
 admin_roles = [
   "unicorn-admin"
 ]
+
+gitaly_pv_match_labels = []

@@ -83,6 +83,12 @@ variables:
     ${replace(trimprefix(bucket, "gitlab-"), "-", "_")}_bucket: "${module.gitlab_s3_bucket[bucket].s3_bucket_id}"
     %{~endfor~}
     disable_registry_redirect: "true"
+%{ if length(var.gitaly_pv_match_labels) > 0 ~}
+    GITALY_PV_MATCH_LABELS:
+      %{~ for label in var.gitaly_pv_match_labels ~}
+      ${label}
+      %{~ endfor ~}
+%{ endif ~}
   confluence:
     confluence_db_endpoint: "${element(split(":", module.confluence_db.db_instance_endpoint), 0)}"
   jira:

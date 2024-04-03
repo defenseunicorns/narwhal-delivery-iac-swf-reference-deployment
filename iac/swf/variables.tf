@@ -509,6 +509,12 @@ variable "gitlab_service_account_names" {
   default     = ["gitlab-gitaly", "gitlab-sidekiq", "gitlab-toolbox", "gitlab-gitlab-exporter", "gitlab-registry", "gitlab-geo-logcursor", "gitlab-migrations", "gitlab-webservice", "gitlab-mailroom", "gitlab-gitlab-shell"]
 }
 
+variable "gitaly_pv_match_labels" {
+  description = "List of labels to match the pv to"
+  type        = list(string)
+  default     = []
+}
+
 ############################################################################
 ################## Confluence Dependencies #########################
 

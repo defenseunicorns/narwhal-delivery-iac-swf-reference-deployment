@@ -4,16 +4,16 @@ metadata:
   name: gitaly-volume
   labels:
     app: gitaly
-    kruggel: badass
+    restored: yup
 spec:
   accessModes:
   - ReadWriteOnce
   capacity:
-    storage: 20Gi
+    storage: 50Gi
   csi:
     driver: ebs.csi.aws.com
     fsType: ext4
-    volumeHandle: vol-0c1b77feeaf072dfa
+    volumeHandle: vol-06ca1b0b529382d0d
   persistentVolumeReclaimPolicy: Retain
   storageClassName: gp3
   volumeMode: Filesystem
