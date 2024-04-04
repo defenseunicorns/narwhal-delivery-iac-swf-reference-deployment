@@ -56,7 +56,7 @@ The EBS volume used by jenkins is backed up via EBS snapshots. These snapshots a
     - The storage must be the same as the volume you created in step 2 and match the Jenkins PVC request (ex. `8Gi`)
     - Apply your PV
 
-4. Create the new jenkins pv. - [Example PersistentVolumeClaim Manifest](files/jenkins-pvc.yaml)
+4. Create the new jenkins pvc. - [Example PersistentVolumeClaim Manifest](files/jenkins-pvc.yaml)
     - Name must match the name you set in step 1 (ex. `jenkins-pvc`)
     - Labels can be anything
     - Namespace should match the namespace jenkins will be deployed to
