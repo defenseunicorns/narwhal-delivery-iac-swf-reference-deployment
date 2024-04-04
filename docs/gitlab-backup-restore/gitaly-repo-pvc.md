@@ -8,7 +8,7 @@ The EBS volume used by gitaly is backed up via EBS snapshots. These snapshots ar
 
 ## Restore Process
 
-Prerequisites:
+### Prerequisites
 
 - New environment (terraform infra) stood up
 - Gitlab database restored
@@ -31,7 +31,7 @@ Prerequisites:
     swf-deps-aws
     ```
 
-Steps:
+### Steps
 
 1. Modify the `uds-config.yaml` for the environment you're deploying to
     - Set the `GITALY_PV_MATCH_LABELS` to the labels you'll be applying to the new gitaly pv. ex:

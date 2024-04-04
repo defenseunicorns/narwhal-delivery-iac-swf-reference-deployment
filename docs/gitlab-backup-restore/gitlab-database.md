@@ -10,13 +10,13 @@ We configure RDS to take snapshots daily and retain snapshots for 30 days. These
 
 The database is definitely the easiest piece of gitlab to restore.
 
-Prerequisites:
+### Prerequisites
 
 - Old environment up and in the same account
 - The name of the snapshot you want to restore from
   - RDS -> Databases -> Old Database -> Maintenance & backups -> Snapshots
 
-Steps:
+### Steps
 
 - Modify the terraform vars for the new environment with the following variable, replacing `<snapshot-name>` with the snapshot name you want to restore from:
 

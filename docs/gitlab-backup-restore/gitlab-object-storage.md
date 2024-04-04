@@ -8,10 +8,12 @@ As of now there is no "snapshot" like backup mechanism for s3. Versioning is ena
 
 ## Restore Process
 
-Prerequisites:
+### Prerequisites
 
 - New environment (terraform infra) stood up
 - Have uds-config.yaml present in env folders for old and new infra (both up to date)
+
+### Steps
 
 From here things can get complicated.
 

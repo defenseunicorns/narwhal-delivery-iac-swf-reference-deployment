@@ -11,7 +11,7 @@ The secrets are backed up via velero to an S3 bucket. Due to the limitations of 
 
 ## Restore Process
 
-Prerequisites:
+### Prerequisites
 
 - New environment (terraform infra) stood up
 - Bundle installed up to UDS-Core
@@ -19,7 +19,7 @@ Prerequisites:
   - Velero has access to old env backup bucket or the objects from old env bucket have been copied to new bucket
 - Velero CLI installed
 
-Steps:
+### Steps
 
 - Get the name of the latest rails backup
   - Run `velero backup get`
