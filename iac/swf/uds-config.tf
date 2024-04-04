@@ -32,20 +32,6 @@ variables:
         provider: aws
         config:
           region: "${var.region}"
-    VELERO_BACKUP_SCHEDULES:
-      %{~for backup_name in local.namespaces_to_backup_with_velero~}
-      uds-${backup_name}-backup:
-        disabled: false
-        schedule: "0 3 * * *"
-        useOwnerReferencesInBackup: false
-        template:
-          csiSnapshotTimeout: 0s
-          includeClusterResources: true
-          snapshotVolumes: true
-          includedNamespaces:
-            - ${backup_name}
-          ttl: "840h" #35 days
-      %{~endfor~}
   zarf-init-s3-backend:
     registry_pc_enabled: "false"
     registry_hpa_min: "2"
@@ -61,7 +47,11 @@ variables:
       - name: REGISTRY_STORAGE_S3_BUCKET
         value: "${module.zarf.zarf_registry_s3_bucket_name}"
   storageclass:
-    EBS_EXTRA_PARAMETERS: 'tagSpecification_1: "NamespaceAndId={{ .PVCNamespace }}-${lower(random_id.default.hex)}"'
+    EBS_EXTRA_PARAMETERS: |
+      tagSpecification_1: "NamespaceAndId={{ .PVCNamespace }}-${lower(random_id.default.hex)}"
+      iopsPerGB: "500"
+      allowAutoIOPSPerGBIncrease: "true"
+      throughput: "1000"
   swf-deps-aws:
     gitlab_db_password: "${random_password.gitlab_db_password.result}"
     confluence_db_password: "${random_password.confluence_db_password.result}"

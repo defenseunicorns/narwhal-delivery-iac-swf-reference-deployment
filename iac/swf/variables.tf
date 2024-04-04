@@ -204,6 +204,18 @@ variable "dataplane_wait_duration" {
   default     = "30s"
 }
 
+variable "uds_swf_ng_name" {
+  description = "Name of the UDS SWF node group"
+  type        = string
+  default     = "uds_ng"
+}
+
+variable "gitaly_ng_name" {
+  description = "Name of the UDS SWF node group"
+  type        = string
+  default     = "gitaly_ng"
+}
+
 ###########################################################
 ################## EKS Addons Config ######################
 

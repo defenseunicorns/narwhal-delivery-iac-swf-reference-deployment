@@ -32,6 +32,20 @@ packages:
           values:
             - path: kube-state-metrics.resources.limits.memory
               value: 512Mi
+      promtail:
+        promtail:
+          values:
+            - path: tolerations
+              value:
+              - key: node-role.kubernetes.io/master
+                operator: Exists
+                effect: NoSchedule
+              - key: node-role.kubernetes.io/control-plane
+                operator: Exists
+                effect: NoSchedule
+              - key: dedicated
+                operator: Exists
+                effect: NoSchedule
       keycloak:
         keycloak:
           values:
@@ -57,6 +71,15 @@ packages:
               value: true
             - path: containerd.path
               value: /run/containerd/containerd.sock
+            - path: enforcer.tolerations
+              value:
+              - effect: NoSchedule
+                key: node-role.kubernetes.io/master
+              - effect: NoSchedule
+                key: node-role.kubernetes.io/control-plane
+              - effect: NoSchedule
+                key: dedicated
+                operator: Exists
       velero:
         velero:
           values:
@@ -130,6 +153,19 @@ packages:
           values:
             - path: global.appConfig.omniauth.autoSignInWithProvider
               value: ""
+            - path: gitlab.gitaly.tolerations
+              value:
+              - effect: NoSchedule
+                key: dedicated
+                operator: Exists
+            - path: gitlab.gitaly.resources
+              value:
+                limits:
+                  cpu: 14000m
+                  memory: 120Gi
+                requests:
+                  cpu: 14000m
+                  memory: 120Gi
           variables:
             - name: REGISTRY_ROLE_ARN
               description: "The ARN of the role to assume for the registry pods"
