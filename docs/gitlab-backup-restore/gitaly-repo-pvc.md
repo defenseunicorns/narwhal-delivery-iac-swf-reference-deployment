@@ -49,7 +49,7 @@ The EBS volume used by gitaly is backed up via EBS snapshots. These snapshots ar
         - The tag that DLM is looking for can be found in the AWS Console: `Elastic Block Store` -> `Lifecycle Manager` -> `Modify` -> `Step 1 Specify Settings` -> `Target resource tags`
         - Add that tag to the volume
         - Create the new volume
-    - Verify later that the volume has beensnapshotted by DLM
+    - Verify later that the volume has been snapshotted by DLM
     - Note the volume id (ex. `vol-093116130d780e5e4`) for step 3
 
 3. Create the new gitaly pv. - [Example PersistentVolume Manifest](files/gitaly-pv.yaml)

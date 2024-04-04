@@ -68,7 +68,7 @@ The EBS volume used by jenkins is backed up via EBS snapshots. These snapshots a
 
     ***NOTE***
 
-    - There is a chance that the jenkins pod and the volume created in step 2 are not in the same availaility zone. This will cause the pod to never show healthy and remain stuck at initing. You can check if this is the case by describing the pod, and looking for an error in the events section.
+    - There is a chance that the jenkins pod and the volume created in step 2 are not in the same availability zone. This will cause the pod to never show healthy and remain stuck at initing. You can check if this is the case by describing the pod, and looking for an error in the events section.
 
     - An example error message is:
 
@@ -77,7 +77,7 @@ The EBS volume used by jenkins is backed up via EBS snapshots. These snapshots a
         Warning  FailedAttachVolume  0s  attachdetach-controller  AttachVolume.Attach failed for volume "jenkins-volume" : rpc error: code = Internal desc = Could not attach volume "vol-0a5410ba3acbc7b6a" to node "i-0f0aeaee254ea5ce5": could not attach volume "vol-0a5410ba3acbc7b6a" to node "i-0f0aeaee254ea5ce5": InvalidVolume.ZoneMismatch: The volume 'vol-0a5410ba3acbc7b6a' is not in the same availability zone as instance 'i-0f0aeaee254ea5ce5'
         ```
 
-    - To get the correct availability zone, see what node the pod is attached to, and check the corresponding node's availailty zone
+    - To get the correct availability zone, see what node the pod is attached to, and check the corresponding node's availability zone
 
     - Should this error appear:
 
@@ -87,4 +87,4 @@ The EBS volume used by jenkins is backed up via EBS snapshots. These snapshots a
 
     - When the pv and pvc are available in the cluster, perform step 5 again
 
-6. The jenkins pod should come up healthy and have its data resotred
+6. The jenkins pod should come up healthy and have its data restored
