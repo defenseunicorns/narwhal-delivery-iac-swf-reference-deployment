@@ -69,7 +69,8 @@ locals {
   }
 
   uds_swf_self_mg_node_group = {
-    (local.uds_swf_ng_name) = {
+    uds_ng = {
+      name          = local.uds_swf_ng_name
       platform      = "bottlerocket"
       ami_id        = data.aws_ami.eks_default_bottlerocket.id
       instance_type = null # conflicts with instance_requirements settings
@@ -157,7 +158,8 @@ locals {
   }
 
   gitaly_self_mg_node_group = {
-    (local.gitaly_ng_name) = {
+    gitaly_ng = {
+      name          = local.gitaly_ng_name
       platform      = "bottlerocket"
       ami_id        = data.aws_ami.eks_default_bottlerocket.id
       instance_type = null # conflicts with instance_requirements settings
