@@ -272,6 +272,10 @@ packages:
               value: true
             - path: volumes.sharedHome.nfsPermissionFixer.enabled
               value: false
+            - path: volumes.sharedHome.persistentVolumeClaim.resources.requests.storage
+              value: 50Gi
+            - path: volumes.localHome.persistentVolumeClaim.resources.requests.storage
+              value: 50Gi
 
 
   - name: confluence
@@ -287,6 +291,10 @@ packages:
               value: true
             - path: volumes.sharedHome.nfsPermissionFixer.enabled
               value: false
+            - path: volumes.sharedHome.persistentVolumeClaim.resources.requests.storage
+              value: 50Gi
+            - path: volumes.localHome.persistentVolumeClaim.resources.requests.storage
+              value: 50Gi
 
   - name: artifactory
     repository: ghcr.io/defenseunicorns/packages/uds/artifactory
