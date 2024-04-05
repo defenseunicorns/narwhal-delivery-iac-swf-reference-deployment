@@ -266,7 +266,7 @@ packages:
       jira:
         jira:
           values:
-            - path: volumes.sharedHome.storageClassName
+            - path: volumes.sharedHome.persistentVolumeClaim.storageClassName
               value: efs
             - path: volumes.sharedHome.persistentVolumeClaim.create
               value: true
@@ -281,7 +281,7 @@ packages:
       confluence:
         confluence:
           values:
-            - path: volumes.sharedHome.storageClassName
+            - path: volumes.sharedHome.persistentVolumeClaim.storageClassName
               value: efs
             - path: volumes.sharedHome.persistentVolumeClaim.create
               value: true
