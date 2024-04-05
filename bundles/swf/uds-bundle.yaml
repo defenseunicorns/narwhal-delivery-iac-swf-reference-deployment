@@ -262,10 +262,31 @@ packages:
   - name: jira
     repository: ghcr.io/defenseunicorns/packages/uds/jira
     ref: 1.17.2-uds.0-registry1
+    overrides:
+      jira:
+        jira:
+          values:
+            - path: volumes.sharedHome.storageClassName
+              value: efs
+            - path: volumes.sharedHome.persistentVolumeClaim.create
+              value: true
+            - path: volumes.sharedHome.nfsPermissionFixer.enabled
+              value: false
+
 
   - name: confluence
     repository: ghcr.io/defenseunicorns/packages/uds/confluence
     ref: 1.18.0-uds.0-registry1
+    overrides:
+      confluence:
+        confluence:
+          values:
+            - path: volumes.sharedHome.storageClassName
+              value: efs
+            - path: volumes.sharedHome.persistentVolumeClaim.create
+              value: true
+            - path: volumes.sharedHome.nfsPermissionFixer.enabled
+              value: false
 
   - name: artifactory
     repository: ghcr.io/defenseunicorns/packages/uds/artifactory
