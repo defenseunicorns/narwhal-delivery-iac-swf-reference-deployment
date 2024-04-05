@@ -215,6 +215,9 @@ packages:
             - name: PAGES_BUCKET
               description: "The name of the S3 bucket to use for pages storage"
               path: global.pages.objectStore.bucket
+            - name: GITALY_PVC_SIZE
+              path: gitlab.gitaly.persistence.size
+              default: 50Gi
             #  For Backup & Restore
             - name: GITALY_PV_MATCH_LABELS
               description: "The labels to provide to the gitaly PVC to match to an existing PV"
@@ -274,8 +277,10 @@ packages:
               value: false
             - path: volumes.sharedHome.persistentVolumeClaim.resources.requests.storage
               value: 50Gi
+          variables:
             - path: volumes.localHome.persistentVolumeClaim.resources.requests.storage
-              value: 50Gi
+              name: JIRA_LOCAL_HOME_PVC_SIZE
+              default: 50Gi
 
 
   - name: confluence
@@ -293,8 +298,10 @@ packages:
               value: false
             - path: volumes.sharedHome.persistentVolumeClaim.resources.requests.storage
               value: 50Gi
+          variables:
             - path: volumes.localHome.persistentVolumeClaim.resources.requests.storage
-              value: 50Gi
+              name: CONFLUENCE_LOCAL_HOME_PVC_SIZE
+              default: 50Gi
 
   - name: artifactory
     repository: ghcr.io/defenseunicorns/packages/uds/artifactory
