@@ -32,6 +32,10 @@ packages:
           values:
             - path: kube-state-metrics.resources.limits.memory
               value: 512Mi
+          variables:
+            - name: PROMETHEUS_PVC_SIZE
+              path: prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.resources.requests.storage
+              default: 50Gi
       promtail:
         promtail:
           values:
@@ -80,6 +84,12 @@ packages:
               - effect: NoSchedule
                 key: dedicated
                 operator: Exists
+      loki:
+        loki:
+          variables:
+            - name: LOKI_PVC_SIZE
+              path: singleBinary.persistence.size
+              default: 50Gi
       velero:
         velero:
           values:
@@ -162,10 +172,10 @@ packages:
               value:
                 limits:
                   cpu: 14000m
-                  memory: 120Gi
+                  memory: 110Gi
                 requests:
                   cpu: 14000m
-                  memory: 120Gi
+                  memory: 110Gi
           variables:
             - name: REGISTRY_ROLE_ARN
               description: "The ARN of the role to assume for the registry pods"

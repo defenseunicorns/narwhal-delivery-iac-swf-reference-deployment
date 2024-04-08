@@ -32,6 +32,8 @@ variables:
         provider: aws
         config:
           region: "${var.region}"
+    LOKI_PVC_SIZE: "${var.loki_pvc_size}"
+    PROMETHEUS_PVC_SIZE: "${var.prometheus_pvc_size}"
   zarf-init-s3-backend:
     registry_pc_enabled: "false"
     registry_hpa_min: "2"
@@ -73,6 +75,7 @@ variables:
     ${replace(trimprefix(bucket, "gitlab-"), "-", "_")}_bucket: "${module.gitlab_s3_bucket[bucket].s3_bucket_id}"
     %{~endfor~}
     disable_registry_redirect: "true"
+    GITALY_PVC_SIZE: "${var.gitaly_pvc_size}"
 %{ if length(var.gitaly_pv_match_labels) > 0 ~}
     GITALY_PV_MATCH_LABELS:
       %{~ for label in var.gitaly_pv_match_labels ~}
@@ -81,8 +84,10 @@ variables:
 %{ endif ~}
   confluence:
     confluence_db_endpoint: "${element(split(":", module.confluence_db.db_instance_endpoint), 0)}"
+    CONFLUENCE_LOCAL_HOME_PVC_SIZE: "${var.confluence_local_home_pvc_size}"
   jira:
     jira_db_endpoint: "${element(split(":", module.jira_db.db_instance_endpoint), 0)}"
+    JIRA_LOCAL_HOME_PVC_SIZE: "${var.jira_local_home_pvc_size}"
   mattermost:
     mattermost_db_endpoint: "${element(split(":", module.mattermost_db.db_instance_endpoint), 0)}"
     mattermost_db_password: "${random_password.mattermost_db_password.result}"

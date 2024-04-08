@@ -521,6 +521,12 @@ variable "gitlab_service_account_names" {
   default     = ["gitlab-gitaly", "gitlab-sidekiq", "gitlab-toolbox", "gitlab-gitlab-exporter", "gitlab-registry", "gitlab-geo-logcursor", "gitlab-migrations", "gitlab-webservice", "gitlab-mailroom", "gitlab-gitlab-shell"]
 }
 
+variable "gitaly_pvc_size" {
+  description = "Size of the gitaly pvc"
+  type        = string
+  default     = "50Gi"
+}
+
 variable "gitaly_pv_match_labels" {
   description = "List of labels to match the pv to"
   type        = list(string)
@@ -562,6 +568,12 @@ variable "confluence_rds_instance_class" {
   default     = "db.t4g.large"
 }
 
+variable "confluence_local_home_pvc_size" {
+  description = "Size of the local home pvc"
+  type        = string
+  default     = "50Gi"
+}
+
 ############################################################################
 ################## Jira Dependencies #########################
 
@@ -595,6 +607,12 @@ variable "jira_rds_instance_class" {
   description = "The instance class to use for the RDS instance"
   type        = string
   default     = "db.t4g.large"
+}
+
+variable "jira_local_home_pvc_size" {
+  description = "Size of the local home pvc"
+  type        = string
+  default     = "50Gi"
 }
 
 ############################################################################
@@ -767,4 +785,20 @@ variable "jenkins_persistence_existing_claim" {
   description = "Name of the pre-existing PVC that jenkins will be restored from"
   type        = string
   default     = ""
+}
+
+###########################################################
+################### Loki Config ########################
+variable "loki_pvc_size" {
+  description = "Size of the Loki pvc"
+  type        = string
+  default     = "50Gi"
+}
+
+##############################################################
+################### Prometheus Config ########################
+variable "prometheus_pvc_size" {
+  description = "Size of the Prometheus pvc"
+  type        = string
+  default     = "50Gi"
 }
