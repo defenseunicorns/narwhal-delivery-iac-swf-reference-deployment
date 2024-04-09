@@ -5,7 +5,7 @@ locals {
   )
 
   uds_swf_ng_name = join("-", compact([local.prefix, var.uds_swf_ng_name, local.suffix]))
-  gitaly_ng_name = join("-", compact([local.prefix, var.gitaly_ng_name, local.suffix]))
+  gitaly_ng_name  = join("-", compact([local.prefix, var.gitaly_ng_name, local.suffix]))
 
   # self managed node groups settings
   self_managed_node_group_defaults = {

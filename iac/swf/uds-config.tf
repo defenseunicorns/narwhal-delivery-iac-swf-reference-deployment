@@ -32,7 +32,8 @@ variables:
         provider: aws
         config:
           region: "${var.region}"
-    LOKI_PVC_SIZE: "${var.loki_pvc_size}"
+    LOKI_BACKEND_PVC_SIZE: "${var.loki_backend_pvc_size}"
+    LOKI_WRITE_PVC_SIZE: "${var.loki_write_pvc_size}"
     PROMETHEUS_PVC_SIZE: "${var.prometheus_pvc_size}"
   zarf-init-s3-backend:
     registry_pc_enabled: "false"
@@ -76,12 +77,12 @@ variables:
     %{~endfor~}
     disable_registry_redirect: "true"
     GITALY_PVC_SIZE: "${var.gitaly_pvc_size}"
-%{ if length(var.gitaly_pv_match_labels) > 0 ~}
+%{if length(var.gitaly_pv_match_labels) > 0~}
     GITALY_PV_MATCH_LABELS:
-      %{~ for label in var.gitaly_pv_match_labels ~}
+      %{~for label in var.gitaly_pv_match_labels~}
       ${label}
-      %{~ endfor ~}
-%{ endif ~}
+      %{~endfor~}
+%{endif~}
   confluence:
     confluence_db_endpoint: "${element(split(":", module.confluence_db.db_instance_endpoint), 0)}"
     CONFLUENCE_LOCAL_HOME_PVC_SIZE: "${var.confluence_local_home_pvc_size}"
@@ -96,10 +97,10 @@ variables:
     mattermost_region: "${var.region}"
     mattermost_s3_endpoint: "s3.${var.region}.amazonaws.com"
     mattermost_role_arn: "${module.mattermost_irsa_s3.irsa_role[var.mattermost_service_account_names[0]].iam_role_arn}"
-%{ if length(var.jenkins_persistence_existing_claim) > 0 ~}
+%{if length(var.jenkins_persistence_existing_claim) > 0~}
   jenkins:
     JENKINS_PERSISTENCE_EXISTING_CLAIM: "${var.jenkins_persistence_existing_claim}"
-%{ endif ~}
+%{endif~}
 EOY
 }
 

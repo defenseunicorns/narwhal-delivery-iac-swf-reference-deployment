@@ -1,5 +1,5 @@
 locals {
-  jenkins_dlm_role_name             = join("-", compact([local.prefix, "dlm-lifecycle-jenkins", local.suffix]))
+  jenkins_dlm_role_name = join("-", compact([local.prefix, "dlm-lifecycle-jenkins", local.suffix]))
 }
 
 module "jenkins_volume_snapshots" {

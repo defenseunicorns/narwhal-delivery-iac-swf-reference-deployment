@@ -789,10 +789,15 @@ variable "jenkins_persistence_existing_claim" {
 
 ###########################################################
 ################### Loki Config ########################
-variable "loki_pvc_size" {
-  description = "Size of the Loki pvc"
+variable "loki_backend_pvc_size" {
+  description = "Size of the Loki backend pvc"
   type        = string
-  default     = "50Gi"
+  default     = "10Gi"
+}
+variable "loki_write_pvc_size" {
+  description = "Size of the Loki write pvc"
+  type        = string
+  default     = "10Gi"
 }
 
 ##############################################################

@@ -52,7 +52,7 @@ resource "aws_dlm_lifecycle_policy" "this" {
   description        = var.lifecycle_policy_description
   execution_role_arn = aws_iam_role.dlm_lifecycle_role.arn
   state              = "ENABLED"
-  tags               = merge(
+  tags = merge(
     var.tags,
     {
       Name = var.dlm_role_name
