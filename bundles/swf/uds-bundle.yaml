@@ -90,10 +90,10 @@ packages:
           variables:
             - name: LOKI_BACKEND_PVC_SIZE
               path: backend.persistence.size
-              default: 10Gi
+              default: 50Gi
             - name: LOKI_WRITE_PVC_SIZE
               path: write.persistence.size
-              default: 10Gi
+              default: 50Gi
       velero:
         velero:
           values:
@@ -275,9 +275,9 @@ packages:
             - name: JENKINS_PERSISTENCE_EXISTING_CLAIM
               description: "Name of the pre-existing PVC that jenkins will be restored from"
               path: persistence.existingClaim
-            - name: JENKINS_LOCAL_HOME_PVC_SIZE
+            - name: JENKINS_PVC_SIZE
               path: persistence.size
-              default: 15Gi
+              default: 50Gi
 
   - name: jira
     repository: ghcr.io/defenseunicorns/packages/uds/jira

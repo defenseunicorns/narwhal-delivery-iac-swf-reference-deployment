@@ -97,8 +97,9 @@ variables:
     mattermost_region: "${var.region}"
     mattermost_s3_endpoint: "s3.${var.region}.amazonaws.com"
     mattermost_role_arn: "${module.mattermost_irsa_s3.irsa_role[var.mattermost_service_account_names[0]].iam_role_arn}"
-%{if length(var.jenkins_persistence_existing_claim) > 0~}
   jenkins:
+    JENKINS_PVC_SIZE: "${var.jenkins_pvc_size}"
+%{if length(var.jenkins_persistence_existing_claim) > 0~}
     JENKINS_PERSISTENCE_EXISTING_CLAIM: "${var.jenkins_persistence_existing_claim}"
 %{endif~}
 EOY
