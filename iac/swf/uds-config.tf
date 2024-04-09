@@ -2,8 +2,6 @@ locals {
   uds_config_secret_name      = join("-", compact([local.prefix, "uds-config", local.suffix]))
   uds_config_output_path      = var.uds_config_output_path != "" ? var.uds_config_output_path : "../env/${var.stage}/uds"
   uds_config_output_file_name = var.uds_config_output_file_name != "" ? var.uds_config_output_file_name : "uds-config.yaml"
-
-  namespaces_to_backup_with_velero = ["gitlab", "jenkins"]
 }
 
 
