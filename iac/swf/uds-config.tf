@@ -2,6 +2,7 @@ locals {
   uds_config_secret_name      = join("-", compact([local.prefix, "uds-config", local.suffix]))
   uds_config_output_path      = var.uds_config_output_path != "" ? var.uds_config_output_path : "../env/${var.stage}/uds"
   uds_config_output_file_name = var.uds_config_output_file_name != "" ? var.uds_config_output_file_name : "uds-config.yaml"
+  min_node_count = sum([for group in local.self_managed_node_groups : group["min_size"]])
 }
 
 
@@ -13,6 +14,8 @@ resource "local_sensitive_file" "uds_config" {
   content  = <<EOY
 variables:
   core:
+    ISTIOD_AUTOSCALE_MIN: "${local.min_node_count}"
+    ISTIOD_AUTOSCALE_MAX: "${local.min_node_count + 4}"
     KC_DB_PASSWORD: "${random_password.keycloak_db_password.result}"
     KC_DB_HOST: "${element(split(":", module.keycloak_db.db_instance_endpoint), 0)}"
     VELERO_ROLE_ARN: "${module.velero_irsa_s3.irsa_role[var.velero_service_account_names[0]].iam_role_arn}"
@@ -47,6 +50,23 @@ variables:
         value: "${var.region}"
       - name: REGISTRY_STORAGE_S3_BUCKET
         value: "${module.zarf.zarf_registry_s3_bucket_name}"
+    REGISTRY_HPA_AUTO_SIZE: "true"
+    REGISTRY_AFFINITY_CUSTOM: |
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - docker-registry
+              topologyKey: kubernetes.io/hostname
+    REGISTRY_TOLERATIONS: |
+      - effect: NoSchedule
+        key: dedicated
+        operator: Exists
   storageclass:
     EBS_EXTRA_PARAMETERS: |
       tagSpecification_1: "NamespaceAndId={{ .PVCNamespace }}-${lower(random_id.default.hex)}"

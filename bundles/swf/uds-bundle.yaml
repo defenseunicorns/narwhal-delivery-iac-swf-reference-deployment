@@ -6,8 +6,8 @@ metadata:
 
 packages:
   - name: zarf-init-s3-backend
-    repository: ghcr.io/defenseunicorns/zacks-zarf-funhouse/init
-    ref: v0.32.2
+    repository: ghcr.io/defenseunicorns-dashdays/zarf-init-resilient-registry/registry1/init
+    ref: v0.32.6
 
   - name: storageclass
     repository: ghcr.io/defenseunicorns/packages/narwhal-delivery-zarf-package-eks-addons/storageclass
@@ -27,6 +27,34 @@ packages:
     repository: ghcr.io/defenseunicorns/packages/uds/core
     ref: 0.18.0-registry1
     overrides:
+      istio-controlplane:
+        istiod:
+          values:
+            - path: pilot.affinity
+              value:
+                podAntiAffinity:
+                  preferredDuringSchedulingIgnoredDuringExecution:
+                    - weight: 100
+                      podAffinityTerm:
+                        labelSelector:
+                          matchExpressions:
+                            - key: app
+                              operator: In
+                              values:
+                                - istiod
+                        topologyKey: kubernetes.io/hostname
+            - path: pilot.tolerations
+              value:
+                - effect: NoSchedule
+                  key: dedicated
+                  operator: Exists
+          variables:
+            - path: pilot.autoscaleMin
+              name: ISTIOD_AUTOSCALE_MIN
+              default: 1
+            - path: pilot.autoscaleMax
+              name: ISTIOD_AUTOSCALE_MAX
+              default: 5
       kube-prometheus-stack:
         kube-prometheus-stack:
           values:
@@ -41,15 +69,15 @@ packages:
           values:
             - path: tolerations
               value:
-              - key: node-role.kubernetes.io/master
-                operator: Exists
-                effect: NoSchedule
-              - key: node-role.kubernetes.io/control-plane
-                operator: Exists
-                effect: NoSchedule
-              - key: dedicated
-                operator: Exists
-                effect: NoSchedule
+                - key: node-role.kubernetes.io/master
+                  operator: Exists
+                  effect: NoSchedule
+                - key: node-role.kubernetes.io/control-plane
+                  operator: Exists
+                  effect: NoSchedule
+                - key: dedicated
+                  operator: Exists
+                  effect: NoSchedule
       keycloak:
         keycloak:
           values:
@@ -78,13 +106,13 @@ packages:
               value: /run/containerd/containerd.sock
             - path: enforcer.tolerations
               value:
-              - effect: NoSchedule
-                key: node-role.kubernetes.io/master
-              - effect: NoSchedule
-                key: node-role.kubernetes.io/control-plane
-              - effect: NoSchedule
-                key: dedicated
-                operator: Exists
+                - effect: NoSchedule
+                  key: node-role.kubernetes.io/master
+                - effect: NoSchedule
+                  key: node-role.kubernetes.io/control-plane
+                - effect: NoSchedule
+                  key: dedicated
+                  operator: Exists
       loki:
         loki:
           variables:
@@ -169,9 +197,9 @@ packages:
               value: ""
             - path: gitlab.gitaly.tolerations
               value:
-              - effect: NoSchedule
-                key: dedicated
-                operator: Exists
+                - effect: NoSchedule
+                  key: dedicated
+                  operator: Exists
             - path: gitlab.gitaly.resources
               value:
                 limits:
@@ -298,7 +326,6 @@ packages:
             - name: JIRA_LOCAL_HOME_PVC_SIZE
               path: volumes.localHome.persistentVolumeClaim.resources.requests.storage
               default: 50Gi
-
 
   - name: confluence
     repository: ghcr.io/defenseunicorns/packages/uds/confluence

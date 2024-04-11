@@ -166,6 +166,7 @@ locals {
       min_size      = 1
       max_size      = 1
       desired_size  = 1
+      subnet_ids    = [module.vpc.private_subnets[2]] # Constrain to a single subnet which corresponds to a single AZ
 
       instance_requirements = {
         allowed_instance_types = ["r6i.4xlarge", "r5.4xlarge"] #this should be adjusted to the appropriate instance family if reserved instances are being utilized
