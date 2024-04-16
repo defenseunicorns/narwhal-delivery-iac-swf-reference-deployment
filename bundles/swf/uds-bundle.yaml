@@ -7,7 +7,7 @@ metadata:
 packages:
   - name: zarf-init-s3-backend
     repository: ghcr.io/defenseunicorns/delivery-zarf-init/init
-    ref: v0.32.6-registry1
+    ref: v0.33.0-registry1
 
   - name: storageclass
     repository: ghcr.io/defenseunicorns/packages/narwhal-delivery-zarf-package-eks-addons/storageclass
