@@ -806,6 +806,36 @@ variable "loki_write_pvc_size" {
   default     = "50Gi"
 }
 
+variable "loki_bucket_names" {
+  description = "List of buckets to create for Loki"
+  type        = list(string)
+  default     = ["loki-ruler", "loki-admin", "loki-chunks"]
+}
+
+variable "loki_s3_bucket_force_destroy" {
+  description = "A boolean that indicates all objects should be deleted from the bucket so that the bucket can be destroyed without error. These objects are not recoverable."
+  type        = bool
+  default     = false
+}
+
+variable "loki_kms_key_alias" {
+  description = "KMS Key Alias name prefix"
+  type        = string
+  default     = "loki"
+}
+
+variable "loki_namespace" {
+  description = "Namespace loki is deployed to"
+  type        = string
+  default     = "loki"
+}
+
+variable "loki_service_account_names" {
+  description = "List of service accounts to create for loki"
+  type        = list(string)
+  default     = ["loki"]
+}
+
 ##############################################################
 ################### Prometheus Config ########################
 variable "prometheus_pvc_size" {

@@ -6,8 +6,8 @@ metadata:
 
 packages:
   - name: zarf-init-s3-backend
-    repository: ghcr.io/defenseunicorns-dashdays/zarf-init-resilient-registry/registry1/init
-    ref: v0.32.6
+    repository: ghcr.io/defenseunicorns/delivery-zarf-init/init
+    ref: v0.32.6-registry1
 
   - name: storageclass
     repository: ghcr.io/defenseunicorns/packages/narwhal-delivery-zarf-package-eks-addons/storageclass
@@ -25,7 +25,7 @@ packages:
 
   - name: core
     repository: ghcr.io/defenseunicorns/packages/uds/core
-    ref: 0.18.0-registry1
+    ref: 0.19.0-registry1
     overrides:
       istio-controlplane:
         istiod:
@@ -121,7 +121,30 @@ packages:
               default: 50Gi
             - name: LOKI_WRITE_PVC_SIZE
               path: write.persistence.size
-              default: 50Gi
+              default: 60Gi
+            - name: LOKI_S3_REGION
+              path: loki.storage.s3.region
+            - name: LOKI_CHUNKS_BUCKET
+              path: loki.storage.bucketNames.chunks
+            - name: LOKI_RULER_BUCKET
+              path: loki.storage.bucketNames.ruler
+            - name: LOKI_ADMIN_BUCKET
+              path: loki.storage.bucketNames.admin
+            - name: LOKI_S3_ROLE_ARN
+              path: serviceAccount.annotations.eks\.amazonaws\.com/role-arn
+          values:
+            - path: loki.storage.type
+              value: "s3"
+            - path: loki.commonConfig.replication_factor
+              value: 3
+            - path: singleBinary.replicas
+              value: 0
+            - path: loki.storage.s3.endpoint
+              value: ""
+            - path: loki.storage.s3.secretAccessKey
+              value: ""
+            - path: loki.storage.s3.accessKeyId
+              value: ""
       velero:
         velero:
           values:

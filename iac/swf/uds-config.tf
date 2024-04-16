@@ -35,6 +35,11 @@ variables:
           region: "${var.region}"
     LOKI_BACKEND_PVC_SIZE: "${var.loki_backend_pvc_size}"
     LOKI_WRITE_PVC_SIZE: "${var.loki_write_pvc_size}"
+    LOKI_S3_REGION: "${var.region}"
+    %{~for bucket in var.loki_bucket_names~}
+    ${upper(replace(bucket, "-", "_"))}_BUCKET: "${module.loki_s3_bucket[bucket].s3_bucket_id}"
+    %{~endfor~}
+    LOKI_S3_ROLE_ARN: "${module.loki_irsa_s3.irsa_role[var.loki_service_account_names[0]].iam_role_arn}"
     PROMETHEUS_PVC_SIZE: "${var.prometheus_pvc_size}"
   zarf-init-s3-backend:
     registry_pc_enabled: "false"
