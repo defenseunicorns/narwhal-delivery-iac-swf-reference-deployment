@@ -179,7 +179,16 @@ tasks:
             fi
           done < <(echo ${INPUT_VAR_FILES} | yq e '.[]' -)
 
-          terraform plan $var_files_options
+          mkdir -p ignore
+
+          terraform plan $var_files_options -no-color 2>&1 | tee ignore/terraform-plan.out
+
+          cat ignore/terraform-plan.out \
+            | grep -v "Refreshing state" \
+            | grep -v "Reading..." \
+            | grep -v "Read complete" \
+            | perl -0777pe 's/  #.*will be read[\s\S]*?    }\n\n//mg' > ignore/terraform-plan-filtered.tf \
+            || true
         shell:
           linux: bash
           darwin: bash

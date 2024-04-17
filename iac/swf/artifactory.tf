@@ -1,6 +1,7 @@
 locals {
   artifactory_db_secret_name            = join("-", compact([local.prefix, "artifactory-db-secret", local.suffix]))
   artifactory_kms_key_alias_name_prefix = join("-", compact([local.prefix, var.artifactory_kms_key_alias, local.suffix]))
+  artifactory_dlm_role_name             = join("-", compact([local.prefix, "dlm-lifecycle-artifactory", local.suffix]))
 }
 
 module "artifactory_kms_key" {
@@ -9,6 +10,44 @@ module "artifactory_kms_key" {
   kms_key_alias_name_prefix = local.artifactory_kms_key_alias_name_prefix
   kms_key_deletion_window   = 7
   kms_key_description       = "Artifactory Key"
+}
+
+module "artifactory_volume_snapshots" {
+  source        = "./modules/volume-snapshot"
+  dlm_role_name = local.artifactory_dlm_role_name
+
+  schedule_details = [{
+    name = "Daily"
+    create_rule = {
+      cron_expression = "cron(0 0 * * ? *)"
+    }
+    retain_rule = {
+      count = 30
+    }
+    },
+    {
+      name = "Weekly"
+      create_rule = {
+        cron_expression = "cron(0 0 ? * 1 *)"
+      }
+      retain_rule = {
+        count = 52
+      }
+    },
+    {
+      name = "Monthly"
+      create_rule = {
+        cron_expression = "cron(0 0 1 * ? *)"
+      }
+      retain_rule = {
+        count = 84
+      }
+  }]
+  target_tags = {
+    NamespaceAndId = "artifactory-${lower(random_id.default.hex)}"
+  }
+  lifecycle_policy_description = "Policy for Artifactory volume snapshots"
+  tags                         = local.tags
 }
 
 # RDS

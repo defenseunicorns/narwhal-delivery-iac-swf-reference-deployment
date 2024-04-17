@@ -73,6 +73,10 @@ tasks:
     actions:
       - description: "Get the current environment"
         task: deploy:get-env
+      - task: deploy:terraform-backend-reconfigure-init
+        with:
+          env: ${ENV}
+          root_module: bootstrap
       - description: "Terraform plan AWS SWF IaC Bootstrap module"
         task: deploy:terraform-plan
         with:
@@ -87,6 +91,10 @@ tasks:
     actions:
       - description: "Get the current environment"
         task: deploy:get-env
+      - task: deploy:terraform-backend-reconfigure-init
+        with:
+          env: ${ENV}
+          root_module: bootstrap
       - description: "Terraform apply AWS SWF IaC Bootstrap module"
         task: deploy:terraform-apply
         with:
@@ -127,6 +135,10 @@ tasks:
     actions:
       - description: "Get the current environment"
         task: deploy:get-env
+      - task: deploy:terraform-backend-reconfigure-init
+        with:
+          env: ${ENV}
+          root_module: swf
       - description: "Terraform plan AWS SWF IaC swf module"
         task: deploy:terraform-plan
         with:
@@ -141,6 +153,10 @@ tasks:
     actions:
       - description: "Get the current environment"
         task: deploy:get-env
+      - task: deploy:terraform-backend-reconfigure-init
+        with:
+          env: ${ENV}
+          root_module: swf
       - description: "Terraform apply AWS SWF IaC swf module"
         task: deploy:terraform-apply
         with:
@@ -203,6 +219,10 @@ tasks:
       #     var_files: '["common.terraform.tfvars", "swf.terraform.tfvars"]'
       - description: "Get the current environment"
         task: deploy:get-env
+      - task: deploy:terraform-backend-reconfigure-init
+        with:
+          env: ${ENV}
+          root_module: transit-gateway
       - description: "Terraform plan AWS SWF IaC transit-gateway module"
         task: deploy:terraform-plan
         with:
@@ -224,6 +244,10 @@ tasks:
       #     var_files: '["common.terraform.tfvars", "swf.terraform.tfvars"]'
       - description: "Get the current environment"
         task: deploy:get-env
+      - task: deploy:terraform-backend-reconfigure-init
+        with:
+          env: ${ENV}
+          root_module: transit-gateway
       - description: "Terraform apply AWS SWF IaC transit-gateway module"
         task: deploy:terraform-apply
         with:
@@ -239,6 +263,10 @@ tasks:
     actions:
       - description: "Get the current environment"
         task: deploy:get-env
+      - task: deploy:terraform-backend-reconfigure-init
+        with:
+          env: ${ENV}
+          root_module: swf
       - description: "Get the bastion instance id"
         task: deploy:get-bastion-instance-id
         with:
@@ -302,6 +330,10 @@ tasks:
     description: "Update the UDS config file for the current environment locally"
     actions:
       - task: deploy:get-env
+      - task: deploy:terraform-backend-reconfigure-init
+        with:
+          env: ${ENV}
+          root_module: swf
       - task: deploy:update-uds-config
         with:
           env: ${ENV}
