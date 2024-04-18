@@ -4,7 +4,7 @@ locals {
 }
 
 module "confluence_kms_key" {
-  source = "github.com/defenseunicorns/terraform-aws-uds-kms?ref=v0.0.2"
+  source = "github.com/defenseunicorns/terraform-aws-uds-kms?ref=v0.0.3"
 
   kms_key_alias_name_prefix = local.confluence_kms_key_alias_name_prefix
   kms_key_deletion_window   = 7
@@ -27,7 +27,7 @@ resource "aws_secretsmanager_secret" "confluence_db_secret" {
 
 module "confluence_db" {
   source  = "terraform-aws-modules/rds/aws"
-  version = "6.1.1"
+  version = "6.5.4"
   tags    = local.tags
 
   identifier                     = var.confluence_db_idenitfier_prefix

@@ -317,7 +317,7 @@ locals {
 }
 
 module "eks" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-eks.git?ref=v0.0.18"
+  source = "git::https://github.com/defenseunicorns/terraform-aws-eks.git?ref=v0.0.19"
 
   name                                    = local.cluster_name
   aws_region                              = var.region

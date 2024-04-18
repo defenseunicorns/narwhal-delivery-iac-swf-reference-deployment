@@ -6,7 +6,7 @@ locals {
 module "mattermost_s3_bucket" {
   for_each = toset(var.mattermost_bucket_names)
 
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v4.1.0"
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v4.1.2"
 
   bucket        = join("-", compact([local.prefix, each.key, local.suffix]))
   force_destroy = var.mattermost_s3_bucket_force_destroy
@@ -51,7 +51,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "mattermost_s3_bucket" {
 }
 
 module "mattermost_kms_key" {
-  source = "github.com/defenseunicorns/terraform-aws-uds-kms?ref=v0.0.2"
+  source = "github.com/defenseunicorns/terraform-aws-uds-kms?ref=v0.0.3"
 
   kms_key_alias_name_prefix = local.mattermost_kms_key_alias_name_prefix
   kms_key_deletion_window   = 7
@@ -88,7 +88,7 @@ resource "aws_secretsmanager_secret" "mattermost_db_secret" {
 
 module "mattermost_db" {
   source  = "terraform-aws-modules/rds/aws"
-  version = "6.1.1"
+  version = "6.5.4"
   tags    = local.tags
 
   identifier                     = var.mattermost_db_idenitfier_prefix
