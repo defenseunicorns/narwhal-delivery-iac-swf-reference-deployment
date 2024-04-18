@@ -125,6 +125,16 @@ variables:
 %{if length(var.jenkins_persistence_existing_claim) > 0~}
     JENKINS_PERSISTENCE_EXISTING_CLAIM: "${var.jenkins_persistence_existing_claim}"
 %{endif~}
+%{if var.artifatory_license_key_secret_id != ""}
+  artifactory:
+    ARTIFACTORY_LICENSE: "${var.artifatory_license_key_secret_id}"
+%{endif~}
+%{if var.artifactory_storage_type != "file-system"}
+    %{~for bucket in var.artifactory_bucket_names~}
+    ${replace(trimprefix(bucket, "artifactory-"), "-", "_")}_bucket: "${module.artifactory_s3_bucket[bucket].s3_bucket_id}"
+    %{~endfor~}
+    ARTIFACTORY_ENDPOINT: "s3.${var.region}.amazonaws.com"
+%{endif~}
 EOY
 }
 

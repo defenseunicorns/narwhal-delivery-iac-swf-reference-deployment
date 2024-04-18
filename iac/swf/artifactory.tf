@@ -12,8 +12,71 @@ module "artifactory_kms_key" {
   kms_key_description       = "Artifactory Key"
 }
 
+module "artifactory_s3_bucket" {
+  for_each = toset(var.artifactory_bucket_names)
+
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v4.1.2"
+
+  bucket        = join("-", compact([local.prefix, each.key, local.suffix]))
+  force_destroy = var.artifactory_s3_bucket_force_destroy
+  tags          = local.tags
+
+  versioning = {
+    status = "Enabled"
+  }
+
+  server_side_encryption_configuration = {
+    rule = {
+      apply_server_side_encryption_by_default = {
+        kms_master_key_id = module.artifactory_kms_key.kms_key_arn
+        sse_algorithm     = "aws:kms"
+      }
+    }
+  }
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "artifactory_s3_bucket" {
+  for_each = toset(var.artifactory_bucket_names)
+
+  bucket = join("-", compact([local.prefix, each.key, local.suffix]))
+
+  rule {
+    id = join("-", compact([local.prefix, each.key, "version-retention", local.suffix]))
+
+    filter {}
+
+    noncurrent_version_expiration {
+      newer_noncurrent_versions = 5
+      noncurrent_days           = 90
+    }
+
+    noncurrent_version_transition {
+      newer_noncurrent_versions = 2
+      storage_class             = "GLACIER_IR"
+    }
+
+    status = "Enabled"
+  }
+}
+
+module "artifactory_irsa_s3" {
+  source = "./modules/irsa-s3"
+  count  = length(var.artifactory_bucket_names) > 0 ? 1 : 0
+
+  stage                = var.stage
+  serviceaccount_names = var.artifactory_service_account_names
+  policy_name          = "artifactory"
+  prefix               = local.prefix
+  suffix               = local.suffix
+  k8s_namespace        = var.artifactory_namespace
+  bucket_names         = var.artifactory_bucket_names
+  kms_key_arn          = module.artifactory_kms_key.kms_key_arn
+  oidc_provider_arn    = module.eks.oidc_provider_arn
+}
+
 module "artifactory_volume_snapshots" {
   source        = "./modules/volume-snapshot"
+  count         = length(var.artifactory_bucket_names) > 0 ? 0 : 1
   dlm_role_name = local.artifactory_dlm_role_name
 
   schedule_details = [{
@@ -127,4 +190,9 @@ resource "aws_vpc_security_group_ingress_rule" "artifactory_rds_ingress" {
   ip_protocol = "tcp"
   from_port   = 0
   to_port     = 5432
+}
+
+data "aws_secretsmanager_secret_version" "artifactory-license-secret" {
+  count     = var.artifatory_license_key_secret_id != "" ? 1 : 0
+  secret_id = var.artifatory_license_key_secret_id
 }

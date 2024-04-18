@@ -373,3 +373,21 @@ packages:
   - name: artifactory
     repository: ghcr.io/defenseunicorns/packages/uds/artifactory
     ref: 107.77.7-uds.0-registry1
+    overrides:
+      artifactory:
+        artifactory:
+          variables:
+            - name: ARTIFACTORY_TYPE
+              path: artifactory.persistence.type
+              default: file-system
+            - name: ARTIFACTORY_TEST_CONNECTION
+              path: artifactory.persistence.awsS3V3.testConnection
+              default: "true"
+            - name: ARTIFACTORY_BUCKET
+              path: artifactory.persistence.awsS3V3.bucketName
+            - name: ARTIFACTORY_PATH
+              path: artifactory.persistence.awsS3V3.path
+              default: artifactory/filestore
+            - name: ARTIFACTORY_ENDPOINT
+              path: artifactory.persistence.awsS3V3.endpoint
+

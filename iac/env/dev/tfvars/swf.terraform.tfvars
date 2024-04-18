@@ -230,3 +230,11 @@ admin_roles = [
 ######################### Prometheus ############################
 
 # prometheus_pvc_size = ""
+
+# mattermost_db_snapshot = ""
+
+##################################################################
+######################### Artifactory ############################
+
+# artifactory_storage_type = "awsS3V3"
+# artifactory_bucket_names = ["artifactory"]

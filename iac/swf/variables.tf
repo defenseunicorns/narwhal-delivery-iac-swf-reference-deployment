@@ -609,6 +609,42 @@ variable "artifactory_kms_key_alias" {
   default     = "artifactory"
 }
 
+variable "artifactory_storage_type" {
+  description = "Set the persistence storage type"
+  type        = string
+  default     = "file-system"
+}
+
+variable "artifactory_bucket_names" {
+  description = "List of buckets to create for Artifactory"
+  type        = list(string)
+  default     = []
+}
+
+variable "artifactory_s3_bucket_force_destroy" {
+  description = "A boolean that indicates all objects should be deleted from the bucket so that the bucket can be destroyed without error. These objects are not recoverable."
+  type        = bool
+  default     = false
+}
+
+variable "artifactory_service_account_names" {
+  description = "List of service accounts to create for Artifactory"
+  type        = list(string)
+  default     = ["artifactory"]
+}
+
+variable "artifactory_namespace" {
+  description = "Namespace Artifactory is deployed to"
+  type        = string
+  default     = "artifactory"
+}
+
+variable "artifatory_license_key_secret_id" {
+  description = "The license secret for artifatory"
+  type        = string
+  default     = ""
+}
+
 variable "artifactory_db_name" {
   description = "Name of the artifactory database."
   type        = string
