@@ -74,7 +74,8 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 |------|--------|---------|
 | <a name="module_artifactory_db"></a> [artifactory\_db](#module\_artifactory\_db) | terraform-aws-modules/rds/aws | 6.1.1 |
 | <a name="module_artifactory_kms_key"></a> [artifactory\_kms\_key](#module\_artifactory\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.2 |
-| <a name="module_bastion"></a> [bastion](#module\_bastion) | git::https://github.com/defenseunicorns/terraform-aws-bastion.git | v0.0.11 |
+| <a name="module_artifactory_volume_snapshots"></a> [artifactory\_volume\_snapshots](#module\_artifactory\_volume\_snapshots) | ./modules/volume-snapshot | n/a |
+| <a name="module_bastion"></a> [bastion](#module\_bastion) | git::https://github.com/defenseunicorns/terraform-aws-bastion.git | v0.0.15 |
 | <a name="module_confluence_db"></a> [confluence\_db](#module\_confluence\_db) | terraform-aws-modules/rds/aws | 6.1.1 |
 | <a name="module_confluence_kms_key"></a> [confluence\_kms\_key](#module\_confluence\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.2 |
 | <a name="module_ebs_kms_key"></a> [ebs\_kms\_key](#module\_ebs\_kms\_key) | terraform-aws-modules/kms/aws | ~> 2.0 |
@@ -84,16 +85,21 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="module_gitlab_kms_key"></a> [gitlab\_kms\_key](#module\_gitlab\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.3 |
 | <a name="module_gitlab_s3_bucket"></a> [gitlab\_s3\_bucket](#module\_gitlab\_s3\_bucket) | git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git | v4.1.0 |
 | <a name="module_gitlab_volume_snapshots"></a> [gitlab\_volume\_snapshots](#module\_gitlab\_volume\_snapshots) | ./modules/volume-snapshot | n/a |
+| <a name="module_jenkins_volume_snapshots"></a> [jenkins\_volume\_snapshots](#module\_jenkins\_volume\_snapshots) | ./modules/volume-snapshot | n/a |
 | <a name="module_jira_db"></a> [jira\_db](#module\_jira\_db) | terraform-aws-modules/rds/aws | 6.1.1 |
 | <a name="module_jira_kms_key"></a> [jira\_kms\_key](#module\_jira\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.2 |
 | <a name="module_key_pair"></a> [key\_pair](#module\_key\_pair) | terraform-aws-modules/key-pair/aws | ~> 2.0 |
 | <a name="module_keycloak_db"></a> [keycloak\_db](#module\_keycloak\_db) | terraform-aws-modules/rds/aws | 6.1.1 |
 | <a name="module_keycloak_kms_key"></a> [keycloak\_kms\_key](#module\_keycloak\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.2 |
+| <a name="module_loki_irsa_s3"></a> [loki\_irsa\_s3](#module\_loki\_irsa\_s3) | ./modules/irsa-s3 | n/a |
+| <a name="module_loki_kms_key"></a> [loki\_kms\_key](#module\_loki\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.3 |
+| <a name="module_loki_s3_bucket"></a> [loki\_s3\_bucket](#module\_loki\_s3\_bucket) | git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git | v4.1.0 |
+| <a name="module_loki_volume_snapshots"></a> [loki\_volume\_snapshots](#module\_loki\_volume\_snapshots) | ./modules/volume-snapshot | n/a |
 | <a name="module_mattermost_db"></a> [mattermost\_db](#module\_mattermost\_db) | terraform-aws-modules/rds/aws | 6.1.1 |
 | <a name="module_mattermost_irsa_s3"></a> [mattermost\_irsa\_s3](#module\_mattermost\_irsa\_s3) | ./modules/irsa-s3 | n/a |
 | <a name="module_mattermost_kms_key"></a> [mattermost\_kms\_key](#module\_mattermost\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.2 |
 | <a name="module_mattermost_s3_bucket"></a> [mattermost\_s3\_bucket](#module\_mattermost\_s3\_bucket) | git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git | v4.1.0 |
-| <a name="module_password_lambda"></a> [password\_lambda](#module\_password\_lambda) | git::https://github.com/defenseunicorns/terraform-aws-lambda.git//modules/password-rotation | v0.0.3 |
+| <a name="module_password_lambda"></a> [password\_lambda](#module\_password\_lambda) | git::https://github.com/defenseunicorns/terraform-aws-lambda.git//modules/password-rotation | v0.0.4 |
 | <a name="module_ssm_kms_key"></a> [ssm\_kms\_key](#module\_ssm\_kms\_key) | terraform-aws-modules/kms/aws | ~> 2.0 |
 | <a name="module_subnet_addrs"></a> [subnet\_addrs](#module\_subnet\_addrs) | git::https://github.com/hashicorp/terraform-cidr-subnets | v1.0.0 |
 | <a name="module_velero_irsa_s3"></a> [velero\_irsa\_s3](#module\_velero\_irsa\_s3) | ./modules/irsa-s3 | n/a |
@@ -114,6 +120,7 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | [aws_s3_bucket.access_log_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket) | resource |
 | [aws_s3_bucket_lifecycle_configuration.access_log_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_lifecycle_configuration) | resource |
 | [aws_s3_bucket_lifecycle_configuration.gitlab_s3_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_lifecycle_configuration) | resource |
+| [aws_s3_bucket_lifecycle_configuration.loki_s3_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_lifecycle_configuration) | resource |
 | [aws_s3_bucket_lifecycle_configuration.mattermost_s3_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_lifecycle_configuration) | resource |
 | [aws_s3_bucket_lifecycle_configuration.velero_s3_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_lifecycle_configuration) | resource |
 | [aws_s3_bucket_notification.access_log_bucket_notification](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_notification) | resource |
@@ -191,6 +198,7 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="input_confluence_db_name"></a> [confluence\_db\_name](#input\_confluence\_db\_name) | Name of the Confluence database. | `string` | `"confluencedb"` | no |
 | <a name="input_confluence_db_snapshot"></a> [confluence\_db\_snapshot](#input\_confluence\_db\_snapshot) | The snapshot to restore the RDS instance from | `string` | `""` | no |
 | <a name="input_confluence_kms_key_alias"></a> [confluence\_kms\_key\_alias](#input\_confluence\_kms\_key\_alias) | KMS Key Alias name prefix | `string` | `"confluence"` | no |
+| <a name="input_confluence_local_home_pvc_size"></a> [confluence\_local\_home\_pvc\_size](#input\_confluence\_local\_home\_pvc\_size) | Size of the local home pvc | `string` | `"50Gi"` | no |
 | <a name="input_confluence_rds_instance_class"></a> [confluence\_rds\_instance\_class](#input\_confluence\_rds\_instance\_class) | The instance class to use for the RDS instance | `string` | `"db.t4g.large"` | no |
 | <a name="input_create_kubernetes_resources"></a> [create\_kubernetes\_resources](#input\_create\_kubernetes\_resources) | If true, kubernetes resources related to non-marketplace addons to will be created | `bool` | `false` | no |
 | <a name="input_create_ssm_parameters"></a> [create\_ssm\_parameters](#input\_create\_ssm\_parameters) | Create SSM parameters for values from eks blueprints addons | `bool` | `true` | no |
@@ -216,6 +224,9 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="input_external_secrets_kms_key_arns"></a> [external\_secrets\_kms\_key\_arns](#input\_external\_secrets\_kms\_key\_arns) | List of KMS Key ARNs that are used by Secrets Manager that contain secrets to mount using External Secrets | `list(string)` | `[]` | no |
 | <a name="input_external_secrets_secrets_manager_arns"></a> [external\_secrets\_secrets\_manager\_arns](#input\_external\_secrets\_secrets\_manager\_arns) | List of Secrets Manager ARNs that contain secrets to mount using External Secrets | `list(string)` | `[]` | no |
 | <a name="input_external_secrets_ssm_parameter_arns"></a> [external\_secrets\_ssm\_parameter\_arns](#input\_external\_secrets\_ssm\_parameter\_arns) | List of Systems Manager Parameter ARNs that contain secrets to mount using External Secrets | `list(string)` | `[]` | no |
+| <a name="input_gitaly_ng_name"></a> [gitaly\_ng\_name](#input\_gitaly\_ng\_name) | Name of the UDS SWF node group | `string` | `"gitaly_ng"` | no |
+| <a name="input_gitaly_pv_match_labels"></a> [gitaly\_pv\_match\_labels](#input\_gitaly\_pv\_match\_labels) | List of labels to match the pv to | `list(string)` | `[]` | no |
+| <a name="input_gitaly_pvc_size"></a> [gitaly\_pvc\_size](#input\_gitaly\_pvc\_size) | Size of the gitaly pvc | `string` | `"50Gi"` | no |
 | <a name="input_gitlab_bucket_names"></a> [gitlab\_bucket\_names](#input\_gitlab\_bucket\_names) | List of buckets to create for GitLab | `list(string)` | <pre>[<br>  "gitlab-artifacts",<br>  "gitlab-backups",<br>  "gitlab-ci-secure-files",<br>  "gitlab-dependency-proxy",<br>  "gitlab-lfs",<br>  "gitlab-mr-diffs",<br>  "gitlab-packages",<br>  "gitlab-pages",<br>  "gitlab-terraform-state",<br>  "gitlab-uploads",<br>  "gitlab-registry",<br>  "gitlab-runner-cache",<br>  "gitlab-tmp"<br>]</pre> | no |
 | <a name="input_gitlab_db_idenitfier_prefix"></a> [gitlab\_db\_idenitfier\_prefix](#input\_gitlab\_db\_idenitfier\_prefix) | The prefix to use for the RDS instance identifier | `string` | `"gitlab-db"` | no |
 | <a name="input_gitlab_db_name"></a> [gitlab\_db\_name](#input\_gitlab\_db\_name) | Name of the GitLab database. | `string` | `"gitlabdb"` | no |
@@ -227,10 +238,13 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="input_gitlab_s3_bucket_force_destroy"></a> [gitlab\_s3\_bucket\_force\_destroy](#input\_gitlab\_s3\_bucket\_force\_destroy) | A boolean that indicates all objects should be deleted from the bucket so that the bucket can be destroyed without error. These objects are not recoverable. | `bool` | `false` | no |
 | <a name="input_gitlab_service_account_names"></a> [gitlab\_service\_account\_names](#input\_gitlab\_service\_account\_names) | List of service accounts to create for GitLab | `list(string)` | <pre>[<br>  "gitlab-gitaly",<br>  "gitlab-sidekiq",<br>  "gitlab-toolbox",<br>  "gitlab-gitlab-exporter",<br>  "gitlab-registry",<br>  "gitlab-geo-logcursor",<br>  "gitlab-migrations",<br>  "gitlab-webservice",<br>  "gitlab-mailroom",<br>  "gitlab-gitlab-shell"<br>]</pre> | no |
 | <a name="input_iam_role_permissions_boundary"></a> [iam\_role\_permissions\_boundary](#input\_iam\_role\_permissions\_boundary) | ARN of the policy that is used to set the permissions boundary for IAM roles | `string` | `null` | no |
+| <a name="input_jenkins_persistence_existing_claim"></a> [jenkins\_persistence\_existing\_claim](#input\_jenkins\_persistence\_existing\_claim) | Name of the pre-existing PVC that jenkins will be restored from | `string` | `""` | no |
+| <a name="input_jenkins_pvc_size"></a> [jenkins\_pvc\_size](#input\_jenkins\_pvc\_size) | Size of the Loki backend pvc | `string` | `"50Gi"` | no |
 | <a name="input_jira_db_idenitfier_prefix"></a> [jira\_db\_idenitfier\_prefix](#input\_jira\_db\_idenitfier\_prefix) | The prefix to use for the RDS instance identifier | `string` | `"jira-db"` | no |
 | <a name="input_jira_db_name"></a> [jira\_db\_name](#input\_jira\_db\_name) | Name of the Jira database. | `string` | `"jiradb"` | no |
 | <a name="input_jira_db_snapshot"></a> [jira\_db\_snapshot](#input\_jira\_db\_snapshot) | The snapshot to restore the RDS instance from | `string` | `""` | no |
 | <a name="input_jira_kms_key_alias"></a> [jira\_kms\_key\_alias](#input\_jira\_kms\_key\_alias) | KMS Key Alias name prefix | `string` | `"jira"` | no |
+| <a name="input_jira_local_home_pvc_size"></a> [jira\_local\_home\_pvc\_size](#input\_jira\_local\_home\_pvc\_size) | Size of the local home pvc | `string` | `"50Gi"` | no |
 | <a name="input_jira_rds_instance_class"></a> [jira\_rds\_instance\_class](#input\_jira\_rds\_instance\_class) | The instance class to use for the RDS instance | `string` | `"db.t4g.large"` | no |
 | <a name="input_keycloak_db_idenitfier_prefix"></a> [keycloak\_db\_idenitfier\_prefix](#input\_keycloak\_db\_idenitfier\_prefix) | The prefix to use for the RDS instance identifier | `string` | `"keycloak-db"` | no |
 | <a name="input_keycloak_db_name"></a> [keycloak\_db\_name](#input\_keycloak\_db\_name) | Name of the Keycloak database. | `string` | `"keycloakdb"` | no |
@@ -239,6 +253,13 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="input_keycloak_kms_key_alias"></a> [keycloak\_kms\_key\_alias](#input\_keycloak\_kms\_key\_alias) | KMS Key Alias name prefix | `string` | `"keycloak"` | no |
 | <a name="input_keycloak_rds_instance_class"></a> [keycloak\_rds\_instance\_class](#input\_keycloak\_rds\_instance\_class) | The instance class to use for the RDS instance | `string` | `"db.t4g.large"` | no |
 | <a name="input_kms_key_deletion_window"></a> [kms\_key\_deletion\_window](#input\_kms\_key\_deletion\_window) | Waiting period for scheduled KMS Key deletion. Can be 7-30 days. | `number` | `7` | no |
+| <a name="input_loki_backend_pvc_size"></a> [loki\_backend\_pvc\_size](#input\_loki\_backend\_pvc\_size) | Size of the Loki backend pvc | `string` | `"50Gi"` | no |
+| <a name="input_loki_bucket_names"></a> [loki\_bucket\_names](#input\_loki\_bucket\_names) | List of buckets to create for Loki | `list(string)` | <pre>[<br>  "loki-ruler",<br>  "loki-admin",<br>  "loki-chunks"<br>]</pre> | no |
+| <a name="input_loki_kms_key_alias"></a> [loki\_kms\_key\_alias](#input\_loki\_kms\_key\_alias) | KMS Key Alias name prefix | `string` | `"loki"` | no |
+| <a name="input_loki_namespace"></a> [loki\_namespace](#input\_loki\_namespace) | Namespace loki is deployed to | `string` | `"loki"` | no |
+| <a name="input_loki_s3_bucket_force_destroy"></a> [loki\_s3\_bucket\_force\_destroy](#input\_loki\_s3\_bucket\_force\_destroy) | A boolean that indicates all objects should be deleted from the bucket so that the bucket can be destroyed without error. These objects are not recoverable. | `bool` | `false` | no |
+| <a name="input_loki_service_account_names"></a> [loki\_service\_account\_names](#input\_loki\_service\_account\_names) | List of service accounts to create for loki | `list(string)` | <pre>[<br>  "loki"<br>]</pre> | no |
+| <a name="input_loki_write_pvc_size"></a> [loki\_write\_pvc\_size](#input\_loki\_write\_pvc\_size) | Size of the Loki write pvc | `string` | `"50Gi"` | no |
 | <a name="input_mattermost_bucket_names"></a> [mattermost\_bucket\_names](#input\_mattermost\_bucket\_names) | List of buckets to create for Mattermost | `list(string)` | <pre>[<br>  "mattermost"<br>]</pre> | no |
 | <a name="input_mattermost_db_idenitfier_prefix"></a> [mattermost\_db\_idenitfier\_prefix](#input\_mattermost\_db\_idenitfier\_prefix) | The prefix to use for the RDS instance identifier | `string` | `"mattermost-db"` | no |
 | <a name="input_mattermost_db_name"></a> [mattermost\_db\_name](#input\_mattermost\_db\_name) | Name of the Mattermost database. | `string` | `"mattermostdb"` | no |
@@ -253,6 +274,7 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="input_namespace"></a> [namespace](#input\_namespace) | Namespace, which could be your organization name or abbreviation, e.g. 'eg' or 'cp' | `string` | `"du"` | no |
 | <a name="input_num_azs"></a> [num\_azs](#input\_num\_azs) | The number of AZs to use | `number` | `3` | no |
 | <a name="input_prefix"></a> [prefix](#input\_prefix) | name prefix to prepend to most resources, if not defined, created as: 'namespace-stage-name' | `string` | `""` | no |
+| <a name="input_prometheus_pvc_size"></a> [prometheus\_pvc\_size](#input\_prometheus\_pvc\_size) | Size of the Prometheus pvc | `string` | `"50Gi"` | no |
 | <a name="input_recovery_window"></a> [recovery\_window](#input\_recovery\_window) | Number of days to wait before deleting the secret | `number` | `7` | no |
 | <a name="input_region"></a> [region](#input\_region) | The AWS region to deploy into | `string` | n/a | yes |
 | <a name="input_secondary_cidr_blocks"></a> [secondary\_cidr\_blocks](#input\_secondary\_cidr\_blocks) | A list of secondary CIDR blocks for the VPC | `list(string)` | `[]` | no |
@@ -265,6 +287,7 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to apply to all resources | `map(string)` | `{}` | no |
 | <a name="input_uds_config_output_file_name"></a> [uds\_config\_output\_file\_name](#input\_uds\_config\_output\_file\_name) | The name of the UDS config file when templating | `string` | `""` | no |
 | <a name="input_uds_config_output_path"></a> [uds\_config\_output\_path](#input\_uds\_config\_output\_path) | The path to output the UDS config file when templating | `string` | `""` | no |
+| <a name="input_uds_swf_ng_name"></a> [uds\_swf\_ng\_name](#input\_uds\_swf\_ng\_name) | Name of the UDS SWF node group | `string` | `"uds_ng"` | no |
 | <a name="input_users"></a> [users](#input\_users) | This needs to be a list of users that will be on your ec2 instances that need password changes. | `list(string)` | `[]` | no |
 | <a name="input_velero_bucket_names"></a> [velero\_bucket\_names](#input\_velero\_bucket\_names) | List of buckets to create for Velero | `list(string)` | <pre>[<br>  "velero"<br>]</pre> | no |
 | <a name="input_velero_kms_key_alias"></a> [velero\_kms\_key\_alias](#input\_velero\_kms\_key\_alias) | KMS Key Alias name prefix | `string` | `"velero"` | no |

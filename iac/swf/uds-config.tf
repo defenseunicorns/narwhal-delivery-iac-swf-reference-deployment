@@ -2,7 +2,7 @@ locals {
   uds_config_secret_name      = join("-", compact([local.prefix, "uds-config", local.suffix]))
   uds_config_output_path      = var.uds_config_output_path != "" ? var.uds_config_output_path : "../env/${var.stage}/uds"
   uds_config_output_file_name = var.uds_config_output_file_name != "" ? var.uds_config_output_file_name : "uds-config.yaml"
-  min_node_count = sum([for group in local.self_managed_node_groups : group["min_size"]])
+  min_node_count              = sum([for group in local.self_managed_node_groups : group["min_size"]])
 }
 
 
