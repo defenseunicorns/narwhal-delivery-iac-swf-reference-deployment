@@ -48,7 +48,7 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0.0 |
-| <a name="requirement_archive"></a> [archive](#requirement\_archive) | 2.4.1 |
+| <a name="requirement_archive"></a> [archive](#requirement\_archive) | 2.4.2 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.36.0 |
 | <a name="requirement_cloudinit"></a> [cloudinit](#requirement\_cloudinit) | >= 2.0.0 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.5.1 |
@@ -72,39 +72,39 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_artifactory_db"></a> [artifactory\_db](#module\_artifactory\_db) | terraform-aws-modules/rds/aws | 6.1.1 |
-| <a name="module_artifactory_kms_key"></a> [artifactory\_kms\_key](#module\_artifactory\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.2 |
+| <a name="module_artifactory_db"></a> [artifactory\_db](#module\_artifactory\_db) | terraform-aws-modules/rds/aws | 6.5.4 |
+| <a name="module_artifactory_kms_key"></a> [artifactory\_kms\_key](#module\_artifactory\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.3 |
 | <a name="module_artifactory_volume_snapshots"></a> [artifactory\_volume\_snapshots](#module\_artifactory\_volume\_snapshots) | ./modules/volume-snapshot | n/a |
 | <a name="module_bastion"></a> [bastion](#module\_bastion) | git::https://github.com/defenseunicorns/terraform-aws-bastion.git | v0.0.15 |
-| <a name="module_confluence_db"></a> [confluence\_db](#module\_confluence\_db) | terraform-aws-modules/rds/aws | 6.1.1 |
-| <a name="module_confluence_kms_key"></a> [confluence\_kms\_key](#module\_confluence\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.2 |
+| <a name="module_confluence_db"></a> [confluence\_db](#module\_confluence\_db) | terraform-aws-modules/rds/aws | 6.5.4 |
+| <a name="module_confluence_kms_key"></a> [confluence\_kms\_key](#module\_confluence\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.3 |
 | <a name="module_ebs_kms_key"></a> [ebs\_kms\_key](#module\_ebs\_kms\_key) | terraform-aws-modules/kms/aws | ~> 2.0 |
-| <a name="module_eks"></a> [eks](#module\_eks) | git::https://github.com/defenseunicorns/terraform-aws-eks.git | v0.0.18 |
-| <a name="module_gitlab_db"></a> [gitlab\_db](#module\_gitlab\_db) | terraform-aws-modules/rds/aws | 6.1.1 |
+| <a name="module_eks"></a> [eks](#module\_eks) | git::https://github.com/defenseunicorns/terraform-aws-eks.git | v0.0.19 |
+| <a name="module_gitlab_db"></a> [gitlab\_db](#module\_gitlab\_db) | terraform-aws-modules/rds/aws | 6.5.4 |
 | <a name="module_gitlab_irsa_s3"></a> [gitlab\_irsa\_s3](#module\_gitlab\_irsa\_s3) | ./modules/irsa-s3 | n/a |
 | <a name="module_gitlab_kms_key"></a> [gitlab\_kms\_key](#module\_gitlab\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.3 |
-| <a name="module_gitlab_s3_bucket"></a> [gitlab\_s3\_bucket](#module\_gitlab\_s3\_bucket) | git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git | v4.1.0 |
+| <a name="module_gitlab_s3_bucket"></a> [gitlab\_s3\_bucket](#module\_gitlab\_s3\_bucket) | git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git | v4.1.2 |
 | <a name="module_gitlab_volume_snapshots"></a> [gitlab\_volume\_snapshots](#module\_gitlab\_volume\_snapshots) | ./modules/volume-snapshot | n/a |
 | <a name="module_jenkins_volume_snapshots"></a> [jenkins\_volume\_snapshots](#module\_jenkins\_volume\_snapshots) | ./modules/volume-snapshot | n/a |
-| <a name="module_jira_db"></a> [jira\_db](#module\_jira\_db) | terraform-aws-modules/rds/aws | 6.1.1 |
-| <a name="module_jira_kms_key"></a> [jira\_kms\_key](#module\_jira\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.2 |
+| <a name="module_jira_db"></a> [jira\_db](#module\_jira\_db) | terraform-aws-modules/rds/aws | 6.5.4 |
+| <a name="module_jira_kms_key"></a> [jira\_kms\_key](#module\_jira\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.3 |
 | <a name="module_key_pair"></a> [key\_pair](#module\_key\_pair) | terraform-aws-modules/key-pair/aws | ~> 2.0 |
-| <a name="module_keycloak_db"></a> [keycloak\_db](#module\_keycloak\_db) | terraform-aws-modules/rds/aws | 6.1.1 |
-| <a name="module_keycloak_kms_key"></a> [keycloak\_kms\_key](#module\_keycloak\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.2 |
+| <a name="module_keycloak_db"></a> [keycloak\_db](#module\_keycloak\_db) | terraform-aws-modules/rds/aws | 6.5.4 |
+| <a name="module_keycloak_kms_key"></a> [keycloak\_kms\_key](#module\_keycloak\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.3 |
 | <a name="module_loki_irsa_s3"></a> [loki\_irsa\_s3](#module\_loki\_irsa\_s3) | ./modules/irsa-s3 | n/a |
 | <a name="module_loki_kms_key"></a> [loki\_kms\_key](#module\_loki\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.3 |
-| <a name="module_loki_s3_bucket"></a> [loki\_s3\_bucket](#module\_loki\_s3\_bucket) | git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git | v4.1.0 |
+| <a name="module_loki_s3_bucket"></a> [loki\_s3\_bucket](#module\_loki\_s3\_bucket) | git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git | v4.1.2 |
 | <a name="module_loki_volume_snapshots"></a> [loki\_volume\_snapshots](#module\_loki\_volume\_snapshots) | ./modules/volume-snapshot | n/a |
-| <a name="module_mattermost_db"></a> [mattermost\_db](#module\_mattermost\_db) | terraform-aws-modules/rds/aws | 6.1.1 |
+| <a name="module_mattermost_db"></a> [mattermost\_db](#module\_mattermost\_db) | terraform-aws-modules/rds/aws | 6.5.4 |
 | <a name="module_mattermost_irsa_s3"></a> [mattermost\_irsa\_s3](#module\_mattermost\_irsa\_s3) | ./modules/irsa-s3 | n/a |
-| <a name="module_mattermost_kms_key"></a> [mattermost\_kms\_key](#module\_mattermost\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.2 |
-| <a name="module_mattermost_s3_bucket"></a> [mattermost\_s3\_bucket](#module\_mattermost\_s3\_bucket) | git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git | v4.1.0 |
+| <a name="module_mattermost_kms_key"></a> [mattermost\_kms\_key](#module\_mattermost\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.3 |
+| <a name="module_mattermost_s3_bucket"></a> [mattermost\_s3\_bucket](#module\_mattermost\_s3\_bucket) | git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git | v4.1.2 |
 | <a name="module_password_lambda"></a> [password\_lambda](#module\_password\_lambda) | git::https://github.com/defenseunicorns/terraform-aws-lambda.git//modules/password-rotation | v0.0.4 |
 | <a name="module_ssm_kms_key"></a> [ssm\_kms\_key](#module\_ssm\_kms\_key) | terraform-aws-modules/kms/aws | ~> 2.0 |
 | <a name="module_subnet_addrs"></a> [subnet\_addrs](#module\_subnet\_addrs) | git::https://github.com/hashicorp/terraform-cidr-subnets | v1.0.0 |
 | <a name="module_velero_irsa_s3"></a> [velero\_irsa\_s3](#module\_velero\_irsa\_s3) | ./modules/irsa-s3 | n/a |
 | <a name="module_velero_kms_key"></a> [velero\_kms\_key](#module\_velero\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.3 |
-| <a name="module_velero_s3_bucket"></a> [velero\_s3\_bucket](#module\_velero\_s3\_bucket) | git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git | v4.1.0 |
+| <a name="module_velero_s3_bucket"></a> [velero\_s3\_bucket](#module\_velero\_s3\_bucket) | git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git | v4.1.2 |
 | <a name="module_vpc"></a> [vpc](#module\_vpc) | git::https://github.com/defenseunicorns/terraform-aws-vpc.git | v0.1.7 |
 | <a name="module_zarf"></a> [zarf](#module\_zarf) | ./modules/zarf | n/a |
 
@@ -168,6 +168,7 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | [aws_iam_policy_document.velero_irsa_iam_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_session_context.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_session_context) | data source |
 | [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |
+| [aws_secretsmanager_secret_version.narwhal-bot-slack-webhook](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/secretsmanager_secret_version) | data source |
 
 ## Inputs
 
@@ -187,7 +188,6 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="input_aws_load_balancer_controller"></a> [aws\_load\_balancer\_controller](#input\_aws\_load\_balancer\_controller) | AWS Loadbalancer Controller Helm Chart config | `any` | `{}` | no |
 | <a name="input_aws_node_termination_handler"></a> [aws\_node\_termination\_handler](#input\_aws\_node\_termination\_handler) | AWS Node Termination Handler config for aws-ia/eks-blueprints-addon/aws | `any` | `{}` | no |
 | <a name="input_bastion_instance_type"></a> [bastion\_instance\_type](#input\_bastion\_instance\_type) | value for the instance type of the EKS worker nodes | `string` | `"m5.xlarge"` | no |
-| <a name="input_bastion_ssh_password"></a> [bastion\_ssh\_password](#input\_bastion\_ssh\_password) | The SSH password to use for the bastion if SSM authentication is used | `string` | `"my-password"` | no |
 | <a name="input_bastion_ssh_user"></a> [bastion\_ssh\_user](#input\_bastion\_ssh\_user) | The SSH user to use for the bastion | `string` | `"ec2-user"` | no |
 | <a name="input_bastion_tenancy"></a> [bastion\_tenancy](#input\_bastion\_tenancy) | The tenancy of the bastion | `string` | `"dedicated"` | no |
 | <a name="input_cluster_addons"></a> [cluster\_addons](#input\_cluster\_addons) | Nested of eks native add-ons and their associated parameters.<br>See https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_add-on for supported values.<br>See https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/examples/complete/main.tf#L44-L60 for upstream example.<br><br>to see available eks marketplace addons available for your cluster's version run:<br>aws eks describe-addon-versions --kubernetes-version $k8s\_cluster\_version --query 'addons[].{MarketplaceProductUrl: marketplaceInformation.productUrl, Name: addonName, Owner: owner Publisher: publisher, Type: type}' --output table | `any` | `{}` | no |
@@ -202,7 +202,6 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="input_confluence_rds_instance_class"></a> [confluence\_rds\_instance\_class](#input\_confluence\_rds\_instance\_class) | The instance class to use for the RDS instance | `string` | `"db.t4g.large"` | no |
 | <a name="input_create_kubernetes_resources"></a> [create\_kubernetes\_resources](#input\_create\_kubernetes\_resources) | If true, kubernetes resources related to non-marketplace addons to will be created | `bool` | `false` | no |
 | <a name="input_create_ssm_parameters"></a> [create\_ssm\_parameters](#input\_create\_ssm\_parameters) | Create SSM parameters for values from eks blueprints addons | `bool` | `true` | no |
-| <a name="input_cron_schedule_password_rotation"></a> [cron\_schedule\_password\_rotation](#input\_cron\_schedule\_password\_rotation) | Schedule for password change function to run on | `string` | `"cron(0 0 1 * ? *)"` | no |
 | <a name="input_dataplane_wait_duration"></a> [dataplane\_wait\_duration](#input\_dataplane\_wait\_duration) | The duration to wait for the EKS cluster to be ready before creating the node groups | `string` | `"30s"` | no |
 | <a name="input_ebs_storageclass_reclaim_policy"></a> [ebs\_storageclass\_reclaim\_policy](#input\_ebs\_storageclass\_reclaim\_policy) | Reclaim policy for gp3 storage class, valid options are Delete and Retain | `string` | `"Delete"` | no |
 | <a name="input_efs_storageclass_reclaim_policy"></a> [efs\_storageclass\_reclaim\_policy](#input\_efs\_storageclass\_reclaim\_policy) | Reclaim policy for EFS storage class, valid options are Delete and Retain | `string` | `"Delete"` | no |
@@ -272,6 +271,7 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="input_metrics_server"></a> [metrics\_server](#input\_metrics\_server) | Metrics Server config for aws-ia/eks-blueprints-addon/aws | `any` | `{}` | no |
 | <a name="input_name"></a> [name](#input\_name) | Name, e.g. 'app' or 'jenkins' | `string` | `"narwhal-delivery-iac-swf"` | no |
 | <a name="input_namespace"></a> [namespace](#input\_namespace) | Namespace, which could be your organization name or abbreviation, e.g. 'eg' or 'cp' | `string` | `"du"` | no |
+| <a name="input_notification_webhook_secret_id"></a> [notification\_webhook\_secret\_id](#input\_notification\_webhook\_secret\_id) | The secret id for the slack webhook, staged in secrets manager | `string` | `""` | no |
 | <a name="input_num_azs"></a> [num\_azs](#input\_num\_azs) | The number of AZs to use | `number` | `3` | no |
 | <a name="input_prefix"></a> [prefix](#input\_prefix) | name prefix to prepend to most resources, if not defined, created as: 'namespace-stage-name' | `string` | `""` | no |
 | <a name="input_prometheus_pvc_size"></a> [prometheus\_pvc\_size](#input\_prometheus\_pvc\_size) | Size of the Prometheus pvc | `string` | `"50Gi"` | no |
@@ -280,8 +280,6 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="input_secondary_cidr_blocks"></a> [secondary\_cidr\_blocks](#input\_secondary\_cidr\_blocks) | A list of secondary CIDR blocks for the VPC | `list(string)` | `[]` | no |
 | <a name="input_secrets_store_csi_driver"></a> [secrets\_store\_csi\_driver](#input\_secrets\_store\_csi\_driver) | k8s Secret Store CSI Driver Helm Chart config | `any` | `{}` | no |
 | <a name="input_single_nat_gateway"></a> [single\_nat\_gateway](#input\_single\_nat\_gateway) | If true, a single NAT Gateway will be created | `bool` | `false` | no |
-| <a name="input_slack_notification_enabled"></a> [slack\_notification\_enabled](#input\_slack\_notification\_enabled) | enable slack notifications for password rotation function. If enabled a slack webhook url will also need to be provided for this to work | `bool` | `false` | no |
-| <a name="input_slack_webhook_url"></a> [slack\_webhook\_url](#input\_slack\_webhook\_url) | value | `string` | `null` | no |
 | <a name="input_stage"></a> [stage](#input\_stage) | Stage, e.g. 'prod', 'staging', 'dev', or 'test' | `string` | `"test"` | no |
 | <a name="input_suffix"></a> [suffix](#input\_suffix) | name suffix to append to most resources, if not defined, randomly generated | `string` | `""` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to apply to all resources | `map(string)` | `{}` | no |

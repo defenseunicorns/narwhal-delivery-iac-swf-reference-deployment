@@ -393,12 +393,6 @@ variable "bastion_ssh_user" {
   default     = "ec2-user"
 }
 
-variable "bastion_ssh_password" {
-  description = "The SSH password to use for the bastion if SSM authentication is used"
-  type        = string
-  default     = "my-password"
-}
-
 variable "zarf_version" {
   description = "The version of Zarf to use"
   type        = string
@@ -429,23 +423,12 @@ variable "users" {
   default     = []
 }
 
-variable "cron_schedule_password_rotation" {
-  description = "Schedule for password change function to run on"
+variable "notification_webhook_secret_id" {
+  description = "The secret id for the slack webhook, staged in secrets manager"
   type        = string
-  default     = "cron(0 0 1 * ? *)"
+  default     = ""
 }
 
-variable "slack_notification_enabled" {
-  description = "enable slack notifications for password rotation function. If enabled a slack webhook url will also need to be provided for this to work"
-  type        = bool
-  default     = false
-}
-
-variable "slack_webhook_url" {
-  description = "value"
-  type        = string
-  default     = null
-}
 
 ############################################################################
 ################## Zarf Init AWS Dependencies #########################

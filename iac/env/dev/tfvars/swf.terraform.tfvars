@@ -72,7 +72,6 @@ zarf_version = "v0.32.4"
 #################### EKS Config ###########################
 # renovate: datasource=endoflife-date depName=amazon-eks versioning=loose extractVersion=^(?<version>.*)-eks.+$
 cluster_version                = "1.29"
-eks_use_mfa                    = false
 cluster_endpoint_public_access = true
 
 ###########################################################
@@ -176,13 +175,8 @@ enable_aws_load_balancer_controller = true
 
 ################# Password Rotation ##################
 # Add users that will be on your ec2 instances.
-users = ["ec2-user", "Administrator"]
-
-cron_schedule_password_rotation = "cron(0 0 1 * ? *)"
-
-slack_notification_enabled = false
-
-slack_webhook_url = ""
+users                          = ["ec2-user"]
+notification_webhook_secret_id = "slack-webbity-hookington-narwhal-bot"
 
 ###########################################################
 ################ Zarf AWS Dependencies ####################
