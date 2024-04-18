@@ -7,7 +7,7 @@ locals {
 module "gitlab_s3_bucket" {
   for_each = toset(var.gitlab_bucket_names)
 
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v4.1.0"
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v4.1.2"
 
   bucket        = join("-", compact([local.prefix, each.key, local.suffix]))
   tags          = local.tags
@@ -127,7 +127,7 @@ resource "aws_secretsmanager_secret" "gitlab_db_secret" {
 
 module "gitlab_db" {
   source  = "terraform-aws-modules/rds/aws"
-  version = "6.1.1"
+  version = "6.5.4"
   tags    = local.tags
 
   identifier                     = var.gitlab_db_idenitfier_prefix
