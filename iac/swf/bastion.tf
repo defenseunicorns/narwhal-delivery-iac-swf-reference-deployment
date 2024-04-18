@@ -24,7 +24,7 @@ data "aws_ami" "amazonlinux2" {
 }
 
 module "bastion" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-bastion.git?ref=v0.0.15"
+  source = "git::https://github.com/defenseunicorns/terraform-aws-bastion.git?ref=v0.0.16"
 
   enable_bastion_terraform_permissions = true
 
@@ -68,7 +68,7 @@ data "aws_secretsmanager_secret" "narwhal-bot-slack-webhook" {
 }
 
 module "password_lambda" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-lambda.git//modules/password-rotation?ref=v0.0.4"
+  source = "git::https://github.com/defenseunicorns/terraform-aws-lambda.git//modules/password-rotation?ref=v0.0.5"
   region = var.region
   suffix = lower(random_id.default.hex)
   prefix = local.prefix
@@ -81,7 +81,7 @@ module "password_lambda" {
     }
   }
 
-  notification_webhook_url = data.aws_secretsmanager_secret.narwhal-bot-slack-webhook[0].arn
-  rotation_tag_key         = "Password-Rotation"
-  rotation_tag_value       = "enabled"
+  notification_webhook_secret_id = data.aws_secretsmanager_secret.narwhal-bot-slack-webhook[0].arn
+  rotation_tag_key               = "Password-Rotation"
+  rotation_tag_value             = "enabled"
 }

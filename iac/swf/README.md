@@ -73,9 +73,11 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_artifactory_db"></a> [artifactory\_db](#module\_artifactory\_db) | terraform-aws-modules/rds/aws | 6.5.4 |
+| <a name="module_artifactory_irsa_s3"></a> [artifactory\_irsa\_s3](#module\_artifactory\_irsa\_s3) | ./modules/irsa-s3 | n/a |
 | <a name="module_artifactory_kms_key"></a> [artifactory\_kms\_key](#module\_artifactory\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.3 |
+| <a name="module_artifactory_s3_bucket"></a> [artifactory\_s3\_bucket](#module\_artifactory\_s3\_bucket) | git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git | v4.1.2 |
 | <a name="module_artifactory_volume_snapshots"></a> [artifactory\_volume\_snapshots](#module\_artifactory\_volume\_snapshots) | ./modules/volume-snapshot | n/a |
-| <a name="module_bastion"></a> [bastion](#module\_bastion) | git::https://github.com/defenseunicorns/terraform-aws-bastion.git | v0.0.15 |
+| <a name="module_bastion"></a> [bastion](#module\_bastion) | git::https://github.com/defenseunicorns/terraform-aws-bastion.git | v0.0.16 |
 | <a name="module_confluence_db"></a> [confluence\_db](#module\_confluence\_db) | terraform-aws-modules/rds/aws | 6.5.4 |
 | <a name="module_confluence_kms_key"></a> [confluence\_kms\_key](#module\_confluence\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.3 |
 | <a name="module_ebs_kms_key"></a> [ebs\_kms\_key](#module\_ebs\_kms\_key) | terraform-aws-modules/kms/aws | ~> 2.0 |
@@ -99,7 +101,7 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="module_mattermost_irsa_s3"></a> [mattermost\_irsa\_s3](#module\_mattermost\_irsa\_s3) | ./modules/irsa-s3 | n/a |
 | <a name="module_mattermost_kms_key"></a> [mattermost\_kms\_key](#module\_mattermost\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.3 |
 | <a name="module_mattermost_s3_bucket"></a> [mattermost\_s3\_bucket](#module\_mattermost\_s3\_bucket) | git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git | v4.1.2 |
-| <a name="module_password_lambda"></a> [password\_lambda](#module\_password\_lambda) | git::https://github.com/defenseunicorns/terraform-aws-lambda.git//modules/password-rotation | v0.0.4 |
+| <a name="module_password_lambda"></a> [password\_lambda](#module\_password\_lambda) | git::https://github.com/defenseunicorns/terraform-aws-lambda.git//modules/password-rotation | v0.0.5 |
 | <a name="module_ssm_kms_key"></a> [ssm\_kms\_key](#module\_ssm\_kms\_key) | terraform-aws-modules/kms/aws | ~> 2.0 |
 | <a name="module_subnet_addrs"></a> [subnet\_addrs](#module\_subnet\_addrs) | git::https://github.com/hashicorp/terraform-cidr-subnets | v1.0.0 |
 | <a name="module_velero_irsa_s3"></a> [velero\_irsa\_s3](#module\_velero\_irsa\_s3) | ./modules/irsa-s3 | n/a |
@@ -119,6 +121,7 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | [aws_kms_key.default](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_key) | resource |
 | [aws_s3_bucket.access_log_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket) | resource |
 | [aws_s3_bucket_lifecycle_configuration.access_log_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_lifecycle_configuration) | resource |
+| [aws_s3_bucket_lifecycle_configuration.artifactory_s3_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_lifecycle_configuration) | resource |
 | [aws_s3_bucket_lifecycle_configuration.gitlab_s3_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_lifecycle_configuration) | resource |
 | [aws_s3_bucket_lifecycle_configuration.loki_s3_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_lifecycle_configuration) | resource |
 | [aws_s3_bucket_lifecycle_configuration.mattermost_s3_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_lifecycle_configuration) | resource |
@@ -169,6 +172,7 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | [aws_iam_session_context.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_session_context) | data source |
 | [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |
 | [aws_secretsmanager_secret.narwhal-bot-slack-webhook](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/secretsmanager_secret) | data source |
+| [aws_secretsmanager_secret_version.artifactory-license-secret](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/secretsmanager_secret_version) | data source |
 
 ## Inputs
 
@@ -178,11 +182,17 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="input_access_log_expire_days"></a> [access\_log\_expire\_days](#input\_access\_log\_expire\_days) | Number of days to wait before deleting access logs | `number` | `30` | no |
 | <a name="input_admin_roles"></a> [admin\_roles](#input\_admin\_roles) | List of IAM roles to add as administrators to the EKS cluster via access entry | `list(string)` | `[]` | no |
 | <a name="input_admin_users"></a> [admin\_users](#input\_admin\_users) | List of IAM users to add as administrators to the EKS cluster via access entry | `list(string)` | `[]` | no |
+| <a name="input_artifactory_bucket_names"></a> [artifactory\_bucket\_names](#input\_artifactory\_bucket\_names) | List of buckets to create for Artifactory | `list(string)` | `[]` | no |
 | <a name="input_artifactory_db_idenitfier_prefix"></a> [artifactory\_db\_idenitfier\_prefix](#input\_artifactory\_db\_idenitfier\_prefix) | The prefix to use for the RDS instance identifier | `string` | `"artifactory-db"` | no |
 | <a name="input_artifactory_db_name"></a> [artifactory\_db\_name](#input\_artifactory\_db\_name) | Name of the artifactory database. | `string` | `"artifactorydb"` | no |
 | <a name="input_artifactory_db_snapshot"></a> [artifactory\_db\_snapshot](#input\_artifactory\_db\_snapshot) | The snapshot to restore the RDS instance from | `string` | `""` | no |
 | <a name="input_artifactory_kms_key_alias"></a> [artifactory\_kms\_key\_alias](#input\_artifactory\_kms\_key\_alias) | KMS Key Alias name prefix | `string` | `"artifactory"` | no |
+| <a name="input_artifactory_namespace"></a> [artifactory\_namespace](#input\_artifactory\_namespace) | Namespace Artifactory is deployed to | `string` | `"artifactory"` | no |
 | <a name="input_artifactory_rds_instance_class"></a> [artifactory\_rds\_instance\_class](#input\_artifactory\_rds\_instance\_class) | The instance class to use for the RDS instance | `string` | `"db.t4g.large"` | no |
+| <a name="input_artifactory_s3_bucket_force_destroy"></a> [artifactory\_s3\_bucket\_force\_destroy](#input\_artifactory\_s3\_bucket\_force\_destroy) | A boolean that indicates all objects should be deleted from the bucket so that the bucket can be destroyed without error. These objects are not recoverable. | `bool` | `false` | no |
+| <a name="input_artifactory_service_account_names"></a> [artifactory\_service\_account\_names](#input\_artifactory\_service\_account\_names) | List of service accounts to create for Artifactory | `list(string)` | <pre>[<br>  "artifactory"<br>]</pre> | no |
+| <a name="input_artifactory_storage_type"></a> [artifactory\_storage\_type](#input\_artifactory\_storage\_type) | Set the persistence storage type | `string` | `"file-system"` | no |
+| <a name="input_artifatory_license_key_secret_id"></a> [artifatory\_license\_key\_secret\_id](#input\_artifatory\_license\_key\_secret\_id) | The license secret for artifatory | `string` | `""` | no |
 | <a name="input_authentication_mode"></a> [authentication\_mode](#input\_authentication\_mode) | The authentication mode for the cluster. Valid values are `CONFIG_MAP`, `API` or `API_AND_CONFIG_MAP` | `string` | `"API"` | no |
 | <a name="input_aws_admin_usernames"></a> [aws\_admin\_usernames](#input\_aws\_admin\_usernames) | A list of one or more AWS usernames with authorized access to KMS and EKS resources, will automatically add the user running the terraform as an admin | `list(string)` | `[]` | no |
 | <a name="input_aws_load_balancer_controller"></a> [aws\_load\_balancer\_controller](#input\_aws\_load\_balancer\_controller) | AWS Loadbalancer Controller Helm Chart config | `any` | `{}` | no |
