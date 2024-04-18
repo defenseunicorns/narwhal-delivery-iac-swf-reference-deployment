@@ -101,7 +101,7 @@ data "aws_iam_policy_document" "s3_bucket" {
 
 
 module "s3_bucket" {
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v4.1.0"
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v4.1.2"
 
   create_bucket = var.create_s3_bucket
 
@@ -136,7 +136,7 @@ locals {
 module "zarf_irsa_policy" {
   count = var.create_irsa_role ? 1 : 0
 
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-iam.git//modules/iam-policy?ref=v5.34.0"
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-iam.git//modules/iam-policy?ref=v5.39.0"
 
   name        = local.zarf_irsa_policy_name
   path        = "/"
@@ -172,7 +172,7 @@ module "zarf_irsa_policy" {
 module "zarf_irsa_role" {
   count = var.create_irsa_role ? 1 : 0
 
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-iam.git//modules/iam-role-for-service-accounts-eks?ref=v5.34.0"
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-iam.git//modules/iam-role-for-service-accounts-eks?ref=v5.39.0"
 
   role_name = local.zarf_irsa_role_name
 

@@ -24,7 +24,7 @@ data "aws_ami" "amazonlinux2" {
 }
 
 module "bastion" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-bastion.git?ref=v0.0.11"
+  source = "git::https://github.com/defenseunicorns/terraform-aws-bastion.git?ref=v0.0.15"
 
   enable_bastion_terraform_permissions = true
 
@@ -57,7 +57,7 @@ module "bastion" {
 
 module "password_lambda" {
 
-  source      = "git::https://github.com/defenseunicorns/terraform-aws-lambda.git//modules/password-rotation?ref=v0.0.3"
+  source      = "git::https://github.com/defenseunicorns/terraform-aws-lambda.git//modules/password-rotation?ref=v0.0.4"
   region      = var.region
   random_id   = lower(random_id.default.hex)
   name_prefix = local.prefix
