@@ -74,7 +74,7 @@ module "password_lambda" {
   prefix = local.prefix
   users  = var.users
 
-  notification_webhook_url = data.aws_secretsmanager_secret_version.narwhal-bot-slack-webhook[0].secret_string
+  notification_webhook_url = try(data.aws_secretsmanager_secret_version.narwhal-bot-slack-webhook[0].secret_string, null)
   rotation_tag_key         = "Password-Rotation"
   rotation_tag_value       = "enabled"
 }
