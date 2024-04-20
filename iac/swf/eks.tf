@@ -1,7 +1,6 @@
 locals {
   cluster_security_group_additional_rules = merge(
     { ingress_bastion_to_cluster = local.ingress_bastion_to_cluster },
-    #other rules here
   )
 
   uds_swf_ng_name = join("-", compact([local.prefix, var.uds_swf_ng_name, local.suffix]))
@@ -209,6 +208,19 @@ locals {
     var.keycloak_enabled ? local.keycloak_self_mg_node_group : {}
   )
 
+  vpc_cni_addon_irsa_extra_config = {
+    "vpc-cni" = merge(
+      var.cluster_addons["vpc-cni"],
+      {
+        service_account_role_arn = module.vpc_cni_ipv4_irsa_role.iam_role_arn
+      }
+    )
+  }
+
+  cluster_addons = merge(
+    var.cluster_addons,
+    local.vpc_cni_addon_irsa_extra_config
+  )
 }
 
 module "ssm_kms_key" {
@@ -348,8 +360,7 @@ module "eks" {
   #---------------------------------------------------------------
   #"native" EKS Add-Ons
   #---------------------------------------------------------------
-
-  cluster_addons = var.cluster_addons
+  cluster_addons = local.cluster_addons
 
   #---------------------------------------------------------------
   # EKS Blueprints - blueprints curated helm charts
@@ -439,25 +450,54 @@ module "ebs_kms_key" {
   tags = local.tags
 }
 
-resource "aws_iam_policy" "additional" {
+######################################################
+# vpc-cni irsa role
+######################################################
+module "vpc_cni_ipv4_irsa_role" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  version = "~> 5.39"
 
-  count = var.keycloak_enabled ? 1 : 0
+  role_name_prefix      = "${module.eks.cluster_name}-vpc-cni-"
+  attach_vpc_cni_policy = true
+  vpc_cni_enable_ipv4   = true
 
-  name        = "${local.cluster_name}-additional"
-  description = "Example usage of node additional policy"
+  oidc_providers = {
+    main = {
+      provider_arn               = module.eks.oidc_provider_arn
+      namespace_service_accounts = ["kube-system:aws-node"]
+    }
+  }
 
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = [
-          "ec2:Describe*",
-        ]
-        Effect   = "Allow"
-        Resource = "*"
-      },
-    ]
-  })
+  # extra policy to attach to the role
+  role_policy_arns = {
+    vpc_cni_logging = aws_iam_policy.vpc_cni_logging.arn
+  }
+
+  tags = local.tags
+}
+
+resource "aws_iam_policy" "vpc_cni_logging" {
+  name        = "${local.prefix}-vpc-cni-logging"
+  description = "Additional test policy"
+
+  policy = jsonencode(
+    {
+      Version = "2012-10-17"
+      Statement = [
+        {
+          Sid    = "CloudWatchLogging"
+          Effect = "Allow"
+          Action = [
+            "logs:DescribeLogGroups",
+            "logs:CreateLogGroup",
+            "logs:CreateLogStream",
+            "logs:PutLogEvents"
+          ]
+          Resource = "*"
+        }
+      ]
+    }
+  )
 
   tags = local.tags
 }

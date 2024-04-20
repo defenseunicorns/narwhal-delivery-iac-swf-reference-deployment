@@ -95,7 +95,11 @@ cluster_addons = {
           "ANNOTATE_POD_IP": "true",
           "POD_SECURITY_GROUP_ENFORCING_MODE": "standard"
         },
-        "enableNetworkPolicy": "true"
+        "enableNetworkPolicy": "true",
+        "nodeAgent": {
+          "enablePolicyEventLogs": "true",
+          "enableCloudWatchLogs": "false"
+        }
       }
     JSON
   }
