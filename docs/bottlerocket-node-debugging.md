@@ -1,7 +1,9 @@
 # Steps to get logdog logs out of bottlerocket node
 
 <https://github.com/bottlerocket-os/bottlerocket/blob/41d9aa58314746fad42c2fe223b94618101be38c/README.md?plain=1#L462-L481>
-other terminology and tools:
+
+Useful terminology and tools:
+
 <https://github.com/bottlerocket-os/bottlerocket/blob/6cfc06439213e89adf1f5a8552cb10c42a7ffbd3/GLOSSARY.md>
 
 ## SSH Config
