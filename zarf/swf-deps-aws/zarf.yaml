@@ -81,3 +81,13 @@ components:
         namespace: velero
         files:
           - manifests/velero/gitlab.yaml
+
+  - name: pepr-workaround
+    required: true
+    manifests:
+      - name: pepr-workaround
+        namespace: pepr-system
+        files:
+          - manifests/pepr-workaround/fix.yaml
+    images:
+      - "registry1.dso.mil/ironbank/chainguard-dev/wolfi/kubectl:stable"
