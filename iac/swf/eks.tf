@@ -77,6 +77,7 @@ locals {
       min_size      = 3
       max_size      = 5
       desired_size  = 3
+      key_name      = module.self_managed_node_group_keypair.key_pair_name
 
       block_device_mappings = {
         xvda = {
@@ -98,9 +99,9 @@ locals {
 
       bootstrap_extra_args = <<-EOT
         # The admin host container provides SSH access and runs with "superpowers".
-        # It is disabled by default, but can be disabled explicitly.
+        # It is disabled by default.
         [settings.host-containers.admin]
-        enabled = false
+        enabled = true
 
         # The control host container provides out-of-band access via SSM.
         # It is enabled by default, and can be disabled if you do not expect to use SSM.
@@ -166,6 +167,7 @@ locals {
       max_size      = 1
       desired_size  = 1
       subnet_ids    = [module.vpc.private_subnets[2]] # Constrain to a single subnet which corresponds to a single AZ
+      key_name      = module.self_managed_node_group_keypair.key_pair_name
 
       instance_requirements = {
         allowed_instance_types = ["r6i.4xlarge", "r5.4xlarge"] #this should be adjusted to the appropriate instance family if reserved instances are being utilized
@@ -181,7 +183,7 @@ locals {
         # The admin host container provides SSH access and runs with "superpowers".
         # It is disabled by default, but can be disabled explicitly.
         [settings.host-containers.admin]
-        enabled = false
+        enabled = true
 
         # The control host container provides out-of-band access via SSM.
         # It is enabled by default, and can be disabled if you do not expect to use SSM.
@@ -498,6 +500,33 @@ resource "aws_iam_policy" "vpc_cni_logging" {
       ]
     }
   )
+
+  tags = local.tags
+}
+
+######################################################
+# EKS Self Managed Node Group Dependencies
+######################################################
+module "self_managed_node_group_keypair" {
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-key-pair?ref=v2.0.3"
+
+  key_name_prefix    = "${local.cluster_name}-uds-swf-"
+  create_private_key = true
+
+  tags = local.tags
+}
+
+module "self_managed_node_group_secret_key_secrets_manager_secret" {
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-secrets-manager.git?ref=v1.1.2"
+
+  name                    = module.self_managed_node_group_keypair.key_pair_name
+  description             = "Secret key for the uds-swf self managed node group keypair"
+  recovery_window_in_days = 7
+
+  block_public_policy = true
+
+  ignore_secret_changes = true
+  secret_string         = module.self_managed_node_group_keypair.private_key_openssh
 
   tags = local.tags
 }

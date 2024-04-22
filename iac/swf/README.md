@@ -102,6 +102,8 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="module_mattermost_kms_key"></a> [mattermost\_kms\_key](#module\_mattermost\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.3 |
 | <a name="module_mattermost_s3_bucket"></a> [mattermost\_s3\_bucket](#module\_mattermost\_s3\_bucket) | git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git | v4.1.2 |
 | <a name="module_password_lambda"></a> [password\_lambda](#module\_password\_lambda) | git::https://github.com/defenseunicorns/terraform-aws-lambda.git//modules/password-rotation | v0.0.5 |
+| <a name="module_self_managed_node_group_keypair"></a> [self\_managed\_node\_group\_keypair](#module\_self\_managed\_node\_group\_keypair) | git::https://github.com/terraform-aws-modules/terraform-aws-key-pair | v2.0.3 |
+| <a name="module_self_managed_node_group_secret_key_secrets_manager_secret"></a> [self\_managed\_node\_group\_secret\_key\_secrets\_manager\_secret](#module\_self\_managed\_node\_group\_secret\_key\_secrets\_manager\_secret) | git::https://github.com/terraform-aws-modules/terraform-aws-secrets-manager.git | v1.1.2 |
 | <a name="module_ssm_kms_key"></a> [ssm\_kms\_key](#module\_ssm\_kms\_key) | terraform-aws-modules/kms/aws | ~> 2.0 |
 | <a name="module_subnet_addrs"></a> [subnet\_addrs](#module\_subnet\_addrs) | git::https://github.com/hashicorp/terraform-cidr-subnets | v1.0.0 |
 | <a name="module_velero_irsa_s3"></a> [velero\_irsa\_s3](#module\_velero\_irsa\_s3) | ./modules/irsa-s3 | n/a |
