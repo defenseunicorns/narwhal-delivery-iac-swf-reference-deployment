@@ -328,6 +328,45 @@ locals {
     var.access_entries
   )
 
+  # blueprints addons IAM role naming
+  cluster_autoscaler_iam_role_name             = join("-", compact([local.prefix, "cluster-autoscaler", local.suffix]))
+  cluster_autoscaler_iam_policy_name           = join("-", compact([local.prefix, "cluster-autoscaler-policy", local.suffix]))
+  aws_node_termination_handler_iam_role_name   = join("-", compact([local.prefix, "aws-node-termination-handler", local.suffix]))
+  aws_node_termination_handler_iam_policy_name = join("-", compact([local.prefix, "aws-node-termination-handler-policy", local.suffix]))
+  aws_load_balancer_controller_iam_role_name   = join("-", compact([local.prefix, "aws-load-balancer-controller", local.suffix]))
+  aws_load_balancer_controller_iam_policy_name = join("-", compact([local.prefix, "aws-load-balancer-controller-policy", local.suffix]))
+
+  # naming of roles and policies. name_prefix makes the the resources flap, conflicts with helm inputs
+  cluster_autoscaler = merge(
+    var.cluster_autoscaler,
+    {
+      role_name_use_prefix   = false
+      policy_name_use_prefix = false
+      role_name              = local.cluster_autoscaler_iam_role_name
+      policy_name            = local.cluster_autoscaler_iam_policy_name
+    }
+  )
+
+  aws_node_termination_handler = merge(
+    var.aws_node_termination_handler,
+    {
+      role_name_use_prefix   = false
+      policy_name_use_prefix = false
+      role_name              = local.aws_node_termination_handler_iam_role_name
+      policy_name            = local.aws_node_termination_handler_iam_policy_name
+    }
+  )
+
+  aws_load_balancer_controller = merge(
+    var.aws_load_balancer_controller,
+    {
+      role_name_use_prefix   = false
+      policy_name_use_prefix = false
+      role_name              = local.aws_load_balancer_controller_iam_role_name
+      policy_name            = local.aws_load_balancer_controller_iam_policy_name
+    }
+  )
+
 }
 
 module "eks" {
@@ -383,7 +422,7 @@ module "eks" {
 
   # AWS EKS node termination handler
   enable_aws_node_termination_handler = var.enable_aws_node_termination_handler
-  aws_node_termination_handler        = var.aws_node_termination_handler
+  aws_node_termination_handler        = local.aws_node_termination_handler
 
   # k8s Metrics Server
   enable_metrics_server = var.enable_metrics_server
@@ -391,11 +430,11 @@ module "eks" {
 
   # k8s Cluster Autoscaler
   enable_cluster_autoscaler = var.enable_cluster_autoscaler
-  cluster_autoscaler        = var.cluster_autoscaler
+  cluster_autoscaler        = local.cluster_autoscaler
 
   # AWS Load Balancer Controller
   enable_aws_load_balancer_controller = var.enable_aws_load_balancer_controller
-  aws_load_balancer_controller        = var.aws_load_balancer_controller
+  aws_load_balancer_controller        = local.aws_load_balancer_controller
 
   # k8s Secrets Store CSI Driver
   enable_secrets_store_csi_driver = var.enable_secrets_store_csi_driver
