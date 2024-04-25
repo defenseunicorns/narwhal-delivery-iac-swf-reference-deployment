@@ -142,36 +142,9 @@ storageclass_reclaim_policy          = "Delete" # set to `Retain` for non-dev us
 #wait false for all addons, as it times out on teardown in the test pipeline
 
 enable_amazon_eks_aws_efs_csi_driver = true
-#todo - move from blueprints to marketplace addons in terraform-aws-eks
-aws_efs_csi_driver = {
-  wait          = false
-  chart_version = "2.4.8"
-}
 
 enable_aws_node_termination_handler = true
-aws_node_termination_handler = {
-  wait = false
-
-  # renovate: datasource=docker depName=public.ecr.aws/aws-ec2/helm/aws-node-termination-handler
-  chart_version = "0.22.0"
-  chart         = "aws-node-termination-handler"
-  repository    = "oci://public.ecr.aws/aws-ec2/helm"
-}
-
-enable_cluster_autoscaler = true
-cluster_autoscaler = {
-  wait = false
-  # renovate: datasource=github-tags depName=kubernetes/autoscaler extractVersion=^cluster-autoscaler-chart-(?<version>.*)$
-  chart_version = "v9.29.3"
-}
-
-enable_metrics_server = true
-metrics_server = {
-  wait = false
-  # renovate: datasource=github-tags depName=kubernetes-sigs/metrics-server extractVersion=^metrics-server-helm-chart-(?<version>.*)$
-  chart_version = "v3.11.0"
-}
-
+enable_cluster_autoscaler           = true
 enable_aws_load_balancer_controller = true
 
 ######################################################
