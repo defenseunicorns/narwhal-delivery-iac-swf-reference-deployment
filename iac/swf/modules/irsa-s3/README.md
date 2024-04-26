@@ -63,7 +63,7 @@ No outputs.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_irsa_role"></a> [irsa\_role](#module\_irsa\_role) | git::https://github.com/terraform-aws-modules/terraform-aws-iam.git//modules/iam-role-for-service-accounts-eks | v5.34.0 |
+| <a name="module_irsa_role"></a> [irsa\_role](#module\_irsa\_role) | git::https://github.com/terraform-aws-modules/terraform-aws-iam.git//modules/iam-role-for-service-accounts-eks | v5.39.0 |
 
 ## Resources
 

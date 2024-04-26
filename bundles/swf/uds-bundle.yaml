@@ -291,6 +291,18 @@ packages:
   - name: gitlab-runner
     repository: ghcr.io/defenseunicorns/packages/uds/gitlab-runner
     ref: 16.10.0-uds.0-registry1
+    overrides:
+      gitlab-runner:
+        gitlab-runner:
+          values:
+            - path: rbac.create
+              value: true
+            - path: rbac.serviceAccountName
+              value: gitlab-runner
+          variables:
+            - name: RUNNER_ROLE_ARN
+              description: "The ARN of the role to assume for the runner pods"
+              path: rbac.serviceAccountAnnotations.eks\.amazonaws\.com/role-arn
 
   - name: mattermost
     repository: ghcr.io/defenseunicorns/packages/uds/mattermost
@@ -390,4 +402,3 @@ packages:
               default: artifactory/filestore
             - name: ARTIFACTORY_ENDPOINT
               path: artifactory.persistence.awsS3V3.endpoint
-

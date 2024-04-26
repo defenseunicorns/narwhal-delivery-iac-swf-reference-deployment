@@ -15,7 +15,7 @@ locals {
     }
   )
   s3_bucket_polcy_name = join("-", compact([var.prefix, var.policy_name, "s3-access-policy", var.suffix]))
-  bucket_names         = [for bucket_name in var.bucket_names : join("-", compact([var.prefix, bucket_name, var.suffix]))]
+  bucket_names         = length(var.bucket_names) > 0 ? [for bucket_name in var.bucket_names : join("-", compact([var.prefix, bucket_name, var.suffix]))] : []
 }
 
 data "aws_iam_policy_document" "s3_bucket_default" {

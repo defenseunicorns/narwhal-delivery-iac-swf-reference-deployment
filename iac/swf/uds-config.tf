@@ -92,8 +92,10 @@ variables:
     gitlab_db_endpoint: "${element(split(":", module.gitlab_db.db_instance_endpoint), 0)}"
     gitlab_redis_endpoint: "${aws_elasticache_replication_group.gitlab_redis.primary_endpoint_address}"
     gitlab_redis_scheme: "rediss"
-    %{~for role in var.gitlab_service_account_names~}
-    ${replace(trimprefix(role, "gitlab-"), "-", "_")}_role_arn: "${module.gitlab_irsa_s3.irsa_role[role].iam_role_arn}"
+    %{~for role in keys(local.gitlab_irsa_map)~}
+    %{~if role != "gitlab-runner"~}
+    ${replace(trimprefix(role, "gitlab-"), "-", "_")}_role_arn: "${module.gitlab_irsa_s3[role].irsa_role[role].iam_role_arn}"
+    %{~endif~}
     %{~endfor~}
     %{~for bucket in var.gitlab_bucket_names~}
     ${replace(trimprefix(bucket, "gitlab-"), "-", "_")}_bucket: "${module.gitlab_s3_bucket[bucket].s3_bucket_id}"
@@ -106,6 +108,8 @@ variables:
       ${label}
       %{~endfor~}
 %{endif~}
+  gitlab-runner:
+    runner_role_arn: "${module.gitlab_irsa_s3["gitlab-runner"].irsa_role["gitlab-runner"].iam_role_arn}"
   confluence:
     confluence_db_endpoint: "${element(split(":", module.confluence_db.db_instance_endpoint), 0)}"
     CONFLUENCE_LOCAL_HOME_PVC_SIZE: "${var.confluence_local_home_pvc_size}"

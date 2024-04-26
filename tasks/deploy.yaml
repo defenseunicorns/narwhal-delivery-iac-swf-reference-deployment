@@ -281,6 +281,53 @@ tasks:
           linux: bash
           darwin: bash
 
+  - name: terraform-console
+    inputs:
+      env:
+        required: true
+        description: "The environment to apply"
+      root_module:
+        required: true
+        description: "The root module to apply"
+      var_files:
+        required: true
+        description: "The var files to use for the plan"
+    actions:
+      - task: check-env
+        with:
+          env: ${ENV}
+      - description: "Terraform apply"
+        cmd: |
+          set -exo pipefail
+          cd ./iac/${INPUT_ROOT_MODULE}
+
+          # Initialize an empty string to hold all --var-file options
+          var_files_options=""
+
+          # Use process substitution to avoid creating a subshell
+          while IFS= read -r item; do
+
+          # Construct the search path relative to root module directory to find the var files provided
+          search_path="../env/${INPUT_ENV}"
+
+            # Find the file matching the pattern and read the first matching file
+            matching_file=$(find $search_path -type f -name "$item" | head -n 1)
+
+            if [[ -n "$matching_file" ]]; then
+              var_files_options+="--var-file $matching_file "
+            else
+              echo "No matching file found for $item"
+            fi
+          done < <(echo ${INPUT_VAR_FILES} | yq e '.[]' -)
+
+          terraform console $var_files_options <<EOF
+          jsondecode(local.gitlab_policies_concat)
+          EOF
+
+        shell:
+          linux: bash
+          darwin: bash
+
   - name: update-uds-config
     inputs:
       env:

@@ -498,11 +498,11 @@ variable "gitlab_rds_instance_class" {
   default     = "db.t4g.large"
 }
 
-variable "gitlab_service_account_names" {
-  description = "List of service accounts to create for GitLab"
-  type        = list(string)
-  default     = ["gitlab-gitaly", "gitlab-sidekiq", "gitlab-toolbox", "gitlab-gitlab-exporter", "gitlab-registry", "gitlab-geo-logcursor", "gitlab-migrations", "gitlab-webservice", "gitlab-mailroom", "gitlab-gitlab-shell"]
-}
+# variable "gitlab_service_account_names" {
+#   description = "List of service accounts to create for GitLab"
+#   type        = list(string)
+#   default     = ["gitlab-gitaly", "gitlab-sidekiq", "gitlab-toolbox", "gitlab-gitlab-exporter", "gitlab-registry", "gitlab-geo-logcursor", "gitlab-migrations", "gitlab-webservice", "gitlab-mailroom", "gitlab-gitlab-shell"]
+# }
 
 variable "gitaly_pvc_size" {
   description = "Size of the gitaly pvc"

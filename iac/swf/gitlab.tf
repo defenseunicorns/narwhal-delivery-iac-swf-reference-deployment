@@ -59,18 +59,130 @@ module "gitlab_kms_key" {
   kms_key_description       = "GitLab Key"
 }
 
+locals {
+  # granular IRSA IAM policies
+  gitlab_generic_s3_access = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:DeleteObject",
+          "s3:ListBucket"
+        ]
+        Resource = concat(
+          [for bucket_name in var.gitlab_bucket_names : "arn:${data.aws_partition.current.partition}:s3:::${join("-", compact([local.prefix, bucket_name, local.suffix]))}" if bucket_name != "gitlab-registry"],
+          [for bucket_name in var.gitlab_bucket_names : "arn:${data.aws_partition.current.partition}:s3:::${join("-", compact([local.prefix, bucket_name, local.suffix]))}/*" if bucket_name != "gitlab-registry"]
+        )
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "kms:GenerateDataKey",
+          "kms:Decrypt"
+        ]
+        Resource = [module.gitlab_kms_key.kms_key_arn]
+      }
+    ]
+  })
+  gitlab_registry_s3_access = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:ListBucket",
+          "s3:GetBucketLocation",
+          "s3:ListBucketMultipartUploads"
+        ]
+        Resource = ["arn:${data.aws_partition.current.partition}:s3:::${join("-", compact([local.prefix, "gitlab-registry", local.suffix]))}"]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:DeleteObject",
+          "s3:ListMultipartUploadParts",
+          "s3:AbortMultipartUpload"
+        ]
+        Resource = ["arn:${data.aws_partition.current.partition}:s3:::${join("-", compact([local.prefix, "gitlab-registry", local.suffix]))}/*"]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "kms:GenerateDataKey",
+          "kms:Decrypt"
+        ]
+        Resource = [module.gitlab_kms_key.kms_key_arn]
+      }
+    ]
+  })
+  gitlab_runner_s3_access = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:DeleteObject",
+        ]
+        Resource = ["arn:${data.aws_partition.current.partition}:s3:::gitlab-runner-cache"]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "kms:GenerateDataKey",
+          "kms:Decrypt"
+        ]
+        Resource = [module.gitlab_kms_key.kms_key_arn]
+      }
+    ]
+  })
+
+  gitlab_policies_concat = jsonencode({
+    Version = "2012-10-17"
+    Statement = distinct(concat(
+      jsondecode(local.gitlab_generic_s3_access).Statement,
+      jsondecode(local.gitlab_registry_s3_access).Statement
+    ))
+  })
+
+  gitlab_irsa_map = {
+    gitlab-registry = {
+      policy = local.gitlab_registry_s3_access
+    }
+    gitlab-sidekiq = {
+      policy = local.gitlab_generic_s3_access
+    }
+    gitlab-toolbox = {
+      policy = local.gitlab_policies_concat
+    }
+    gitlab-webservice = {
+      policy = local.gitlab_policies_concat
+    }
+    gitlab-runner = {
+      policy = local.gitlab_runner_s3_access
+    }
+  }
+}
+
 module "gitlab_irsa_s3" {
-  source = "./modules/irsa-s3"
+  source   = "./modules/irsa-s3"
+  for_each = local.gitlab_irsa_map
 
   stage                = var.stage
-  serviceaccount_names = var.gitlab_service_account_names
-  policy_name          = "gitlab"
+  serviceaccount_names = [each.key]
+  policy_name          = each.key
   prefix               = local.prefix
   suffix               = local.suffix
   k8s_namespace        = var.gitlab_namespace
-  bucket_names         = var.gitlab_bucket_names
   kms_key_arn          = module.gitlab_kms_key.kms_key_arn
   oidc_provider_arn    = module.eks.oidc_provider_arn
+  irsa_iam_policy      = each.value.policy
 }
 
 module "gitlab_volume_snapshots" {
