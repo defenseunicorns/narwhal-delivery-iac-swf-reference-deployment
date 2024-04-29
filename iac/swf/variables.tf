@@ -447,7 +447,7 @@ variable "zarf_s3_bucket_force_destroy" {
 variable "gitlab_bucket_names" {
   description = "List of buckets to create for GitLab"
   type        = list(string)
-  default     = ["gitlab-artifacts", "gitlab-backups", "gitlab-ci-secure-files", "gitlab-dependency-proxy", "gitlab-lfs", "gitlab-mr-diffs", "gitlab-packages", "gitlab-pages", "gitlab-terraform-state", "gitlab-uploads", "gitlab-registry", "gitlab-runner-cache", "gitlab-tmp"]
+  default     = ["gitlab-artifacts", "gitlab-backups", "gitlab-ci-secure-files", "gitlab-dependency-proxy", "gitlab-lfs", "gitlab-external-diffs", "gitlab-packages", "gitlab-pages", "gitlab-terraform-state", "gitlab-uploads", "gitlab-registry", "gitlab-runner-cache", "gitlab-tmp"]
 }
 
 variable "gitlab_s3_bucket_force_destroy" {

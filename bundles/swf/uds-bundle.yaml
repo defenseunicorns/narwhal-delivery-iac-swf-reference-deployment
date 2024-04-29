@@ -231,6 +231,12 @@ packages:
                 requests:
                   cpu: 14000m
                   memory: 110Gi
+            - path: global.appConfig.ciSecureFiles.connection
+              value:
+                key: connection
+                secret: gitlab-object-store
+            - path: global.appConfig.ciSecureFiles.proxy_download
+              value: true
           variables:
             - name: REGISTRY_ROLE_ARN
               description: "The ARN of the role to assume for the registry pods"
@@ -256,15 +262,31 @@ packages:
             - name: PACKAGES_BUCKET
               description: "The name of the S3 bucket to use for packages storage"
               path: global.appConfig.packages.bucket
+            - name: EXTERNAL_DIFFS_ENABLED
+              description: "Whether to enable external diffs storage"
+              path: global.appConfig.externalDiffs.enabled
+              default: true
             - name: EXTERNAL_DIFFS_BUCKET
               description: "The name of the S3 bucket to use for external diffs storage"
               path: global.appConfig.externalDiffs.bucket
+            - name: TERRAFORM_STATE_ENABLED
+              description: "Whether to enable terraform state storage"
+              path: global.appConfig.terraformState.enabled
+              default: true
             - name: TERRAFORM_STATE_BUCKET
               description: "The name of the S3 bucket to use for terraform state storage"
               path: global.appConfig.terraformState.bucket
+            - name: CI_SECURE_FILES_ENABLED
+              description: "Whether to enable CI secure files storage"
+              path: global.appConfig.ciSecureFiles.enabled
+              default: true
             - name: CI_SECURE_FILES_BUCKET
               description: "The name of the S3 bucket to use for CI secure files storage"
               path: global.appConfig.ciSecureFiles.bucket
+            - name: DEPENDENCY_PROXY_ENABLED
+              description: "Whether to enable dependency proxy storage"
+              path: global.appConfig.dependencyProxy.enabled
+              default: true
             - name: DEPENDENCY_PROXY_BUCKET
               description: "The name of the S3 bucket to use for dependency proxy storage"
               path: global.appConfig.dependencyProxy.bucket
