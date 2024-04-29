@@ -286,7 +286,7 @@ packages:
             - name: DEPENDENCY_PROXY_ENABLED
               description: "Whether to enable dependency proxy storage"
               path: global.appConfig.dependencyProxy.enabled
-              default: true
+              default: false
             - name: DEPENDENCY_PROXY_BUCKET
               description: "The name of the S3 bucket to use for dependency proxy storage"
               path: global.appConfig.dependencyProxy.bucket
