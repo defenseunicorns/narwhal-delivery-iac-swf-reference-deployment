@@ -42,9 +42,8 @@ variables:
     LOKI_S3_ROLE_ARN: "${module.loki_irsa_s3.irsa_role[var.loki_service_account_names[0]].iam_role_arn}"
     PROMETHEUS_PVC_SIZE: "${var.prometheus_pvc_size}"
   zarf-init-s3-backend:
-    registry_pc_enabled: "false"
-    registry_hpa_min: "2"
     registry_pvc_enabled: "false"
+    registry_hpa_min: "2"
     registry_service_account_name: "docker-registry-sa"
     registry_create_service_account: "true"
     registry_service_account_annotations: "eks.amazonaws.com/role-arn: ${module.zarf.irsa_role_arn}"

@@ -60,6 +60,19 @@ module "gitlab_kms_key" {
 }
 
 locals {
+  # gitlab service accounts:
+  # gitlab-sidekiq -> all buckets except registry
+  # gitlab-toolbox -> access to all buckets
+  # gitlab-webservice (contains rails) -> access to all buckets
+  # gitlab-runner -> gitlab runner cache only
+  # gitlab-registry -> registry only
+  # gitlab-geo-logcursor -> N/A
+  # gitlab-gitaly -> N/A
+  # gitlab-gitlab-exporter -> N/A
+  # gitlab-gitlab-shell -> N/A
+  # gitlab-mailroom -> N/A
+  # gitlab-migrations -> N/A
+
   # granular IRSA IAM policies
   gitlab_generic_s3_access = jsonencode({
     Version = "2012-10-17"
