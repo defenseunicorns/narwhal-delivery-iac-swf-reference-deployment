@@ -24,8 +24,7 @@ tasks:
               COMMAND="$COMMAND --no-tea"  # Append --no-tea if the current version is >= 0.10.0
           fi
 
-          eval $COMMAND -p storageclass
-
+          eval $COMMAND
         shell:
           linux: bash
           darwin: bash
