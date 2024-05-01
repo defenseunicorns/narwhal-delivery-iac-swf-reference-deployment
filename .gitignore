@@ -8,6 +8,7 @@
 
 # UDS/Zarf things
 *.tar.zst
+*.tar.gz
 zarf-sbom
 
 # Local .terraform directories
