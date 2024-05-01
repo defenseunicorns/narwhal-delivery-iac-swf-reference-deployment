@@ -37,7 +37,15 @@ You can attach the keypair to the bottlerocket node groups through the Launch Te
 
 When the bottlerocket nodes come up, they will automagically set that keypair into the ec2-user's authorized_keys file.
 
-Then you can
+Then you can do something like:
+
+```bash
+aws secretsmanager get-secret-value --secret-id "$id" --query 'SecretString' --output text > ~/.ssh/du-uds-swf.key
+
+ssh -i ~/.ssh/du-uds-swf.key ec2-user@$instance_id "sudo sheltie logdog"
+
+ssh -i ~/.ssh/du-uds-swf.key ec2-user@$instance_id "cat /.bottlerocket/support/bottlerocket-logs.tar.gz" > bottlerocket-logs.tar.gz
+```
 
 ### Create your own keypair (dirty oneoff && hacky solution)
 

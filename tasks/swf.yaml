@@ -13,8 +13,19 @@ tasks:
     description: "Deploys the swf bundle"
     actions:
       - cmd: |
+          set -x
           export UDS_CONFIG="./iac/env/${ENV}/uds/uds-config.yaml"
-          uds deploy $(ls -tr bundles/swf/uds-bundle-swf*.tar.zst | tail -1) --confirm --no-progress
+          COMMAND="uds deploy $(ls -tr bundles/swf/uds-bundle-swf*.tar.zst | tail -1) --confirm --no-progress"
+
+          UDS_VERSION=$(uds version | sed 's/^v//')  # Extract version and remove leading 'v'
+
+          # Compare the current version with 0.10.0
+          if [[ "$(echo -e "$UDS_VERSION\n0.10.0" | sort -V | head -n1)" == "0.10.0" ]]; then
+              COMMAND="$COMMAND --no-tea"  # Append --no-tea if the current version is >= 0.10.0
+          fi
+
+          eval $COMMAND -p storageclass
+
         shell:
           linux: bash
           darwin: bash
