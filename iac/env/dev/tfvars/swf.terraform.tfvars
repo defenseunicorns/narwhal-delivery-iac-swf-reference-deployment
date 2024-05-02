@@ -6,7 +6,6 @@ secondary_cidr_blocks = ["100.64.0.0/16"] #https://aws.amazon.com/blogs/containe
 enable_public_subnets = true
 single_nat_gateway    = true
 enable_nat_gateway    = true
-admin_role_name       = "unicorn-admin"
 
 
 # new_bits is added to the cidr of vpc_cidr to chunk the subnets up
@@ -134,26 +133,23 @@ cluster_addons = {
   }
 }
 
-enable_amazon_eks_aws_ebs_csi_driver = true
-enable_gp3_default_storage_class     = true
-storageclass_reclaim_policy          = "Delete" # set to `Retain` for non-dev use
+#################### EKS Access Policies ###########################
+enable_cluster_creator_admin_permissions = false
+admin_users                              = []
+enable_admin_roles_prefix_or_suffix      = false
+admin_roles                              = []
 
 #################### Blueprints addons ###################
-#wait false for all addons, as it times out on teardown in the test pipeline
-
+# stages things in AWS for the cluster, values staged in SSM, consumed by zarf packages
 enable_amazon_eks_aws_efs_csi_driver = true
+enable_aws_node_termination_handler  = true
+enable_cluster_autoscaler            = true
+enable_aws_load_balancer_controller  = true
 
-enable_aws_node_termination_handler = true
-enable_cluster_autoscaler           = true
-enable_aws_load_balancer_controller = true
-
-######################################################
-################## Lambda Config #####################
-
-################# Password Rotation ##################
+################# Lambda Password Rotation ##################
 # Add users that will be on your ec2 instances.
-users                          = ["ec2-user"]
-notification_webhook_secret_id = "slack-webbity-hookington-narwhal-bot"
+users = ["ec2-user"]
+# notification_webhook_secret_id = "slack-webhook-secret" # secretsmanager secret
 
 ###########################################################
 ################ Zarf AWS Dependencies ####################
@@ -161,23 +157,9 @@ notification_webhook_secret_id = "slack-webbity-hookington-narwhal-bot"
 zarf_s3_bucket_force_destroy = true
 
 #############################################################
-################ Gitlab AWS Dependencies ####################
+########################### Gitlab ##########################
 gitlab_s3_bucket_force_destroy = true
 velero_s3_bucket_force_destroy = true
-
-enable_cluster_creator_admin_permissions = false
-
-admin_users = [
-  "Michael.Kruggel",
-  "Jordan.McClintock",
-  "Zack.Annexstein",
-  "matt.bunch"
-]
-
-enable_admin_roles_prefix_or_suffix = false
-admin_roles = [
-  "unicorn-admin"
-]
 
 # gitaly_pvc_size = ""
 

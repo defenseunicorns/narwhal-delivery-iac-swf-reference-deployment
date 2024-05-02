@@ -1,8 +1,8 @@
-<https://github.com/cloudposse/terraform-aws-tfstate-backend#usage>
+# bootstrap
 
-This module is used to bootstrap s3 and dynamodb backend for this repostiory.
+This module is used to bootstrap s3 and dynamodb backend, template partial backend and tfvar files in this repository for each environment under iac/env.
 
-It templates out a `backend.tf` file and a `$root-module-backend.tfconfig` file that are used to configure terraform to utilize an s3 backend. Each environment (dev, staging, prod) has its own backend-config file that is used to configure the backend. This is called a [partial backend configuration](https://developer.hashicorp.com/terraform/language/settings/backends/configuration#partial-configuration).
+This module templates out a `backend.tf` file and a `$root-module-backend.tfconfig` file that are used to configure terraform to utilize an s3 backend. Each environment (dev, staging, prod) has its own backend-config file that is used to configure the backend. This pattern is known as [terraform partial backend configuration](https://developer.hashicorp.com/terraform/language/settings/backends/configuration#partial-configuration).
 
 Steps to use this module:
 
@@ -11,7 +11,7 @@ Steps to use this module:
 3. Re-init backend to use the newly created backend
 
 > [!WARNING]
-When bootstrapping multiple environments and the same root module, you'll need to remove your local `.terraform` directory and `backend.tf` file before re-initializing the backend since it will need to create the s3 bucket and dynamodb table for each environment as well as the `$root-module-backend.tfconfig` files.
+When bootstrapping multiple environments and the same root module, you'll need to remove your local `.terraform` directory and `backend.tf` file before re-initializing the backend since it will need to create the s3 bucket and dynamodb table for each environment as well as the `$root-module-backend.tfconfig` files. Once this has been completed, the same `backend.tf` can be used across all environments as long as the contents of the `backend.tf` file are the same.
 
 ## Usage
 

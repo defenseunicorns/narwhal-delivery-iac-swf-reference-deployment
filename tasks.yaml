@@ -222,6 +222,7 @@ tasks:
   - name: plan-transit-gateway
     description: |
       Terraform plan AWS SWF IaC transit-gateway module
+      This task references and reads the remote backend of the swf module to get information from the VPC. It uses the swf-backend.tfconfig file to get the environment variables to know which state to read.
       NOTE: This task should be run after the swf module has been applied. It relies on reading the remote backend of the swf module to get information from the VPC.
       example: uds run plan-transit-gateway --set ENV=$ENV
     actions:
@@ -247,6 +248,7 @@ tasks:
   - name: apply-transit-gateway
     description: |
       Terraform apply AWS SWF IaC transit-gateway module
+      This task references and reads the remote backend of the swf module to get information from the VPC. It uses the swf-backend.tfconfig file to get the environment variables to know which state to read.
       NOTE: This task should be run after the swf module has been applied. It relies on reading the remote backend of the swf module to get information from the VPC.
       example: uds run apply-transit-gateway --set ENV=$ENV
     actions:
