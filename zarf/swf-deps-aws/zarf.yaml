@@ -1,0 +1,93 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/defenseunicorns/zarf/main/zarf.schema.json
+kind: ZarfPackageConfig
+metadata:
+  name: swf-deps-aws
+  version: "0.1.0"
+  architecture: amd64
+
+variables:
+  - name: GITLAB_DB_PASSWORD
+    default: "set-me"
+  - name: CONFLUENCE_DB_PASSWORD
+    default: "set-me"
+  - name: JIRA_DB_PASSWORD
+    default: "set-me"
+  # - name: SONARQUBE_DB_PASSWORD
+  #   default: "set-me"
+  - name: REDIS_PASSWORD
+    default: "set-me"
+
+components:
+  - name: gitlab-rds
+    required: true
+    manifests:
+      - name: gitlab-postgres
+        namespace: gitlab
+        files:
+          - manifests/rds/gitlab-secret.yaml
+
+  - name: gitlab-elasticache
+    required: true
+    manifests:
+      - name: gitlab-redis
+        namespace: gitlab
+        files:
+          - manifests/elasticache/gitlab-secret.yaml
+
+  - name: gitlab-s3
+    required: true
+    manifests:
+      - name: gitlab-s3
+        namespace: gitlab
+        files:
+          - manifests/s3/gitlab-secret.yaml
+
+  - name: confluence-rds
+    required: true
+    manifests:
+      - name: confluence-postgres
+        namespace: confluence
+        files:
+          - manifests/rds/confluence-secret.yaml
+
+  - name: jira-rds
+    required: true
+    manifests:
+      - name: jira-postgres
+        namespace: jira
+        files:
+          - manifests/rds/jira-secret.yaml
+
+  - name: artifactory-rds
+    required: true
+    manifests:
+      - name: artifactory-postgres
+        namespace: artifactory
+        files:
+          - manifests/rds/artifactory-secret.yaml
+
+  # - name: sonarqube-rds
+  #   required: true
+  #   manifests:
+  #     - name: sonarqube-rds
+  #       namespace: sonarqube
+  #       files:
+  #         - manifests/rds/sonarqube-secret.yaml
+
+  - name: gitlab-backup
+    required: true
+    manifests:
+      - name: gitlab-backup
+        namespace: velero
+        files:
+          - manifests/velero/gitlab.yaml
+
+  - name: pepr-workaround
+    required: true
+    manifests:
+      - name: pepr-workaround
+        namespace: pepr-system
+        files:
+          - manifests/pepr-workaround/fix.yaml
+    images:
+      - "registry1.dso.mil/ironbank/chainguard-dev/wolfi/kubectl:stable"

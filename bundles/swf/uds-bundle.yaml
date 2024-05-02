@@ -1,0 +1,426 @@
+kind: UDSBundle
+metadata:
+  name: swf
+  description: A UDS bundle for deploying a swf to narwhal reference deployment
+  version: "0.1.0"
+
+packages:
+  - name: zarf-init-s3-backend
+    repository: ghcr.io/defenseunicorns/delivery-zarf-init/init
+    ref: v0.33.0-registry1
+
+  - name: storageclass
+    repository: ghcr.io/defenseunicorns/packages/narwhal-delivery-zarf-package-eks-addons/storageclass
+    ref: 0.0.1
+    optionalComponents:
+      - fetch-staged-aws-ssm-vars
+      - ebs-storageclass
+      - efs-storageclass
+
+  - name: aws-load-balancer-controller
+    repository: ghcr.io/defenseunicorns/packages/narwhal-delivery-zarf-package-eks-addons/aws-load-balancer-controller
+    ref: 0.0.1
+    optionalComponents:
+      - fetch-staged-aws-ssm-vars
+
+  - name: core
+    repository: ghcr.io/defenseunicorns/packages/uds/core
+    ref: 0.21.0-registry1
+    overrides:
+      istio-controlplane:
+        istiod:
+          values:
+            - path: pilot.affinity
+              value:
+                podAntiAffinity:
+                  preferredDuringSchedulingIgnoredDuringExecution:
+                    - weight: 100
+                      podAffinityTerm:
+                        labelSelector:
+                          matchExpressions:
+                            - key: app
+                              operator: In
+                              values:
+                                - istiod
+                        topologyKey: kubernetes.io/hostname
+            - path: pilot.tolerations
+              value:
+                - effect: NoSchedule
+                  key: dedicated
+                  operator: Exists
+          variables:
+            - path: pilot.autoscaleMin
+              name: ISTIOD_AUTOSCALE_MIN
+              default: 1
+            - path: pilot.autoscaleMax
+              name: ISTIOD_AUTOSCALE_MAX
+              default: 5
+      kube-prometheus-stack:
+        kube-prometheus-stack:
+          values:
+            - path: kube-state-metrics.resources.limits.memory
+              value: 512Mi
+          variables:
+            - name: PROMETHEUS_PVC_SIZE
+              path: prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.resources.requests.storage
+              default: 50Gi
+      promtail:
+        promtail:
+          values:
+            - path: tolerations
+              value:
+                - key: node-role.kubernetes.io/master
+                  operator: Exists
+                  effect: NoSchedule
+                - key: node-role.kubernetes.io/control-plane
+                  operator: Exists
+                  effect: NoSchedule
+                - key: dedicated
+                  operator: Exists
+                  effect: NoSchedule
+      keycloak:
+        keycloak:
+          values:
+            - path: devMode
+              value: false
+            - path: fips
+              value: true
+            - path: postgresql.database
+              value: keycloakdb
+            - path: postgresql.username
+              value: keycloak
+          variables:
+            - name: KC_DB_PASSWORD
+              path: postgresql.password
+            - name: KC_DB_HOST
+              path: postgresql.host
+
+      neuvector:
+        core:
+          values:
+            - path: k3s.enabled
+              value: false
+            - path: containerd.enabled
+              value: true
+            - path: containerd.path
+              value: /run/containerd/containerd.sock
+            - path: enforcer.tolerations
+              value:
+                - effect: NoSchedule
+                  key: node-role.kubernetes.io/master
+                - effect: NoSchedule
+                  key: node-role.kubernetes.io/control-plane
+                - effect: NoSchedule
+                  key: dedicated
+                  operator: Exists
+      loki:
+        loki:
+          variables:
+            - name: LOKI_BACKEND_PVC_SIZE
+              path: backend.persistence.size
+              default: 50Gi
+            - name: LOKI_WRITE_PVC_SIZE
+              path: write.persistence.size
+              default: 60Gi
+            - name: LOKI_S3_REGION
+              path: loki.storage.s3.region
+            - name: LOKI_CHUNKS_BUCKET
+              path: loki.storage.bucketNames.chunks
+            - name: LOKI_RULER_BUCKET
+              path: loki.storage.bucketNames.ruler
+            - name: LOKI_ADMIN_BUCKET
+              path: loki.storage.bucketNames.admin
+            - name: LOKI_S3_ROLE_ARN
+              path: serviceAccount.annotations.eks\.amazonaws\.com/role-arn
+          values:
+            - path: loki.storage.type
+              value: "s3"
+            - path: loki.commonConfig.replication_factor
+              value: 3
+            - path: singleBinary.replicas
+              value: 0
+            - path: loki.storage.s3.endpoint
+              value: ""
+            - path: loki.storage.s3.secretAccessKey
+              value: ""
+            - path: loki.storage.s3.accessKeyId
+              value: ""
+      velero:
+        velero:
+          values:
+            - path: snapshotsEnabled # This is required for EBS
+              value: true
+            # - path: deployNodeAgent # This is required for EFS
+            #   value: true
+            - path: credentials
+              value: {}
+            - path: schedules.udsbackup.disabled
+              value: true
+          variables:
+            - name: VELERO_ROLE_ARN
+              path: serviceAccount.server.annotations.eks\.amazonaws\.com/role-arn
+            - name: VELERO_BACKUP_STORAGE_LOCATION
+              path: configuration.backupStorageLocation
+            - name: VELERO_VOLUME_SNAPSHOT_LOCATION
+              path: configuration.volumeSnapshotLocation
+            - name: VELERO_BACKUP_SCHEDULES
+              path: schedules
+      istio-admin-gateway:
+        gateway:
+          values:
+            - path: service.annotations
+              value:
+                service.beta.kubernetes.io/aws-load-balancer-type: "external"
+                service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+                service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "instance"
+                service.beta.kubernetes.io/aws-load-balancer-attributes: "load_balancing.cross_zone.enabled=true"
+      istio-tenant-gateway:
+        gateway:
+          values:
+            - path: service.annotations
+              value:
+                service.beta.kubernetes.io/aws-load-balancer-type: "external"
+                service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+                service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "instance"
+                service.beta.kubernetes.io/aws-load-balancer-attributes: "load_balancing.cross_zone.enabled=true"
+      istio-passthrough-gateway:
+        gateway:
+          values:
+            - path: service.annotations
+              value:
+                service.beta.kubernetes.io/aws-load-balancer-type: "external"
+                service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+                service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "instance"
+                service.beta.kubernetes.io/aws-load-balancer-attributes: "load_balancing.cross_zone.enabled=true"
+
+  - name: cluster-autoscaler
+    repository: ghcr.io/defenseunicorns/packages/narwhal-delivery-zarf-package-eks-addons/cluster-autoscaler
+    ref: 0.0.1-registry1
+    optionalComponents:
+      - fetch-staged-aws-ssm-vars
+
+  - name: aws-node-termination-handler
+    repository: ghcr.io/defenseunicorns/packages/narwhal-delivery-zarf-package-eks-addons/aws-node-termination-handler
+    ref: 0.0.1-registry1
+    optionalComponents:
+      - fetch-staged-aws-ssm-vars
+
+  - name: swf-deps-aws
+    path: ../../
+    ref: "0.1.0"
+
+  - name: gitlab
+    repository: ghcr.io/defenseunicorns/packages/uds/gitlab
+    ref: 16.10.2-uds.0-registry1
+    overrides:
+      gitlab:
+        gitlab:
+          values:
+            - path: global.appConfig.omniauth.autoSignInWithProvider
+              value: ""
+            - path: gitlab.gitaly.tolerations
+              value:
+                - effect: NoSchedule
+                  key: dedicated
+                  operator: Exists
+            - path: gitlab.gitaly.resources
+              value:
+                limits:
+                  cpu: 14000m
+                  memory: 110Gi
+                requests:
+                  cpu: 14000m
+                  memory: 110Gi
+            - path: global.appConfig.ciSecureFiles.connection
+              value:
+                key: connection
+                secret: gitlab-object-store
+            - path: global.appConfig.ciSecureFiles.proxy_download
+              value: true
+          variables:
+            - name: REGISTRY_ROLE_ARN
+              description: "The ARN of the role to assume for the registry pods"
+              path: registry.serviceAccount.annotations.eks\.amazonaws\.com/role-arn
+            - name: SIDEKIQ_ROLE_ARN
+              description: "The ARN of the role to assume for the sidekiq pods"
+              path: gitlab.sidekiq.serviceAccount.annotations.eks\.amazonaws\.com/role-arn
+            - name: WEBSERVICE_ROLE_ARN
+              description: "The ARN of the role to assume for the web service pods"
+              path: gitlab.webservice.serviceAccount.annotations.eks\.amazonaws\.com/role-arn
+            - name: TOOLBOX_ROLE_ARN
+              description: "The ARN of the role to assume for the toolbox pods"
+              path: gitlab.toolbox.serviceAccount.annotations.eks\.amazonaws\.com/role-arn
+            - name: LFS_BUCKET
+              description: "The name of the S3 bucket to use for LFS storage"
+              path: global.appConfig.lfs.bucket
+            - name: ARTIFACTS_BUCKET
+              description: "The name of the S3 bucket to use for artifacts storage"
+              path: global.appConfig.artifacts.bucket
+            - name: UPLOADS_BUCKET
+              description: "The name of the S3 bucket to use for uploads storage"
+              path: global.appConfig.uploads.bucket
+            - name: PACKAGES_BUCKET
+              description: "The name of the S3 bucket to use for packages storage"
+              path: global.appConfig.packages.bucket
+            - name: EXTERNAL_DIFFS_ENABLED
+              description: "Whether to enable external diffs storage"
+              path: global.appConfig.externalDiffs.enabled
+              default: true
+            - name: EXTERNAL_DIFFS_BUCKET
+              description: "The name of the S3 bucket to use for external diffs storage"
+              path: global.appConfig.externalDiffs.bucket
+            - name: TERRAFORM_STATE_ENABLED
+              description: "Whether to enable terraform state storage"
+              path: global.appConfig.terraformState.enabled
+              default: true
+            - name: TERRAFORM_STATE_BUCKET
+              description: "The name of the S3 bucket to use for terraform state storage"
+              path: global.appConfig.terraformState.bucket
+            - name: CI_SECURE_FILES_ENABLED
+              description: "Whether to enable CI secure files storage"
+              path: global.appConfig.ciSecureFiles.enabled
+              default: true
+            - name: CI_SECURE_FILES_BUCKET
+              description: "The name of the S3 bucket to use for CI secure files storage"
+              path: global.appConfig.ciSecureFiles.bucket
+            - name: DEPENDENCY_PROXY_ENABLED
+              description: "Whether to enable dependency proxy storage"
+              path: global.appConfig.dependencyProxy.enabled
+              default: false
+            - name: DEPENDENCY_PROXY_BUCKET
+              description: "The name of the S3 bucket to use for dependency proxy storage"
+              path: global.appConfig.dependencyProxy.bucket
+            - name: BACKUPS_BUCKET
+              description: "The name of the S3 bucket to use for backups storage"
+              path: global.appConfig.backups.bucket
+            - name: TMP_BUCKET
+              description: "The name of the S3 bucket to use for temporary backups storage"
+              path: global.appConfig.backups.tmpBucket
+            - name: REGISTRY_BUCKET
+              description: "The name of the S3 bucket to use for registry storage"
+              path: global.registry.bucket
+            - name: PAGES_BUCKET
+              description: "The name of the S3 bucket to use for pages storage"
+              path: global.pages.objectStore.bucket
+            - name: GITALY_PVC_SIZE
+              path: gitlab.gitaly.persistence.size
+              default: 50Gi
+            #  For Backup & Restore
+            - name: GITALY_PV_MATCH_LABELS
+              description: "The labels to provide to the gitaly PVC to match to an existing PV"
+              path: gitlab.gitaly.persistence.matchLabels
+
+  - name: gitlab-runner
+    repository: ghcr.io/defenseunicorns/packages/uds/gitlab-runner
+    ref: 16.10.0-uds.0-registry1
+    overrides:
+      gitlab-runner:
+        gitlab-runner:
+          values:
+            - path: rbac.create
+              value: true
+            - path: rbac.serviceAccountName
+              value: gitlab-runner
+          variables:
+            - name: RUNNER_ROLE_ARN
+              description: "The ARN of the role to assume for the runner pods"
+              path: rbac.serviceAccountAnnotations.eks\.amazonaws\.com/role-arn
+
+  - name: mattermost
+    repository: ghcr.io/defenseunicorns/packages/uds/mattermost
+    ref: 9.7.1-uds.0-registry1
+    overrides:
+      mattermost:
+        uds-mattermost-config:
+          variables:
+            - name: MATTERMOST_DB_ENDPOINT
+              path: "postgres.host"
+            - name: MATTERMOST_DB_PASSWORD
+              path: "postgres.password"
+            - name: MATTERMOST_DB_NAME
+              path: "postgres.dbName"
+            - name: MATTERMOST_BUCKET
+              path: "objectStorage.bucket"
+            - name: MATTERMOST_REGION
+              path: "objectStorage.region"
+            - name: MATTERMOST_S3_ENDPOINT
+              path: "objectStorage.endpoint"
+        mattermost-enterprise-edition:
+          variables:
+            - name: MATTERMOST_ROLE_ARN
+              path: serviceAccount.annotations.eks\.amazonaws\.com/role-arn
+
+  - name: jenkins
+    repository: ghcr.io/defenseunicorns/packages/uds/jenkins
+    ref: 5.1.0-uds.1
+    overrides:
+      jenkins:
+        jenkins:
+          variables:
+            - name: JENKINS_PERSISTENCE_EXISTING_CLAIM
+              description: "Name of the pre-existing PVC that jenkins will be restored from"
+              path: persistence.existingClaim
+            - name: JENKINS_PVC_SIZE
+              path: persistence.size
+              default: 50Gi
+
+  - name: jira
+    repository: ghcr.io/defenseunicorns/packages/uds/jira
+    ref: 1.17.2-uds.0-registry1
+    overrides:
+      jira:
+        jira:
+          values:
+            - path: volumes.sharedHome.persistentVolumeClaim.storageClassName
+              value: efs
+            - path: volumes.sharedHome.persistentVolumeClaim.create
+              value: true
+            - path: volumes.sharedHome.nfsPermissionFixer.enabled
+              value: false
+            - path: volumes.sharedHome.persistentVolumeClaim.resources.requests.storage
+              value: 50Gi
+          variables:
+            - name: JIRA_LOCAL_HOME_PVC_SIZE
+              path: volumes.localHome.persistentVolumeClaim.resources.requests.storage
+              default: 50Gi
+
+  - name: confluence
+    repository: ghcr.io/defenseunicorns/packages/uds/confluence
+    ref: 1.18.0-uds.0-registry1
+    overrides:
+      confluence:
+        confluence:
+          values:
+            - path: volumes.sharedHome.persistentVolumeClaim.storageClassName
+              value: efs
+            - path: volumes.sharedHome.persistentVolumeClaim.create
+              value: true
+            - path: volumes.sharedHome.nfsPermissionFixer.enabled
+              value: false
+            - path: volumes.sharedHome.persistentVolumeClaim.resources.requests.storage
+              value: 50Gi
+          variables:
+            - name: CONFLUENCE_LOCAL_HOME_PVC_SIZE
+              path: volumes.localHome.persistentVolumeClaim.resources.requests.storage
+              default: 50Gi
+
+  - name: artifactory
+    repository: ghcr.io/defenseunicorns/packages/uds/artifactory
+    ref: 107.77.7-uds.0-registry1
+    overrides:
+      artifactory:
+        artifactory:
+          variables:
+            - name: ARTIFACTORY_TYPE
+              path: artifactory.persistence.type
+              default: file-system
+            - name: ARTIFACTORY_TEST_CONNECTION
+              path: artifactory.persistence.awsS3V3.testConnection
+              default: "true"
+            - name: ARTIFACTORY_BUCKET
+              path: artifactory.persistence.awsS3V3.bucketName
+            - name: ARTIFACTORY_PATH
+              path: artifactory.persistence.awsS3V3.path
+              default: artifactory/filestore
+            - name: ARTIFACTORY_ENDPOINT
+              path: artifactory.persistence.awsS3V3.endpoint

@@ -1,0 +1,445 @@
+tasks:
+  - name: check-env
+    inputs:
+      env:
+        required: true
+        description: "the environment variable"
+    actions:
+      - description: "Check if environment exists"
+        cmd: |
+          # check if ENV input variable has been templated in bash, if not, bail
+          set +x
+          if [ -z "${ENV}" ]; then
+            echo "ENV input is empty. Please set it with --set ENV=<env>"
+            exit 1
+          fi
+        shell:
+          linux: bash
+          darwin: bash
+  # - name: check-var-files
+  #   inputs:
+  #     var_files:
+  #       required: true
+  #       description: "The var files to check"
+  #   actions:
+  #     - description: "Check if var files exist"
+  #       cmd: |
+  #         printenv
+  #         set -exo pipefail
+  #         # check if VAR_FILES input variable has been templated in bash, if not, bail
+  #         if [ -z "${VAR_FILES}" ]; then
+  #           echo "VAR_FILES input is empty. Please set it with --set VAR_FILES=<var_files>"
+  #           exit 1
+  #         fi
+  #       shell:
+  #         linux: bash
+  #         darwin: bash
+  - name: terraform-one-time-bootstrap-per-env
+    inputs:
+      env:
+        required: true
+        description: "The environment to bootstrap"
+    actions:
+      - task: check-env
+        with:
+          env: ${ENV}
+      - description: "Check if bootstrap for '$env' is clean"
+        cmd: |
+          set -exo pipefail
+          # check if ./iac/env/${INPUT_ENV}/backends/bootstrap-backend.tfconfig exists
+          if [ -f ./iac/env/${INPUT_ENV}/backends/bootstrap-backend.tfconfig ]; then
+            echo "terraform s3 backend environment files for ${INPUT_ENV} already exists"
+            exit 1
+          fi
+        shell:
+          linux: bash
+          darwin: bash
+      - description: "Init the bootstrap module"
+        task: terraform-init
+        with:
+          root_module: bootstrap
+      - description: "Apply the bootstrap module in the specified environment"
+        task: terraform-apply
+        with:
+          env: ${ENV}
+          root_module: bootstrap
+          var_files: '["common.terraform.tfvars", "bootstrap.terraform.tfvars"]'
+      - description: "Migrate local backend to s3"
+        cmd: |
+          set -exo pipefail
+          cd ./iac/bootstrap
+          terraform init --reconfigure --force-copy --backend-config=../env/${INPUT_ENV}/backends/bootstrap-backend.tfconfig && \
+            mv terraform.tfstate "terraform-tfstate.${INPUT_ENV}-local-backend-backup"
+        shell:
+          linux: bash
+          darwin: bash
+
+  - name: dryrun-terraform-one-time-bootstrap-per-env
+    inputs:
+      env:
+        required: true
+        description: "The environment to bootstrap"
+    actions:
+      - task: check-env
+        with:
+          env: ${ENV}
+      - description: "Check if bootstrap for '$env' is clean"
+        cmd: |
+          set -exo pipefail
+          # check if ./iac/env/${INPUT_ENV}/backends/bootstrap-backend.tfconfig exists
+          if [ -f ./iac/env/${INPUT_ENV}/backends/bootstrap-backend.tfconfig ]; then
+            echo "terraform s3 backend environment files for ${INPUT_ENV} already exists"
+            exit 1
+          fi
+        shell:
+          linux: bash
+          darwin: bash
+      - description: "Init the bootstrap module"
+        task: terraform-init
+        with:
+          root_module: bootstrap
+      - description: "Apply the bootstrap module in the specified environment"
+        task: terraform-plan
+        with:
+          env: ${ENV}
+          root_module: bootstrap
+          var_files: '["common.terraform.tfvars", "bootstrap.terraform.tfvars"]'
+
+  - name: terraform-init
+    inputs:
+      root_module:
+        required: true
+        description: "The root module to init"
+    actions:
+      - cmd: |
+          set -exo pipefail
+          cd ./iac/${INPUT_ROOT_MODULE}
+          terraform init
+        shell:
+          linux: bash
+          darwin: bash
+
+  - name: terraform-backend-reconfigure-init
+    description: "Reconfigure the backend using partial backend configuration patterns and init the root module"
+    inputs:
+      env:
+        required: true
+        description: "The environment to init, relative to the backend config file"
+      root_module:
+        required: true
+        description: "The root module to init"
+    actions:
+      - task: check-env
+        with:
+          env: ${ENV}
+      - cmd: |
+          set -exo pipefail
+          cd ./iac/${INPUT_ROOT_MODULE}
+          terraform init --reconfigure --backend-config=../env/${INPUT_ENV}/backends/${INPUT_ROOT_MODULE}-backend.tfconfig
+        shell:
+          linux: bash
+          darwin: bash
+
+  - name: terraform-plan
+    inputs:
+      env:
+        required: true
+        description: "The environment to plan"
+      root_module:
+        required: true
+        description: "The root module to plan"
+      var_files:
+        required: true
+        description: "The var files to use for the plan"
+    actions:
+      - task: check-env
+        with:
+          env: ${ENV}
+      - description: "Terraform plan"
+        cmd: |
+          set -exo pipefail
+          cd ./iac/${INPUT_ROOT_MODULE}
+
+          # Initialize an empty string to hold all --var-file options
+          var_files_options=""
+
+          # Use process substitution to avoid creating a subshell
+          while IFS= read -r item; do
+
+          # Construct the search path relative to root module directory to find the var files provided
+          search_path="../env/${INPUT_ENV}"
+
+            # Find the file matching the pattern and read the first matching file
+            matching_file=$(find $search_path -type f -name "$item" | head -n 1)
+
+            if [[ -n "$matching_file" ]]; then
+              var_files_options+="--var-file $matching_file "
+            else
+              echo "No matching file found for $item"
+            fi
+          done < <(echo ${INPUT_VAR_FILES} | yq e '.[]' -)
+
+          mkdir -p ignore
+
+          terraform plan $var_files_options -no-color 2>&1 | tee ignore/terraform-plan.out
+
+          cat ignore/terraform-plan.out \
+            | grep -v "Refreshing state" \
+            | grep -v "Reading..." \
+            | grep -v "Read complete" \
+            | perl -0777pe 's/  #.*will be read[\s\S]*?    }\n\n//mg' > ignore/terraform-plan-filtered.tf \
+            || true
+        shell:
+          linux: bash
+          darwin: bash
+
+  - name: terraform-apply
+    inputs:
+      env:
+        required: true
+        description: "The environment to apply"
+      root_module:
+        required: true
+        description: "The root module to apply"
+      var_files:
+        required: true
+        description: "The var files to use for the plan"
+    actions:
+      - task: check-env
+        with:
+          env: ${ENV}
+      - description: "Terraform apply"
+        cmd: |
+          set -exo pipefail
+          cd ./iac/${INPUT_ROOT_MODULE}
+
+          # Initialize an empty string to hold all --var-file options
+          var_files_options=""
+
+          # Use process substitution to avoid creating a subshell
+          while IFS= read -r item; do
+
+          # Construct the search path relative to root module directory to find the var files provided
+          search_path="../env/${INPUT_ENV}"
+
+            # Find the file matching the pattern and read the first matching file
+            matching_file=$(find $search_path -type f -name "$item" | head -n 1)
+
+            if [[ -n "$matching_file" ]]; then
+              var_files_options+="--var-file $matching_file "
+            else
+              echo "No matching file found for $item"
+            fi
+          done < <(echo ${INPUT_VAR_FILES} | yq e '.[]' -)
+
+          terraform apply $var_files_options --auto-approve
+        shell:
+          linux: bash
+          darwin: bash
+
+  - name: terraform-destroy
+    inputs:
+      env:
+        required: true
+        description: "The environment to destroy"
+      root_module:
+        required: true
+        description: "The root module to destroy"
+      var_files:
+        required: true
+        description: "The var files to use for the plan"
+    actions:
+      - task: check-env
+        with:
+          env: ${ENV}
+      - description: "Terraform destroy"
+        cmd: |
+          set -exo pipefail
+          cd ./iac/${INPUT_ROOT_MODULE}
+
+          # Initialize an empty string to hold all --var-file options
+          var_files_options=""
+
+          # Use process substitution to avoid creating a subshell
+          while IFS= read -r item; do
+
+          # Construct the search path relative to root module directory to find the var files provided
+          search_path="../env/${INPUT_ENV}"
+
+            # Find the file matching the pattern and read the first matching file
+            matching_file=$(find $search_path -type f -name "$item" | head -n 1)
+
+            if [[ -n "$matching_file" ]]; then
+              var_files_options+="--var-file $matching_file "
+            else
+              echo "No matching file found for $item"
+            fi
+          done < <(echo ${INPUT_VAR_FILES} | yq e '.[]' -)
+
+          terraform destroy $var_files_options --auto-approve
+        shell:
+          linux: bash
+          darwin: bash
+
+  - name: terraform-console
+    inputs:
+      env:
+        required: true
+        description: "The environment to apply"
+      root_module:
+        required: true
+        description: "The root module to apply"
+      var_files:
+        required: true
+        description: "The var files to use for the plan"
+    actions:
+      - task: check-env
+        with:
+          env: ${ENV}
+      - description: "Terraform apply"
+        cmd: |
+          set -exo pipefail
+          cd ./iac/${INPUT_ROOT_MODULE}
+
+          # Initialize an empty string to hold all --var-file options
+          var_files_options=""
+
+          # Use process substitution to avoid creating a subshell
+          while IFS= read -r item; do
+
+          # Construct the search path relative to root module directory to find the var files provided
+          search_path="../env/${INPUT_ENV}"
+
+            # Find the file matching the pattern and read the first matching file
+            matching_file=$(find $search_path -type f -name "$item" | head -n 1)
+
+            if [[ -n "$matching_file" ]]; then
+              var_files_options+="--var-file $matching_file "
+            else
+              echo "No matching file found for $item"
+            fi
+          done < <(echo ${INPUT_VAR_FILES} | yq e '.[]' -)
+
+          terraform console $var_files_options <<EOF
+          jsondecode(local.gitlab_policies_concat)
+          EOF
+
+        shell:
+          linux: bash
+          darwin: bash
+
+  - name: update-uds-config
+    inputs:
+      env:
+        required: true
+        description: "The environment to update"
+      root_module:
+        required: true
+        description: "The root module"
+      var_files:
+        required: true
+        description: "The var files to use"
+    actions:
+      - task: check-env
+        with:
+          env: ${ENV}
+      - cmd: |
+          set -exo pipefail
+          cd ./iac/swf
+          terraform init --reconfigure --backend-config=../env/${INPUT_ENV}/backends/swf-backend.tfconfig
+        shell:
+          linux: bash
+          darwin: bash
+      - description: "Update the UDS config"
+        cmd: |
+          set -exo pipefail
+          cd ./iac/swf
+
+          # Initialize an empty string to hold all --var-file options
+          var_files_options=""
+
+          # Use process substitution to avoid creating a subshell
+          while IFS= read -r item; do
+
+          # Construct the search path relative to root module directory to find the var files provided
+          search_path="../env/${INPUT_ENV}"
+
+            # Find the file matching the pattern and read the first matching file
+            matching_file=$(find $search_path -type f -name "$item" | head -n 1)
+
+            if [[ -n "$matching_file" ]]; then
+              var_files_options+="--var-file $matching_file "
+            else
+              echo "No matching file found for $item"
+            fi
+          done < <(echo ${INPUT_VAR_FILES} | yq e '.[]' -)
+
+          terraform apply $var_files_options \
+          --target local_sensitive_file.uds_config \
+          --auto-approve
+        shell:
+          linux: bash
+          darwin: bash
+
+  - name: just-echo
+    description: "sanity checking different ways to access input variables"
+    inputs:
+      env:
+        required: true
+        description: "input env"
+    actions:
+      - description: "echo"
+        cmd: |
+          set -x
+          echo "Test"
+          echo "${{ index .inputs }}"
+          echo "${{ index .inputs "env" }}"
+          echo "${INPUT_ENV}"
+          echo "${ENV}"
+        shell:
+          linux: bash
+          darwin: bash
+
+  - name: get-bastion-instance-id
+    inputs:
+      env:
+        required: true
+        description: "The environment to start the sshuttle session in"
+    actions:
+      - description: "Get the bastion's instance ID"
+        cmd: |
+          set -exo pipefail
+          cd ./iac/swf > /dev/null
+          terraform output -json bastion | jq -r .instance_id
+        setVariables:
+          - name: BASTION_INSTANCE_ID
+        shell:
+          linux: bash
+          darwin: bash
+      # - description: "Start an sshuttle session in the background"
+      #   cmd: |
+      #     set -exo pipefail
+      #     sshuttle -r ${SSHUTTLE_REMOTE} ${SSHUTTLE_SUBNETS} --daemon --pidfile /tmp/sshuttle.pid
+      #   shell:
+      #     linux: bash
+      #     darwin: bash
+
+  - name: get-env
+    actions:
+      - description: "Get the environment from var or file"
+        shell:
+          linux: bash
+          darwin: bash
+        cmd: |
+          if [ ! -z "${ENV}" ]; then
+            printf "${ENV}"
+          else
+            if [ -f .current-env ]; then
+              cat .current-env
+            else
+              echo "No environment set"
+              exit 1
+            fi
+          fi
+        setVariables:
+          - name: ENV
