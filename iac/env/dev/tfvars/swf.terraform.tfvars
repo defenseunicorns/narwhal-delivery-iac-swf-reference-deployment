@@ -171,7 +171,8 @@ admin_users = [
   "Michael.Kruggel",
   "Jordan.McClintock",
   "Zack.Annexstein",
-  "matt.bunch"
+  "matt.bunch",
+  "jeff.mccoy"
 ]
 
 enable_admin_roles_prefix_or_suffix = false
