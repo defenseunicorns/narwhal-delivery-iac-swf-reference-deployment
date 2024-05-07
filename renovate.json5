@@ -12,7 +12,9 @@
     // Apply crowd-sourced package replacement rules. See https://docs.renovatebot.com/presets-replacements/#replacementsall
     "replacements:all",
     // Apply crowd-sourced workarounds for known problems with packages. See https://docs.renovatebot.com/presets-workarounds/#workaroundsall
-    "workarounds:all"
+    "workarounds:all",
+    // generic versioning updates for yaml files
+    "github>defenseunicorns/narwhal-delivery-renovate-config:zarfPackageGenericMatching.json5"
   ],
   // If we don't specify a timezone then Renovate will use UTC
   "timezone": "America/New_York",
@@ -35,36 +37,17 @@
   "pre-commit": {
     "enabled": true
   },
-  "regexManagers": [
-    // Custom regex manager for the .env file that follows the pattern documented here: https://docs.renovatebot.com/modules/manager/regex/#advanced-capture
-    {
-      "fileMatch": ["^.env"],
-      "matchStrings": [
-        "datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\s.*?_VERSION=(?<currentValue>.*)\\s"
-      ],
-      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver-coerced{{/if}}",
-      "extractVersionTemplate": "^v?(?<version>.*)$"
-    },
-    // Custom regex manager for the .tool-versions file that follows the pattern documented here: https://docs.renovatebot.com/modules/manager/regex/#advanced-capture
-    {
-      "fileMatch": ["^.tool-versions$"],
-      "matchStrings": [
-        "datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\s.*? (?<currentValue>.*)\\s"
-      ],
-      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver-coerced{{/if}}",
-      "extractVersionTemplate": "^v?(?<version>.*)$"
-    }
-  ],
   "packageRules": [
-    {
-      "matchPackageNames": ["k8s.io/client-go"],
-      "allowedVersions": "<1.0.0"
-    },
     {
       "matchManagers": ["terraform"],
       "matchDepTypes": ["module"],
       "matchDatasources": ["github-tags", "git-tags"],
       "versioning": "loose"
+    },
+    {
+      "matchFileNames": ["bundles/swf/uds-bundle.yaml"],
+      "groupName": "swf-uds-bundle",
+      "commitMessageTopic": "swf-uds-bundle"
     }
   ]
 }
