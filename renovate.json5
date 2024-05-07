@@ -30,7 +30,7 @@
     "renovate"
   ],
   // Rate limit PRs to maximum x created per hour. 0 means no limit. See https://docs.renovatebot.com/configuration-options/#prhourlylimit
-  "prHourlyLimit": 1,
+  "prHourlyLimit": 0,
   // Limit to a maximum of x concurrent branches/PRs. 0 means no limit. See https://docs.renovatebot.com/configuration-options/#prconcurrentlimit
   "prConcurrentLimit": 0,
   // Enable updates to the pre-commit-config.yaml file. See https://docs.renovatebot.com/modules/manager/pre-commit/
