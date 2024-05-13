@@ -19,13 +19,13 @@ packages:
 
   - name: aws-load-balancer-controller
     repository: ghcr.io/defenseunicorns/packages/narwhal-delivery-zarf-package-eks-addons/aws-load-balancer-controller
-    ref: 0.0.1
+    ref: v2.7.2
     optionalComponents:
       - fetch-staged-aws-ssm-vars
 
   - name: core
     repository: ghcr.io/defenseunicorns/packages/uds/core
-    ref: 0.21.0-registry1
+    ref: 0.21.1-registry1
     overrides:
       istio-controlplane:
         istiod:
@@ -195,13 +195,13 @@ packages:
 
   - name: cluster-autoscaler
     repository: ghcr.io/defenseunicorns/packages/narwhal-delivery-zarf-package-eks-addons/cluster-autoscaler
-    ref: 0.0.1-registry1
+    ref: v1.29.0-registry1
     optionalComponents:
       - fetch-staged-aws-ssm-vars
 
   - name: aws-node-termination-handler
     repository: ghcr.io/defenseunicorns/packages/narwhal-delivery-zarf-package-eks-addons/aws-node-termination-handler
-    ref: 0.0.1-registry1
+    ref: v1.13.3-registry1
     optionalComponents:
       - fetch-staged-aws-ssm-vars
 
@@ -211,7 +211,7 @@ packages:
 
   - name: gitlab
     repository: ghcr.io/defenseunicorns/packages/uds/gitlab
-    ref: 16.10.2-uds.0-registry1
+    ref: 16.11.1-uds.0-registry1
     overrides:
       gitlab:
         gitlab:
@@ -312,7 +312,7 @@ packages:
 
   - name: gitlab-runner
     repository: ghcr.io/defenseunicorns/packages/uds/gitlab-runner
-    ref: 16.10.0-uds.0-registry1
+    ref: 16.11.0-uds.0-registry1
     overrides:
       gitlab-runner:
         gitlab-runner:
@@ -328,7 +328,7 @@ packages:
 
   - name: mattermost
     repository: ghcr.io/defenseunicorns/packages/uds/mattermost
-    ref: 9.7.1-uds.0-registry1
+    ref: 9.7.2-uds.0-registry1
     overrides:
       mattermost:
         uds-mattermost-config:
