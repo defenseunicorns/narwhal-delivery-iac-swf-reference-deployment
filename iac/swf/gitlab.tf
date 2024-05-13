@@ -60,6 +60,7 @@ module "gitlab_kms_key" {
 }
 
 locals {
+  # Permissions extrapolated from https://gitlab.com/gitlab-org/gitlab-environment-toolkit/-/blob/main/terraform/modules/gitlab_ref_arch_aws/storage.tf and other files in the repo
   # gitlab service accounts:
   # gitlab-sidekiq -> all buckets except registry
   # gitlab-toolbox -> access to all buckets
@@ -141,15 +142,19 @@ locals {
         Action = [
           "s3:PutObject",
           "s3:GetObject",
+          "s3:GetObjectVersion",
           "s3:DeleteObject",
         ]
-        Resource = ["arn:${data.aws_partition.current.partition}:s3:::gitlab-runner-cache"]
+        Resource = ["arn:${data.aws_partition.current.partition}:s3:::${join("-", compact([local.prefix, "gitlab-runner-cache", local.suffix]))}/*"]
       },
       {
         Effect = "Allow"
         Action = [
-          "kms:GenerateDataKey",
-          "kms:Decrypt"
+          "kms:Encrypt",
+          "kms:Decrypt",
+          "kms:GenerateDataKey*",
+          "kms:ReEncrypt*",
+          "kms:DescribeKey"
         ]
         Resource = [module.gitlab_kms_key.kms_key_arn]
       }
