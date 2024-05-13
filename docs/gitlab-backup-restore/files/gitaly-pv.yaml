@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: gitaly-restored-volume
+  labels:
+    FILL IN LABELS HERE
+    example: value
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: MATCH PVC VOLUME SIZE HERE
+  csi:
+    driver: ebs.csi.aws.com
+    fsType: ext4
+    volumeHandle: FILL IN VOLUME ID HERE
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: gp3
+  volumeMode: Filesystem

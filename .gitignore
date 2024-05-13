@@ -3,6 +3,13 @@
 .DS_Store
 .vscode
 
+# Current env file
+.current-env
+
+# UDS/Zarf things
+*.tar.zst
+*.tar.gz
+zarf-sbom
 
 # Local .terraform directories
 .terraform/
@@ -61,7 +68,11 @@ examples/zarf-complete-example/build
 
 **/ignore
 
-iac/env/*/backends/*.conf
+# keep these for dev branch
+# iac/env/*/backends/*.conf
 
 **/builds
 **/.terraform.lock.hcl
+
+
+**/uds-config.yaml
