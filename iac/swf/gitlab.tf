@@ -60,6 +60,7 @@ module "gitlab_kms_key" {
 }
 
 locals {
+  # Permissions extrapolated from https://gitlab.com/gitlab-org/gitlab-environment-toolkit/-/blob/main/terraform/modules/gitlab_ref_arch_aws/storage.tf and other files in the repo
   # gitlab service accounts:
   # gitlab-sidekiq -> all buckets except registry
   # gitlab-toolbox -> access to all buckets
