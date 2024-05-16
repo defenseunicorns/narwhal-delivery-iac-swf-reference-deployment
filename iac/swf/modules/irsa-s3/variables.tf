@@ -75,3 +75,9 @@ variable "serviceaccount_names" {
   type        = list(string)
   default     = []
 }
+
+variable "role_permissions_boundary" {
+  description = "Permissions boundary ARN to use for IAM role"
+  type        = string
+  default     = null
+}

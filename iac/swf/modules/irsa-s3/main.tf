@@ -82,6 +82,7 @@ module "irsa_role" {
       namespace_service_accounts = ["${var.k8s_namespace}:${each.value}"]
     }
   }
+  role_permissions_boundary_arn = var.role_permissions_boundary_arn
   tags = local.tags
 }
 
