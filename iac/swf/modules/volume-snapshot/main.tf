@@ -17,6 +17,7 @@ resource "aws_iam_role" "dlm_lifecycle_role" {
   name               = var.dlm_role_name
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
   tags               = var.tags
+  permissions_boundary = var.role_permissions_boundary_arn
 }
 
 data "aws_iam_policy_document" "dlm_lifecycle" {

@@ -42,3 +42,9 @@ variable "dlm_role_name" {
   type        = string
   default     = ""
 }
+
+variable "role_permissions_boundary_arn" {
+  description = "Permissions boundary ARN to use for IAM role"
+  type        = string
+  default     = null
+}
