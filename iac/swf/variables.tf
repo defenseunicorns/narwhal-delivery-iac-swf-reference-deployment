@@ -474,6 +474,12 @@ variable "gitlab_namespace" {
   default     = "gitlab"
 }
 
+variable "gitlab_runner_namespace" {
+  description = "Namespace GitLab Runner is deployed to"
+  type        = string
+  default     = "gitlab-runner"
+}
+
 variable "gitlab_elasticache_cluster_name" {
   description = "ElastiCache Cluster Name"
   type        = string
