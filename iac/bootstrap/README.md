@@ -25,7 +25,7 @@ export ENV=dev
 uds run one-time-bootstrap-per-env --set ENV=$ENV
 
 #subsequent runs for $ENV
-uds run apply-aws-bootstrap --set ENV=$ENV
+uds run apply-bootstrap --set ENV=$ENV
 
 # re-init to use a different ENV and also s3 backend
 export ENV=stg
