@@ -22,14 +22,14 @@ example uds runner usage (preferred):
 
 export ENV=dev
 #initial runs
-uds run terraform-one-time-bootstrap-per-env --set ENV=$ENV
+uds run one-time-bootstrap-per-env --set ENV=$ENV
 
 #subsequent runs for $ENV
-uds run terraform-apply-aws-bootstrap --set ENV=$ENV
+uds run apply-bootstrap --set ENV=$ENV
 
 # re-init to use a different ENV and also s3 backend
 export ENV=stg
-uds run terraform-backend-reconfigure-init-aws-bootstrap  --set ENV=$ENV
+uds run init-reconfigure-backend-bootstrap -set ENV=$ENV
 
 ```
 
@@ -77,7 +77,7 @@ terraform init --reconfigure --backend-config=../env/${env}/backends/${root_modu
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_tfstate_backend"></a> [tfstate\_backend](#module\_tfstate\_backend) | git::https://github.com/cloudposse/terraform-aws-tfstate-backend.git | tags/1.4.0 |
+| <a name="module_tfstate_backend"></a> [tfstate\_backend](#module\_tfstate\_backend) | git::<https://github.com/cloudposse/terraform-aws-tfstate-backend.git> | tags/1.4.0 |
 
 ## Resources
 

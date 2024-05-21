@@ -62,9 +62,17 @@ module "bastion" {
 }
 
 ### fetch secretsmanager secret for the notifcation webhook
-data "aws_secretsmanager_secret" "narwhal-bot-slack-webhook" {
+data "aws_secretsmanager_secret" "notification-webhook" {
   count = var.notification_webhook_secret_id != "" ? 1 : 0
   name  = var.notification_webhook_secret_id
+}
+
+locals {
+  webhook_secret_fetcher_policy = var.notification_webhook_secret_id != "" ? {
+    effect    = "Allow"
+    actions   = ["secretsmanager:GetSecretValue"]
+    resources = [try(data.aws_secretsmanager_secret.notification-webhook[0].arn, "")]
+  } : {}
 }
 
 module "password_lambda" {
@@ -74,14 +82,10 @@ module "password_lambda" {
   prefix = local.prefix
   users  = var.users
   lambda_additional_policy_statements = {
-    webhook_secret_fetcher = {
-      effect    = "Allow",
-      actions   = ["secretsmanager:GetSecretValue"]
-      resources = [data.aws_secretsmanager_secret.narwhal-bot-slack-webhook[0].arn]
-    }
+    webhook_secret_fetcher = local.webhook_secret_fetcher_policy
   }
 
-  notification_webhook_secret_id = data.aws_secretsmanager_secret.narwhal-bot-slack-webhook[0].arn
+  notification_webhook_secret_id = try(data.aws_secretsmanager_secret.notification-webhook[0].arn, null)
   rotation_tag_key               = "Password-Rotation"
   rotation_tag_value             = "enabled"
 }

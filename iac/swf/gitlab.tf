@@ -171,19 +171,24 @@ locals {
 
   gitlab_irsa_map = {
     gitlab-registry = {
-      policy = local.gitlab_registry_s3_access
+      policy    = local.gitlab_registry_s3_access
+      namespace = var.gitlab_namespace
     }
     gitlab-sidekiq = {
-      policy = local.gitlab_generic_s3_access
+      policy    = local.gitlab_generic_s3_access
+      namespace = var.gitlab_namespace
     }
     gitlab-toolbox = {
-      policy = local.gitlab_policies_concat
+      policy    = local.gitlab_policies_concat
+      namespace = var.gitlab_namespace
     }
     gitlab-webservice = {
-      policy = local.gitlab_policies_concat
+      policy    = local.gitlab_policies_concat
+      namespace = var.gitlab_namespace
     }
     gitlab-runner = {
-      policy = local.gitlab_runner_s3_access
+      policy    = local.gitlab_runner_s3_access
+      namespace = var.gitlab_runner_namespace
     }
   }
 }
@@ -197,7 +202,7 @@ module "gitlab_irsa_s3" {
   policy_name          = each.key
   prefix               = local.prefix
   suffix               = local.suffix
-  k8s_namespace        = var.gitlab_namespace
+  k8s_namespace        = each.value.namespace
   kms_key_arn          = module.gitlab_kms_key.kms_key_arn
   oidc_provider_arn    = module.eks.oidc_provider_arn
   irsa_iam_policy      = each.value.policy
