@@ -29,7 +29,7 @@ uds run apply-aws-bootstrap --set ENV=$ENV
 
 # re-init to use a different ENV and also s3 backend
 export ENV=stg
-uds run backend-reconfigure-init-aws-bootstrap  --set ENV=$ENV
+uds run init-reconfigure-backend-bootstrap -set ENV=$ENV
 
 ```
 

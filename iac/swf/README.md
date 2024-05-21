@@ -21,7 +21,7 @@ uds run apply-aws-swf --set ENV=$ENV
 
 # re-init to use a different ENV and also s3 backend
 export ENV=stg
-uds run backend-reconfigure-init-aws-swf  --set ENV=$ENV
+uds run init-reconfigure-backend-swf  --set ENV=$ENV
 ```
 
 example terraform usage:
