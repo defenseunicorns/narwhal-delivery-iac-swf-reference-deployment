@@ -192,7 +192,7 @@ resource "aws_vpc_security_group_ingress_rule" "artifactory_rds_ingress" {
   to_port     = 5432
 }
 
-data "aws_secretsmanager_secret_version" "artifactory-license-secret" {
-  count     = var.artifatory_license_key_secret_id != "" ? 1 : 0
-  secret_id = var.artifatory_license_key_secret_id
-}
+# data "aws_secretsmanager_secret_version" "artifactory-license-secret" {
+#   count     = var.artifatory_license_key_secret_id != "" ? 1 : 0
+#   secret_id = var.artifatory_license_key_secret_id
+# }

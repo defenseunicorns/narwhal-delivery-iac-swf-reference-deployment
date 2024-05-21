@@ -175,7 +175,6 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | [aws_iam_session_context.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_session_context) | data source |
 | [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |
 | [aws_secretsmanager_secret.narwhal-bot-slack-webhook](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/secretsmanager_secret) | data source |
-| [aws_secretsmanager_secret_version.artifactory-license-secret](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/secretsmanager_secret_version) | data source |
 
 ## Inputs
 
