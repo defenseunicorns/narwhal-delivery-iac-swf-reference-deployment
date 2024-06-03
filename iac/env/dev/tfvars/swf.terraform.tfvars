@@ -162,8 +162,10 @@ zarf_s3_bucket_force_destroy = true
 
 #############################################################
 ################ Gitlab AWS Dependencies ####################
-gitlab_s3_bucket_force_destroy = true
-velero_s3_bucket_force_destroy = true
+gitlab_s3_bucket_force_destroy     = true
+velero_s3_bucket_force_destroy     = true
+mattermost_s3_bucket_force_destroy = true
+loki_s3_bucket_force_destroy       = true
 
 enable_cluster_creator_admin_permissions = false
 
