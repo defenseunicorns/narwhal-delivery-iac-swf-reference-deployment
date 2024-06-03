@@ -162,7 +162,7 @@ tasks:
         with:
           env: ${ENV}
           root_module: swf
-          var_files: '["common.terraform.tfvars", "swf.terraform.tfvars"]'
+          var_files: '["common.terraform.tfvars", "swf.terraform.tfvars", "context.tfvars",]'
 
   - name: apply-swf
     description: |
@@ -180,7 +180,7 @@ tasks:
         with:
           env: ${ENV}
           root_module: swf
-          var_files: '["common.terraform.tfvars", "swf.terraform.tfvars"]'
+          var_files: '["common.terraform.tfvars", "swf.terraform.tfvars", "context.tfvars",]'
 
   - name: destroy-swf
     description: |
@@ -198,7 +198,7 @@ tasks:
         with:
           env: ${ENV}
           root_module: swf
-          var_files: '["common.terraform.tfvars", "swf.terraform.tfvars"]'
+          var_files: '["common.terraform.tfvars", "swf.terraform.tfvars", "context.tfvars",]'
 
   - name: console-swf
     description: |
@@ -212,7 +212,7 @@ tasks:
         with:
           env: ${ENV}
           root_module: swf
-          var_files: '["common.terraform.tfvars", "swf.terraform.tfvars"]'
+          var_files: '["common.terraform.tfvars", "swf.terraform.tfvars", "context.tfvars",]'
 
   - name: init-transit-gateway
     description: |

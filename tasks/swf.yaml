@@ -15,16 +15,7 @@ tasks:
       - cmd: |
           set -x
           export UDS_CONFIG="./iac/env/${ENV}/uds/uds-config.yaml"
-          COMMAND="./uds deploy $(ls -tr bundles/swf/uds-bundle-swf*.tar.zst | tail -1) --confirm --no-progress"
-
-          UDS_VERSION=$(./uds version | sed 's/^v//')  # Extract version and remove leading 'v'
-
-          # Compare the current version with 0.10.0
-          if [[ "$(echo -e "$UDS_VERSION\n0.10.0" | sort -V | head -n1)" == "0.10.0" ]]; then
-              COMMAND="$COMMAND --no-tea"  # Append --no-tea if the current version is >= 0.10.0
-          fi
-
-          eval $COMMAND
+          ./uds deploy $(ls -tr bundles/swf/uds-bundle-swf*.tar.zst | tail -1) -a amd64 --confirm --no-progress
         shell:
           linux: bash
           darwin: bash
