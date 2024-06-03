@@ -84,6 +84,12 @@ variable "enable_sqs_events_on_access_log_access" {
   default     = false
 }
 
+variable "rds_deletion_protection" {
+  description = "Sets deletion protection for RDS instances"
+  type        = bool
+  default     = false
+}
+
 ###########################################################
 #################### VPC Config ###########################
 variable "vpc_cidr" {

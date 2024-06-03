@@ -55,6 +55,8 @@ module "velero_kms_key" {
   kms_key_alias_name_prefix         = local.velero_kms_key_alias_name_prefix
   kms_key_deletion_window           = 7
   kms_key_description               = "Velero Key"
+
+  depends_on = [module.velero_irsa_s3]
 }
 
 data "aws_iam_policy_document" "velero_irsa_iam_policy" {

@@ -102,6 +102,24 @@ tasks:
           root_module: bootstrap
           var_files: '["common.terraform.tfvars", "bootstrap.terraform.tfvars"]'
 
+  - name: destroy-bootstrap
+    description: |
+      Terraform destroy AWS SWF IaC Bootstrap module
+      example: uds run destroy-bootstrap --set ENV=$ENV
+    actions:
+      - description: "Get the current environment"
+        task: deploy:get-env
+      - task: deploy:terraform-backend-reconfigure-init
+        with:
+          env: ${ENV}
+          root_module: bootstrap
+      - description: "Terraform destroy AWS SWF IaC Bootstrap module"
+        task: deploy:terraform-destroy
+        with:
+          env: ${ENV}
+          root_module: bootstrap
+          var_files: '["common.terraform.tfvars", "bootstrap.terraform.tfvars"]'
+
   - name: init-swf
     description: |
       terraform init AWS SWF IaC swf module
@@ -171,6 +189,10 @@ tasks:
     actions:
       - description: "Get the current environment"
         task: deploy:get-env
+      - task: deploy:terraform-backend-reconfigure-init
+        with:
+          env: ${ENV}
+          root_module: swf
       - description: "Terraform destroy AWS SWF IaC swf module"
         task: deploy:terraform-destroy
         with:
@@ -271,6 +293,31 @@ tasks:
           root_module: transit-gateway
           var_files: '["common.terraform.tfvars", "context.tfvars", "swf-backend.tfconfig", "transit-gateway.terraform.tfvars"]'
 
+  - name: destroy-transit-gateway
+    description: |
+      Terraform destroy AWS SWF IaC transit-gateway module
+      NOTE: This task should be run after the swf module has been applied. It relies on reading the remote backend of the swf module to get information from the VPC.
+      example: uds run destroy-transit-gateway --set ENV=$ENV
+    actions:
+      # - description: "Terraform apply AWS SWF IaC swf module"
+      #   task: deploy:terraform-apply
+      #   with:
+      #     env: ${ENV}
+      #     root_module: swf
+      #     var_files: '["common.terraform.tfvars", "swf.terraform.tfvars"]'
+      - description: "Get the current environment"
+        task: deploy:get-env
+      - task: deploy:terraform-backend-reconfigure-init
+        with:
+          env: ${ENV}
+          root_module: transit-gateway
+      - description: "Terraform destroy AWS SWF IaC transit-gateway module"
+        task: deploy:terraform-destroy
+        with:
+          env: ${ENV}
+          root_module: transit-gateway
+          var_files: '["common.terraform.tfvars", "context.tfvars", "swf-backend.tfconfig", "transit-gateway.terraform.tfvars"]'
+
   - name: get-bastion-instance-id
     description: |
       Get the bastion instance id
@@ -355,3 +402,19 @@ tasks:
           env: ${ENV}
           root_module: swf
           var_files: '["common.terraform.tfvars", "swf.terraform.tfvars"]'
+
+  - name: ad-hoc-targeted-apply
+    description: "Update the UDS config file for the current environment locally"
+    actions:
+      - task: deploy:get-env
+      - task: deploy:terraform-backend-reconfigure-init
+        with:
+          env: ${ENV}
+          root_module: swf
+      - task: deploy:targeted-apply
+        with:
+          env: ${ENV}
+          root_module: swf
+          var_files: '["common.terraform.tfvars", "swf.terraform.tfvars"]'
+          targets: ${TARGETS}
+          # targets: '["module.artifactory_db", "module.confluence_db", "module.jira_db", "module.gitlab_db", "module.keycloak_db", "module.mattermost_db"]'

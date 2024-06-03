@@ -125,7 +125,7 @@ module "mattermost_db" {
   allow_major_version_upgrade = false
   auto_minor_version_upgrade  = false
 
-  deletion_protection = true
+  deletion_protection = var.rds_deletion_protection
 
   vpc_security_group_ids = [aws_security_group.mattermost_rds_sg.id]
 }
