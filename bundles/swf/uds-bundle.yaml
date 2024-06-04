@@ -341,6 +341,10 @@ packages:
       mattermost:
         uds-mattermost-config:
           values:
+            - path: postgres.existingSecret.name
+              value: ""
+            - path: postgres.username
+              value: "mattermost"
             - path: postgres.internal
               value: "false"
             - path: storage.internal
@@ -365,7 +369,7 @@ packages:
 
   - name: jenkins
     repository: ghcr.io/defenseunicorns/packages/uds/jenkins
-    ref: 5.1.0-uds.1
+    ref: 5.1.8-uds.2-registry1
     overrides:
       jenkins:
         jenkins:
@@ -376,6 +380,9 @@ packages:
             - name: JENKINS_PVC_SIZE
               path: persistence.size
               default: 50Gi
+            - name: JENKINS_PLUGINS
+              description: "List of plugins to install on Jenkins startup"
+              path: controller.installPlugins
 
   - name: jira
     repository: ghcr.io/defenseunicorns/packages/uds/jira
