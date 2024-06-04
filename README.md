@@ -40,4 +40,4 @@ Order of root module deployment:
 
 #### Transit Gateway
 
-[Transit Gateway module](./iac/transit-gateway/README.md) - This module is used to create the resources required for the transit gateway. It creates the transit gateway, transit gateway route table, transit gateway route, transit gateway attachment, and transit gateway route table associations required for ingress and egress traffic.
+[Transit Gateway module](./iac/transit-gateway/README.md) - This module is used to create the resources required for environments using an existing transit gateway or creating a new transit gateway. It creates the transit gateway, transit gateway route table, transit gateway route, transit gateway attachment, and transit gateway route table associations required for ingress and egress traffic.

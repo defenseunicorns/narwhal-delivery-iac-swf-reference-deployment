@@ -214,6 +214,14 @@ packages:
     ref: 17.0.1-uds.0-registry1
     overrides:
       gitlab:
+        uds-gitlab-config:
+          values:
+            - path: postgres.internal
+              value: "false"
+            - path: storage.internal
+              value: "false"
+            - path: redis.internal
+              value: "false"
         gitlab:
           values:
             - path: global.appConfig.omniauth.autoSignInWithProvider
@@ -332,6 +340,11 @@ packages:
     overrides:
       mattermost:
         uds-mattermost-config:
+          values:
+            - path: postgres.internal
+              value: "false"
+            - path: storage.internal
+              value: "false"
           variables:
             - name: MATTERMOST_DB_ENDPOINT
               path: "postgres.host"

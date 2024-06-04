@@ -142,6 +142,7 @@ admin_roles                              = []
 #################### Blueprints addons ###################
 # stages things in AWS for the cluster, values staged in SSM, consumed by zarf packages
 enable_amazon_eks_aws_efs_csi_driver = true
+enable_amazon_eks_aws_ebs_csi_driver = true
 enable_aws_node_termination_handler  = true
 enable_cluster_autoscaler            = true
 enable_aws_load_balancer_controller  = true
