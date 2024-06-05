@@ -50,11 +50,10 @@ resource "aws_s3_bucket_lifecycle_configuration" "velero_s3_bucket" {
 }
 
 module "velero_kms_key" {
-  source                            = "github.com/defenseunicorns/terraform-aws-uds-kms?ref=v0.0.3"
-  kms_key_policy_default_identities = [for role in var.velero_service_account_names : join("", ["arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/", (join("-", compact([local.prefix, role, "s3-role", local.suffix])))])]
-  kms_key_alias_name_prefix         = local.velero_kms_key_alias_name_prefix
-  kms_key_deletion_window           = 7
-  kms_key_description               = "Velero Key"
+  source                    = "github.com/defenseunicorns/terraform-aws-uds-kms?ref=v0.0.3"
+  kms_key_alias_name_prefix = local.velero_kms_key_alias_name_prefix
+  kms_key_deletion_window   = 7
+  kms_key_description       = "Velero Key"
 }
 
 data "aws_iam_policy_document" "velero_irsa_iam_policy" {

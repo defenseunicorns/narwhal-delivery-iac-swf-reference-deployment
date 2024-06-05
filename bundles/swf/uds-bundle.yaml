@@ -7,7 +7,7 @@ metadata:
 packages:
   - name: zarf-init-s3-backend
     repository: ghcr.io/defenseunicorns/delivery-zarf-init/init
-    ref: v0.33.0-registry1
+    ref: v0.34.0-registry1
 
   - name: storageclass
     repository: ghcr.io/defenseunicorns/packages/narwhal-delivery-zarf-package-eks-addons/storageclass
@@ -19,13 +19,21 @@ packages:
 
   - name: aws-load-balancer-controller
     repository: ghcr.io/defenseunicorns/packages/narwhal-delivery-zarf-package-eks-addons/aws-load-balancer-controller
-    ref: v2.7.2
+    ref: v2.8.1-registry1
     optionalComponents:
       - fetch-staged-aws-ssm-vars
+    overrides:
+      aws-load-balancer-controller:
+        aws-load-balancer-controller:
+          values:
+            - path: securityContext.runAsUser
+              value: 997
+            - path: securityContext.fsGroup
+              value: 997
 
   - name: core
     repository: ghcr.io/defenseunicorns/packages/uds/core
-    ref: 0.21.1-registry1
+    ref: 0.22.0-registry1
     overrides:
       istio-controlplane:
         istiod:
@@ -195,7 +203,7 @@ packages:
 
   - name: cluster-autoscaler
     repository: ghcr.io/defenseunicorns/packages/narwhal-delivery-zarf-package-eks-addons/cluster-autoscaler
-    ref: v1.29.0-registry1
+    ref: v1.30.1-registry1
     optionalComponents:
       - fetch-staged-aws-ssm-vars
 
@@ -211,9 +219,17 @@ packages:
 
   - name: gitlab
     repository: ghcr.io/defenseunicorns/packages/uds/gitlab
-    ref: 16.11.1-uds.0-registry1
+    ref: 17.0.1-uds.0-registry1
     overrides:
       gitlab:
+        uds-gitlab-config:
+          values:
+            - path: postgres.internal
+              value: "false"
+            - path: storage.internal
+              value: "false"
+            - path: redis.internal
+              value: "false"
         gitlab:
           values:
             - path: global.appConfig.omniauth.autoSignInWithProvider
@@ -312,7 +328,7 @@ packages:
 
   - name: gitlab-runner
     repository: ghcr.io/defenseunicorns/packages/uds/gitlab-runner
-    ref: 16.11.0-uds.0-registry1
+    ref: 17.0.0-uds.0-registry1
     overrides:
       gitlab-runner:
         gitlab-runner:
@@ -328,10 +344,19 @@ packages:
 
   - name: mattermost
     repository: ghcr.io/defenseunicorns/packages/uds/mattermost
-    ref: 9.7.2-uds.0-registry1
+    ref: 9.8.0-uds.0-registry1
     overrides:
       mattermost:
         uds-mattermost-config:
+          values:
+            - path: postgres.existingSecret.name
+              value: ""
+            - path: postgres.username
+              value: "mattermost"
+            - path: postgres.internal
+              value: "false"
+            - path: storage.internal
+              value: "false"
           variables:
             - name: MATTERMOST_DB_ENDPOINT
               path: "postgres.host"
@@ -352,7 +377,7 @@ packages:
 
   - name: jenkins
     repository: ghcr.io/defenseunicorns/packages/uds/jenkins
-    ref: 5.1.0-uds.1
+    ref: 5.1.8-uds.2-registry1
     overrides:
       jenkins:
         jenkins:
@@ -363,10 +388,13 @@ packages:
             - name: JENKINS_PVC_SIZE
               path: persistence.size
               default: 50Gi
+            - name: JENKINS_PLUGINS
+              description: "List of plugins to install on Jenkins startup"
+              path: controller.installPlugins
 
   - name: jira
     repository: ghcr.io/defenseunicorns/packages/uds/jira
-    ref: 1.17.2-uds.0-registry1
+    ref: 1.19.0-uds.0-registry1
     overrides:
       jira:
         jira:
@@ -386,7 +414,7 @@ packages:
 
   - name: confluence
     repository: ghcr.io/defenseunicorns/packages/uds/confluence
-    ref: 1.18.0-uds.0-registry1
+    ref: 1.20.0-uds.0-registry1
     overrides:
       confluence:
         confluence:
@@ -406,7 +434,7 @@ packages:
 
   - name: artifactory
     repository: ghcr.io/defenseunicorns/packages/uds/artifactory
-    ref: 107.77.7-uds.0-registry1
+    ref: 107.77.12-uds.0-registry1
     overrides:
       artifactory:
         artifactory:

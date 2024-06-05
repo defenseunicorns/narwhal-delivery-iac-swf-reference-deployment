@@ -10,10 +10,6 @@ terraform {
       source  = "hashicorp/cloudinit"
       version = ">= 2.0.0"
     }
-    helm = {
-      source  = "hashicorp/helm"
-      version = ">= 2.5.1"
-    }
     kubernetes = {
       source  = "hashicorp/kubernetes"
       version = ">= 2.10.0"
@@ -37,14 +33,6 @@ terraform {
     tls = {
       source  = "hashicorp/tls"
       version = ">= 3.0.0"
-    }
-    http = {
-      source  = "terraform-aws-modules/http"
-      version = "2.4.1"
-    }
-    archive = {
-      source  = "hashicorp/archive"
-      version = "2.4.2"
     }
   }
 }

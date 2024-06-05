@@ -13,7 +13,7 @@ At a high level the IaC will deploy the following resources:
 ## pre-requisites
 
 1. UDS cli
-2. Terraform  v1.5.7
+2. OpenTofu
 3. AWS cli
 4. Kubectl
 
@@ -40,4 +40,4 @@ Order of root module deployment:
 
 #### Transit Gateway
 
-[Transit Gateway module](./iac/transit-gateway/README.md) - This module is used to create the resources required for the transit gateway. It creates the transit gateway, transit gateway route table, transit gateway route, transit gateway attachment, and transit gateway route table associations required for ingress and egress traffic.
+[Transit Gateway module](./iac/transit-gateway/README.md) - This module is used to create the resources required for environments using an existing transit gateway or creating a new transit gateway. It creates the transit gateway, transit gateway route table, transit gateway route, transit gateway attachment, and transit gateway route table associations required for ingress and egress traffic.

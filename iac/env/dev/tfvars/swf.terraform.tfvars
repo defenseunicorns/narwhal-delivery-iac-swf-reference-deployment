@@ -134,7 +134,7 @@ cluster_addons = {
 }
 
 #################### EKS Access Policies ###########################
-enable_cluster_creator_admin_permissions = false
+enable_cluster_creator_admin_permissions = true
 admin_users                              = []
 enable_admin_roles_prefix_or_suffix      = false
 admin_roles                              = []
@@ -142,6 +142,7 @@ admin_roles                              = []
 #################### Blueprints addons ###################
 # stages things in AWS for the cluster, values staged in SSM, consumed by zarf packages
 enable_amazon_eks_aws_efs_csi_driver = true
+enable_amazon_eks_aws_ebs_csi_driver = true
 enable_aws_node_termination_handler  = true
 enable_cluster_autoscaler            = true
 enable_aws_load_balancer_controller  = true
@@ -157,9 +158,11 @@ users = ["ec2-user"]
 zarf_s3_bucket_force_destroy = true
 
 #############################################################
-########################### Gitlab ##########################
-gitlab_s3_bucket_force_destroy = true
-velero_s3_bucket_force_destroy = true
+################ Gitlab AWS Dependencies ####################
+gitlab_s3_bucket_force_destroy     = true
+velero_s3_bucket_force_destroy     = true
+mattermost_s3_bucket_force_destroy = true
+loki_s3_bucket_force_destroy       = true
 
 # gitaly_pvc_size = ""
 

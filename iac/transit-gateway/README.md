@@ -1,6 +1,25 @@
 # transit-gateway
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+This module is used to create the resources required for environments needing to use an existing transit gateway or creating a new transit gateway and update existing VPC route tables. It creates the transit gateway, transit gateway route table, transit gateway route, transit gateway attachment, and transit gateway route table associations required for ingress and egress traffic from nodes in an existing VPC to the transit gateway.
+
+## Pre-requisites
+
+- [bootstrap](../bootstrap/README.md)
+- [swf](../swf/README.md)
+
+## Usage
+
+example uds runner usage:
+
+```bash
+# from the root of the repo
+# The bootstrap and swf module should be run first, and backend files staged before running this module.
+export ENV=dev
+# apply-transit-gateway will also run init
+uds run apply-transit-gateway --set ENV=$ENV
+```
+
+<!-- BEGINNING OF PRE-COMMIT-OPENTOFU DOCS HOOK -->
 ## Requirements
 
 | Name | Version |
@@ -20,8 +39,8 @@
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_transit_gateway"></a> [transit\_gateway](#module\_transit\_gateway) | git::https://github.com/defenseunicorns/terraform-aws-transit-gateway.git | v0.0.3 |
-| <a name="module_transit_gateway_attachment"></a> [transit\_gateway\_attachment](#module\_transit\_gateway\_attachment) | git::https://github.com/defenseunicorns/terraform-aws-transit-gateway.git | v0.0.3 |
+| <a name="module_transit_gateway"></a> [transit\_gateway](#module\_transit\_gateway) | git::<https://github.com/defenseunicorns/terraform-aws-transit-gateway.git> | v0.0.3 |
+| <a name="module_transit_gateway_attachment"></a> [transit\_gateway\_attachment](#module\_transit\_gateway\_attachment) | git::<https://github.com/defenseunicorns/terraform-aws-transit-gateway.git> | v0.0.3 |
 
 ## Resources
 
@@ -52,4 +71,4 @@
 | <a name="output_route_config_map"></a> [route\_config\_map](#output\_route\_config\_map) | n/a |
 | <a name="output_transit_gateway_attachment"></a> [transit\_gateway\_attachment](#output\_transit\_gateway\_attachment) | n/a |
 | <a name="output_vpc_name"></a> [vpc\_name](#output\_vpc\_name) | n/a |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END OF PRE-COMMIT-OPENTOFU DOCS HOOK -->

@@ -69,21 +69,25 @@ data "aws_secretsmanager_secret" "notification-webhook" {
 
 locals {
   webhook_secret_fetcher_policy = var.notification_webhook_secret_id != "" ? {
-    effect    = "Allow"
-    actions   = ["secretsmanager:GetSecretValue"]
-    resources = [try(data.aws_secretsmanager_secret.notification-webhook[0].arn, "")]
+    "webhook_secret_fetcher" = {
+      effect    = "Allow"
+      actions   = ["secretsmanager:GetSecretValue"]
+      resources = [try(data.aws_secretsmanager_secret.notification-webhook[0].arn, "")]
+    }
   } : {}
+
+  local_lambda_additional_policy_statements = merge(
+    local.webhook_secret_fetcher_policy
+  )
 }
 
 module "password_lambda" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-lambda.git//modules/password-rotation?ref=v0.0.5"
-  region = var.region
-  suffix = lower(random_id.default.hex)
-  prefix = local.prefix
-  users  = var.users
-  lambda_additional_policy_statements = {
-    webhook_secret_fetcher = local.webhook_secret_fetcher_policy
-  }
+  source                              = "git::https://github.com/defenseunicorns/terraform-aws-lambda.git//modules/password-rotation?ref=v0.0.5"
+  region                              = var.region
+  suffix                              = lower(random_id.default.hex)
+  prefix                              = local.prefix
+  users                               = var.users
+  lambda_additional_policy_statements = local.local_lambda_additional_policy_statements
 
   notification_webhook_secret_id = try(data.aws_secretsmanager_secret.notification-webhook[0].arn, null)
   rotation_tag_key               = "Password-Rotation"
