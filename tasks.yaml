@@ -19,36 +19,36 @@ tasks:
 
   - name: one-time-bootstrap-env
     description: |
-      One time bootstrapping of a terraform environment for both the bootstrap and swf modules using the bootstrap root module
+      One time bootstrapping of an OpenTofu environment for both the bootstrap and swf modules using the bootstrap root module
       This sets up the backend resources in AWS and templates out the backend.tf file in each root module and generates the ${root_module}-backend.tfconfig files in the ./iac/env/${env}/backends directory.
       example: uds run one-time-bootstrap-env --set ENV=$ENV
     actions:
       - description: "Get the current environment"
         task: deploy:get-env
-      - task: deploy:terraform-one-time-bootstrap-per-env
+      - task: deploy:tofu-one-time-bootstrap-per-env
         with:
           env: ${ENV}
 
   - name: bootstrap-env-dryrun
     description: |-
-      Dryrun the one time bootstrapping of a terraform environment for both the bootstrap and swf modules using the bootstrap root module
+      Dryrun the one time bootstrapping of an OpenTofu environment for both the bootstrap and swf modules using the bootstrap root module
       example: uds run bootstrap-env-dryrun --set ENV=$ENV
     actions:
       - description: "Get the current environment"
         task: deploy:get-env
-      - task: deploy:dryrun-terraform-one-time-bootstrap-per-env
+      - task: deploy:dryrun-tofu-one-time-bootstrap-per-env
         with:
           env: ${ENV}
 
   - name: init-bootstrap
     description: |
-      terraform init AWS SWF IaC Bootstrap module
+      tofu init AWS SWF IaC Bootstrap module
       example: uds run init-bootstrap --set ENV=$ENV
     actions:
       - description: "Get the current environment"
         task: deploy:get-env
-      - description: "terraform init AWS SWF IaC Bootstrap module"
-        task: deploy:terraform-init
+      - description: "OpenTofu init AWS SWF IaC Bootstrap module"
+        task: deploy:tofu-init
         with:
           root_module: bootstrap
 
@@ -68,17 +68,17 @@ tasks:
 
   - name: plan-bootstrap
     description: |
-      Terraform plan AWS SWF IaC Bootstrap module
+      OpenTofu plan AWS SWF IaC Bootstrap module
       example: uds run plan-bootstrap --set ENV=$ENV
     actions:
       - description: "Get the current environment"
         task: deploy:get-env
-      - task: deploy:terraform-backend-reconfigure-init
+      - task: deploy:tofu-backend-reconfigure-init
         with:
           env: ${ENV}
           root_module: bootstrap
-      - description: "Terraform plan AWS SWF IaC Bootstrap module"
-        task: deploy:terraform-plan
+      - description: "OpenTofu plan AWS SWF IaC Bootstrap module"
+        task: deploy:tofu-plan
         with:
           env: ${ENV}
           root_module: bootstrap
@@ -86,17 +86,17 @@ tasks:
 
   - name: apply-bootstrap
     description: |
-      Terraform apply AWS SWF IaC Bootstrap module
+      OpenTofu apply AWS SWF IaC Bootstrap module
       example: uds run apply-bootstrap --set ENV=$ENV
     actions:
       - description: "Get the current environment"
         task: deploy:get-env
-      - task: deploy:terraform-backend-reconfigure-init
+      - task: deploy:tofu-backend-reconfigure-init
         with:
           env: ${ENV}
           root_module: bootstrap
-      - description: "Terraform apply AWS SWF IaC Bootstrap module"
-        task: deploy:terraform-apply
+      - description: "OpenTofu apply AWS SWF IaC Bootstrap module"
+        task: deploy:tofu-apply
         with:
           env: ${ENV}
           root_module: bootstrap
@@ -104,17 +104,17 @@ tasks:
 
   - name: destroy-bootstrap
     description: |
-      Terraform destroy AWS SWF IaC Bootstrap module
+      OpenTofu destroy AWS SWF IaC Bootstrap module
       example: uds run destroy-bootstrap --set ENV=$ENV
     actions:
       - description: "Get the current environment"
         task: deploy:get-env
-      - task: deploy:terraform-backend-reconfigure-init
+      - task: deploy:tofu-backend-reconfigure-init
         with:
           env: ${ENV}
           root_module: bootstrap
-      - description: "Terraform destroy AWS SWF IaC Bootstrap module"
-        task: deploy:terraform-destroy
+      - description: "OpenTofu destroy AWS SWF IaC Bootstrap module"
+        task: deploy:tofu-destroy
         with:
           env: ${ENV}
           root_module: bootstrap
@@ -122,13 +122,13 @@ tasks:
 
   - name: init-swf
     description: |
-      terraform init AWS SWF IaC swf module
+      OpenTofu init AWS SWF IaC swf module
       example: uds run init-swf --set ENV=$ENV
     actions:
       - description: "Get the current environment"
         task: deploy:get-env
       - description: "AWS SWF IaC"
-        task: deploy:terraform-init
+        task: deploy:tofu-init
         with:
           root_module: swf
 
@@ -148,17 +148,17 @@ tasks:
 
   - name: plan-swf
     description: |
-      Terraform plan AWS SWF IaC swf module
+      OpenTofu plan AWS SWF IaC swf module
       example: uds run plan-swf --set ENV=$ENV
     actions:
       - description: "Get the current environment"
         task: deploy:get-env
-      - task: deploy:terraform-backend-reconfigure-init
+      - task: deploy:tofu-backend-reconfigure-init
         with:
           env: ${ENV}
           root_module: swf
-      - description: "Terraform plan AWS SWF IaC swf module"
-        task: deploy:terraform-plan
+      - description: "OpenTofu plan AWS SWF IaC swf module"
+        task: deploy:tofu-plan
         with:
           env: ${ENV}
           root_module: swf
@@ -166,17 +166,17 @@ tasks:
 
   - name: apply-swf
     description: |
-      Terraform apply AWS SWF IaC swf module
+      OpenTofu apply AWS SWF IaC swf module
       example: uds run apply-swf --set ENV=$ENV
     actions:
       - description: "Get the current environment"
         task: deploy:get-env
-      - task: deploy:terraform-backend-reconfigure-init
+      - task: deploy:tofu-backend-reconfigure-init
         with:
           env: ${ENV}
           root_module: swf
-      - description: "Terraform apply AWS SWF IaC swf module"
-        task: deploy:terraform-apply
+      - description: "OpenTofu apply AWS SWF IaC swf module"
+        task: deploy:tofu-apply
         with:
           env: ${ENV}
           root_module: swf
@@ -184,17 +184,17 @@ tasks:
 
   - name: destroy-swf
     description: |
-      Terraform destroy AWS SWF IaC swf module
+      OpenTofu destroy AWS SWF IaC swf module
       example: uds run destroy-swf --set ENV=$ENV
     actions:
       - description: "Get the current environment"
         task: deploy:get-env
-      - task: deploy:terraform-backend-reconfigure-init
+      - task: deploy:tofu-backend-reconfigure-init
         with:
           env: ${ENV}
           root_module: swf
-      - description: "Terraform destroy AWS SWF IaC swf module"
-        task: deploy:terraform-destroy
+      - description: "OpenTofu destroy AWS SWF IaC swf module"
+        task: deploy:tofu-destroy
         with:
           env: ${ENV}
           root_module: swf
@@ -202,13 +202,13 @@ tasks:
 
   - name: console-swf
     description: |
-      Terraform console AWS SWF IaC swf module
+      OpenTofu console AWS SWF IaC swf module
       example: uds run console-swf --set ENV=$ENV
     actions:
       - description: "Get the current environment"
         task: deploy:get-env
-      - description: "Terraform console AWS SWF IaC swf module"
-        task: deploy:terraform-console
+      - description: "OpenTofu console AWS SWF IaC swf module"
+        task: deploy:tofu-console
         with:
           env: ${ENV}
           root_module: swf
@@ -216,13 +216,13 @@ tasks:
 
   - name: init-transit-gateway
     description: |
-      terraform init AWS SWF IaC transit-gateway module
+      tofu init AWS SWF IaC transit-gateway module
       example: uds run init-transit-gateway --set ENV=$ENV
     actions:
       - description: "Get the current environment"
         task: deploy:get-env
-      - description: "Terraform init AWS SWF IaC transit-gateway module"
-        task: deploy:terraform-init
+      - description: "OpenTofu init AWS SWF IaC transit-gateway module"
+        task: deploy:tofu-init
         with:
           root_module: transit-gateway
 
@@ -235,7 +235,7 @@ tasks:
       - description: "Get the current environment"
         task: deploy:get-env
       - description: "Reconfigure the backend for the transit-gateway module"
-        task: deploy:terraform-backend-reconfigure-init
+        task: deploy:tofu-backend-reconfigure-init
         with:
           env: ${ENV}
           root_module: transit-gateway
@@ -243,25 +243,25 @@ tasks:
   # Ideally, we would like to ensure that the swf module is applied and state reconciled before the transit-gateway module
   - name: plan-transit-gateway
     description: |
-      Terraform plan AWS SWF IaC transit-gateway module
+      OpenTofu plan AWS SWF IaC transit-gateway module
       This task references and reads the remote backend of the swf module to get information from the VPC. It uses the swf-backend.tfconfig file to get the environment variables to know which state to read.
       NOTE: This task should be run after the swf module has been applied. It relies on reading the remote backend of the swf module to get information from the VPC.
       example: uds run plan-transit-gateway --set ENV=$ENV
     actions:
-      # - description: "Terraform apply AWS SWF IaC swf module"
-      #   task: deploy:terraform-apply
+      # - description: "OpenTofu apply AWS SWF IaC swf module"
+      #   task: deploy:tofu-apply
       #   with:
       #     env: ${ENV}
       #     root_module: swf
       #     var_files: '["common.terraform.tfvars", "swf.terraform.tfvars"]'
       - description: "Get the current environment"
         task: deploy:get-env
-      - task: deploy:terraform-backend-reconfigure-init
+      - task: deploy:tofu-backend-reconfigure-init
         with:
           env: ${ENV}
           root_module: transit-gateway
-      - description: "Terraform plan AWS SWF IaC transit-gateway module"
-        task: deploy:terraform-plan
+      - description: "OpenTofu plan AWS SWF IaC transit-gateway module"
+        task: deploy:tofu-plan
         with:
           env: ${ENV}
           root_module: transit-gateway
@@ -269,25 +269,25 @@ tasks:
 
   - name: apply-transit-gateway
     description: |
-      Terraform apply AWS SWF IaC transit-gateway module
+      OpenTofu apply AWS SWF IaC transit-gateway module
       This task references and reads the remote backend of the swf module to get information from the VPC. It uses the swf-backend.tfconfig file to get the environment variables to know which state to read.
       NOTE: This task should be run after the swf module has been applied. It relies on reading the remote backend of the swf module to get information from the VPC.
       example: uds run apply-transit-gateway --set ENV=$ENV
     actions:
-      # - description: "Terraform apply AWS SWF IaC swf module"
-      #   task: deploy:terraform-apply
+      # - description: "OpenTofu apply AWS SWF IaC swf module"
+      #   task: deploy:tofu-apply
       #   with:
       #     env: ${ENV}
       #     root_module: swf
       #     var_files: '["common.terraform.tfvars", "swf.terraform.tfvars"]'
       - description: "Get the current environment"
         task: deploy:get-env
-      - task: deploy:terraform-backend-reconfigure-init
+      - task: deploy:tofu-backend-reconfigure-init
         with:
           env: ${ENV}
           root_module: transit-gateway
-      - description: "Terraform apply AWS SWF IaC transit-gateway module"
-        task: deploy:terraform-apply
+      - description: "OpenTofu apply AWS SWF IaC transit-gateway module"
+        task: deploy:tofu-apply
         with:
           env: ${ENV}
           root_module: transit-gateway
@@ -295,24 +295,24 @@ tasks:
 
   - name: destroy-transit-gateway
     description: |
-      Terraform destroy AWS SWF IaC transit-gateway module
+      OpenTofu destroy AWS SWF IaC transit-gateway module
       NOTE: This task should be run after the swf module has been applied. It relies on reading the remote backend of the swf module to get information from the VPC.
       example: uds run destroy-transit-gateway --set ENV=$ENV
     actions:
-      # - description: "Terraform apply AWS SWF IaC swf module"
-      #   task: deploy:terraform-apply
+      # - description: "OpenTofu apply AWS SWF IaC swf module"
+      #   task: deploy:tofu-apply
       #   with:
       #     env: ${ENV}
       #     root_module: swf
       #     var_files: '["common.terraform.tfvars", "swf.terraform.tfvars"]'
       - description: "Get the current environment"
         task: deploy:get-env
-      - task: deploy:terraform-backend-reconfigure-init
+      - task: deploy:tofu-backend-reconfigure-init
         with:
           env: ${ENV}
           root_module: transit-gateway
-      - description: "Terraform destroy AWS SWF IaC transit-gateway module"
-        task: deploy:terraform-destroy
+      - description: "OpenTofu destroy AWS SWF IaC transit-gateway module"
+        task: deploy:tofu-destroy
         with:
           env: ${ENV}
           root_module: transit-gateway
@@ -326,7 +326,7 @@ tasks:
     actions:
       - description: "Get the current environment"
         task: deploy:get-env
-      - task: deploy:terraform-backend-reconfigure-init
+      - task: deploy:tofu-backend-reconfigure-init
         with:
           env: ${ENV}
           root_module: swf
@@ -457,7 +457,7 @@ tasks:
     description: "Update the UDS config file for the current environment locally"
     actions:
       - task: deploy:get-env
-      - task: deploy:terraform-backend-reconfigure-init
+      - task: deploy:tofu-backend-reconfigure-init
         with:
           env: ${ENV}
           root_module: swf
@@ -482,7 +482,7 @@ tasks:
       - task: preflight
         with:
           root_module: ${ROOT_MODULE}
-      - task: deploy:terraform-backend-reconfigure-init
+      - task: deploy:tofu-backend-reconfigure-init
         with:
           env: ${ENV}
           root_module: ${ROOT_MODULE}
