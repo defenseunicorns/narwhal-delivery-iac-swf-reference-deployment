@@ -1,6 +1,6 @@
 # volume-snapshot
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- BEGINNING OF PRE-COMMIT-OPENTOFU DOCS HOOK -->
 ## Requirements
 
 | Name | Version |
@@ -36,7 +36,7 @@ No modules.
 |------|-------------|------|---------|:--------:|
 | <a name="input_dlm_role_name"></a> [dlm\_role\_name](#input\_dlm\_role\_name) | Name for the DLM IAM role policy | `string` | `""` | no |
 | <a name="input_lifecycle_policy_description"></a> [lifecycle\_policy\_description](#input\_lifecycle\_policy\_description) | Description of the lifecycle policy | `string` | `""` | no |
-| <a name="input_schedule_details"></a> [schedule\_details](#input\_schedule\_details) | Details of the schedule - Cron reference https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-cron-expressions.html | <pre>list(object({<br>    name = string<br>    create_rule = object({<br>      cron_expression = string<br>    })<br>    retain_rule = object({<br>      count = number<br>    })<br>  }))</pre> | <pre>[<br>  {<br>    "create_rule": {<br>      "cron_expression": "cron(0 0 * * *)"<br>    },<br>    "name": "Daily",<br>    "retain_rule": {<br>      "count": 7<br>    }<br>  }<br>]</pre> | no |
+| <a name="input_schedule_details"></a> [schedule\_details](#input\_schedule\_details) | Details of the schedule - Cron reference <https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-cron-expressions.html> | <pre>list(object({<br>    name = string<br>    create_rule = object({<br>      cron_expression = string<br>    })<br>    retain_rule = object({<br>      count = number<br>    })<br>  }))</pre> | <pre>[<br>  {<br>    "create_rule": {<br>      "cron_expression": "cron(0 0 * * *)"<br>    },<br>    "name": "Daily",<br>    "retain_rule": {<br>      "count": 7<br>    }<br>  }<br>]</pre> | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Tags to apply to lifecycle policy resources | `map(string)` | `{}` | no |
 | <a name="input_target_tags"></a> [target\_tags](#input\_target\_tags) | List of tags to target snapshots by, is OR operation | `map(string)` | n/a | yes |
 
@@ -45,4 +45,4 @@ No modules.
 | Name | Description |
 |------|-------------|
 | <a name="output_dlm_target_tags"></a> [dlm\_target\_tags](#output\_dlm\_target\_tags) | Tags to reference when selecting volumes to snapshot |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END OF PRE-COMMIT-OPENTOFU DOCS HOOK -->

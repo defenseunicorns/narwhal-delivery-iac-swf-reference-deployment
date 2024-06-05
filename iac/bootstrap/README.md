@@ -56,7 +56,7 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 terraform init --reconfigure --backend-config=../env/${env}/backends/${root_module}-backend.tfconfig
 ```
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- BEGINNING OF PRE-COMMIT-OPENTOFU DOCS HOOK -->
 ## Requirements
 
 | Name | Version |
@@ -78,7 +78,7 @@ terraform init --reconfigure --backend-config=../env/${env}/backends/${root_modu
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_tfstate_backend"></a> [tfstate\_backend](#module\_tfstate\_backend) | git::https://github.com/cloudposse/terraform-aws-tfstate-backend.git | tags/1.4.0 |
+| <a name="module_tfstate_backend"></a> [tfstate\_backend](#module\_tfstate\_backend) | git::<https://github.com/cloudposse/terraform-aws-tfstate-backend.git> | tags/1.4.0 |
 
 ## Resources
 
@@ -121,4 +121,4 @@ terraform init --reconfigure --backend-config=../env/${env}/backends/${root_modu
 | <a name="output_account_tfstate_backend_dynamodb_table_id"></a> [account\_tfstate\_backend\_dynamodb\_table\_id](#output\_account\_tfstate\_backend\_dynamodb\_table\_id) | tf state backend DynamoDB table ID |
 | <a name="output_account_tfstate_backend_dynamodb_table_name"></a> [account\_tfstate\_backend\_dynamodb\_table\_name](#output\_account\_tfstate\_backend\_dynamodb\_table\_name) | tfstate backend DynamoDB table name |
 | <a name="output_account_tfstate_backend_s3_bucket_id"></a> [account\_tfstate\_backend\_s3\_bucket\_id](#output\_account\_tfstate\_backend\_s3\_bucket\_id) | tfstate backend S3 bucket ID |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END OF PRE-COMMIT-OPENTOFU DOCS HOOK -->

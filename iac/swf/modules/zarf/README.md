@@ -2,7 +2,8 @@
 
 1. creates s3 bucket for docker registry
 2. creates IRSA role for s3 access
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+
+<!-- BEGINNING OF PRE-COMMIT-OPENTOFU DOCS HOOK -->
 ## Requirements
 
 | Name | Version |
@@ -22,9 +23,9 @@
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_s3_bucket"></a> [s3\_bucket](#module\_s3\_bucket) | git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git | v4.1.2 |
-| <a name="module_zarf_irsa_policy"></a> [zarf\_irsa\_policy](#module\_zarf\_irsa\_policy) | git::https://github.com/terraform-aws-modules/terraform-aws-iam.git//modules/iam-policy | v5.39.0 |
-| <a name="module_zarf_irsa_role"></a> [zarf\_irsa\_role](#module\_zarf\_irsa\_role) | git::https://github.com/terraform-aws-modules/terraform-aws-iam.git//modules/iam-role-for-service-accounts-eks | v5.39.0 |
+| <a name="module_s3_bucket"></a> [s3\_bucket](#module\_s3\_bucket) | git::<https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git> | v4.1.2 |
+| <a name="module_zarf_irsa_policy"></a> [zarf\_irsa\_policy](#module\_zarf\_irsa\_policy) | git::<https://github.com/terraform-aws-modules/terraform-aws-iam.git//modules/iam-policy> | v5.39.0 |
+| <a name="module_zarf_irsa_role"></a> [zarf\_irsa\_role](#module\_zarf\_irsa\_role) | git::<https://github.com/terraform-aws-modules/terraform-aws-iam.git//modules/iam-role-for-service-accounts-eks> | v5.39.0 |
 
 ## Resources
 
@@ -75,4 +76,4 @@
 | <a name="output_irsa_k8s_sa_name"></a> [irsa\_k8s\_sa\_name](#output\_irsa\_k8s\_sa\_name) | zarf IRSA k8s service account name in k8s |
 | <a name="output_irsa_role_arn"></a> [irsa\_role\_arn](#output\_irsa\_role\_arn) | zarf IRSA role ARN |
 | <a name="output_zarf_registry_s3_bucket_name"></a> [zarf\_registry\_s3\_bucket\_name](#output\_zarf\_registry\_s3\_bucket\_name) | zarf registry S3 bucket name |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END OF PRE-COMMIT-OPENTOFU DOCS HOOK -->

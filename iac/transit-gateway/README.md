@@ -19,7 +19,7 @@ export ENV=dev
 uds run apply-transit-gateway --set ENV=$ENV
 ```
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- BEGINNING OF PRE-COMMIT-OPENTOFU DOCS HOOK -->
 ## Requirements
 
 | Name | Version |
@@ -39,8 +39,8 @@ uds run apply-transit-gateway --set ENV=$ENV
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_transit_gateway"></a> [transit\_gateway](#module\_transit\_gateway) | git::https://github.com/defenseunicorns/terraform-aws-transit-gateway.git | v0.0.3 |
-| <a name="module_transit_gateway_attachment"></a> [transit\_gateway\_attachment](#module\_transit\_gateway\_attachment) | git::https://github.com/defenseunicorns/terraform-aws-transit-gateway.git | v0.0.3 |
+| <a name="module_transit_gateway"></a> [transit\_gateway](#module\_transit\_gateway) | git::<https://github.com/defenseunicorns/terraform-aws-transit-gateway.git> | v0.0.3 |
+| <a name="module_transit_gateway_attachment"></a> [transit\_gateway\_attachment](#module\_transit\_gateway\_attachment) | git::<https://github.com/defenseunicorns/terraform-aws-transit-gateway.git> | v0.0.3 |
 
 ## Resources
 
@@ -71,4 +71,4 @@ uds run apply-transit-gateway --set ENV=$ENV
 | <a name="output_route_config_map"></a> [route\_config\_map](#output\_route\_config\_map) | n/a |
 | <a name="output_transit_gateway_attachment"></a> [transit\_gateway\_attachment](#output\_transit\_gateway\_attachment) | n/a |
 | <a name="output_vpc_name"></a> [vpc\_name](#output\_vpc\_name) | n/a |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END OF PRE-COMMIT-OPENTOFU DOCS HOOK -->
