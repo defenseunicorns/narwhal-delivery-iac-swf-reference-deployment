@@ -16,24 +16,43 @@ tasks:
         shell:
           linux: bash
           darwin: bash
-  # - name: check-var-files
-  #   inputs:
-  #     var_files:
-  #       required: true
-  #       description: "The var files to check"
-  #   actions:
-  #     - description: "Check if var files exist"
-  #       cmd: |
-  #         printenv
-  #         set -exo pipefail
-  #         # check if VAR_FILES input variable has been templated in bash, if not, bail
-  #         if [ -z "${VAR_FILES}" ]; then
-  #           echo "VAR_FILES input is empty. Please set it with --set VAR_FILES=<var_files>"
-  #           exit 1
-  #         fi
-  #       shell:
-  #         linux: bash
-  #         darwin: bash
+
+  - name: check-root-module
+    inputs:
+      root_module:
+        required: true
+        description: "the root module variable"
+    actions:
+      - description: "Check if root module exists"
+        cmd: |
+          # check if ROOT_MODULE input variable has been templated in bash, if not, bail
+          set +x
+          if [ -z "${ROOT_MODULE}" ]; then
+            echo "ROOT_MODULE input is empty. Please set it with --set ROOT_MODULE=<root_module>"
+            exit 1
+          fi
+        shell:
+          linux: bash
+          darwin: bash
+
+  - name: check-targets
+    inputs:
+      targets:
+        required: true
+        description: "the targets variable"
+    actions:
+      - description: "Check if targets exists"
+        cmd: |
+          # check if TARGETS input variable has been templated in bash, if not, bail
+          set +x
+          if [ -z "${TARGETS}" ]; then
+            echo "TARGETS input is empty. Please set it with --set TARGETS=<targets>"
+            exit 1
+          fi
+        shell:
+          linux: bash
+          darwin: bash
+
   - name: terraform-one-time-bootstrap-per-env
     inputs:
       env:
@@ -401,15 +420,15 @@ tasks:
           env: ${ENV}
       - cmd: |
           set -exo pipefail
-          cd ./iac/swf
-          terraform init --reconfigure --backend-config=../env/${INPUT_ENV}/backends/swf-backend.tfconfig
+          cd ./iac/${INPUT_ROOT_MODULE}
+          terraform init --reconfigure --backend-config=../env/${INPUT_ENV}/backends/${INPUT_ROOT_MODULE}-backend.tfconfig
         shell:
           linux: bash
           darwin: bash
-      - description: "Update the UDS config"
+      - description: "Targeted Apply"
         cmd: |
           set -exo pipefail
-          cd ./iac/swf
+          cd ./iac/${INPUT_ROOT_MODULE}
 
           # Initialize an empty string to hold all --var-file options
           var_files_options=""
@@ -436,6 +455,69 @@ tasks:
           done < <(echo ${INPUT_TARGETS} | yq e '.[]' -)
 
           terraform apply $var_files_options $targets_options --auto-approve
+
+        shell:
+          linux: bash
+          darwin: bash
+
+  - name: targeted-destroy
+    inputs:
+      env:
+        required: true
+        description: "The environment to update"
+      root_module:
+        required: true
+        description: "The root module"
+      var_files:
+        required: true
+        description: "The var files to use"
+      targets:
+        required: true
+        description: "The targets to apply"
+    actions:
+      - task: check-env
+        with:
+          env: ${ENV}
+      - cmd: |
+          set -exo pipefail
+          cd ./iac/${INPUT_ROOT_MODULE}
+          terraform init --reconfigure --backend-config=../env/${INPUT_ENV}/backends/${INPUT_ROOT_MODULE}-backend.tfconfig
+        shell:
+          linux: bash
+          darwin: bash
+      - description: "Targeted Destroy"
+        cmd: |
+          set -exo pipefail
+          cd ./iac/${INPUT_ROOT_MODULE}
+
+          # Initialize an empty string to hold all --var-file options
+          var_files_options=""
+
+          # Use process substitution to avoid creating a subshell
+          while IFS= read -r item; do
+
+          # Construct the search path relative to root module directory to find the var files provided
+          search_path="../env/${INPUT_ENV}"
+
+            # Find the file matching the pattern and read the first matching file
+            matching_file=$(find $search_path -type f -name "$item" | head -n 1)
+
+            if [[ -n "$matching_file" ]]; then
+              var_files_options+="--var-file $matching_file "
+            else
+              echo "No matching file found for $item"
+            fi
+          done < <(echo ${INPUT_VAR_FILES} | yq e '.[]' -)
+
+          # Use process substitution to avoid creating a subshell for targets
+          while IFS= read -r target; do
+            targets_options+="--target $target "
+          done < <(echo ${INPUT_TARGETS} | yq e '.[]' -)
+
+          echo $var_files_options
+          echo $targets_options
+
+          # terraform destroy $var_files_options $targets_options --auto-approve
 
         shell:
           linux: bash
@@ -503,3 +585,23 @@ tasks:
           fi
         setVariables:
           - name: ENV
+
+  - name: get-root-module
+    actions:
+      - description: "Get the root module from var or file"
+        shell:
+          linux: bash
+          darwin: bash
+        cmd: |
+          if [ ! -z "${ROOT_MODULE}" ]; then
+            printf "${ROOT_MODULE}"
+          else
+            if [ -f .current-root-module ]; then
+              cat .current-root-module
+            else
+              echo "No root module set"
+              exit 1
+            fi
+          fi
+        setVariables:
+          - name: ROOT_MODULE

@@ -383,6 +383,70 @@ tasks:
           set -euo pipefail
           printf ${ENV} > .current-env
 
+  - name: set-root-module-variable
+    inputs:
+      root_module:
+        description: "The root module to run the task in"
+        required: true
+    actions:
+      - description: "Set the root module to be used for all runner commands"
+        shell:
+          linux: bash
+          darwin: bash
+        cmd: |
+          set -euo pipefail
+          printf ${INPUT_ROOT_MODULE}
+        setVariables:
+          - name: ROOT_MODULE
+
+  - name: set-var-files-arrays
+    description: "Set the var files arrays for each root module"
+    actions:
+      - cmd: |
+          # set bootstrap var files
+          echo '["common.terraform.tfvars", "bootstrap.terraform.tfvars"]'
+        setVariables:
+          - name: BOOTSTRAP_VAR_FILES
+      - cmd: |
+          # set swf var files
+          echo '["common.terraform.tfvars", "swf.terraform.tfvars", "context.tfvars"]'
+        setVariables:
+          - name: SWF_VAR_FILES
+      - cmd: |
+          # set transit-gateway var files
+          echo '["common.terraform.tfvars", "context.tfvars", "swf-backend.tfconfig", "transit-gateway.terraform.tfvars"]'
+        setVariables:
+          - name: TRANSIT_GATEWAY_VAR_FILES
+
+  - name: set-root-module-vars
+    description: "Debug the UDS config file for the current environment locally"
+    inputs:
+      root_module:
+        description: "The root module to run the task in"
+        required: true
+    actions:
+      - task: set-var-files-arrays
+      - cmd: |
+          # convert to uppercase and replace - with _ for env var name
+          ROOT_MODULE_UPPER=$(echo ${INPUT_ROOT_MODULE} | tr '[:lower:]' '[:upper:]' | tr '-' '_')
+          ENV_VAR_NAME="${ROOT_MODULE_UPPER}_VAR_FILES"
+          ROOT_MODULE_TF_VARS=$(eval echo "\$$ENV_VAR_NAME")
+          echo $ROOT_MODULE_TF_VARS
+        setVariables:
+          - name: VAR_FILES
+
+  - name: preflight
+    inputs:
+      root_module:
+        description: "The root module to run the task in"
+        required: true
+    description: "Run preflight checks"
+    actions:
+      - task: deploy:get-env
+      - task: set-root-module-vars
+        with:
+          root_module: ${ROOT_MODULE}
+
   - name: read-env
     actions:
       - task: deploy:get-env
@@ -404,17 +468,63 @@ tasks:
           var_files: '["common.terraform.tfvars", "swf.terraform.tfvars"]'
 
   - name: ad-hoc-targeted-apply
-    description: "Update the UDS config file for the current environment locally"
+    description: "Ad-hoc targeted apply"
     actions:
-      - task: deploy:get-env
+      - task: deploy:check-targets
+        with:
+          targets: ${TARGETS}
+      - task: deploy:check-root-module
+        with:
+          root_module: ${ROOT_MODULE}
+      - task: set-root-module-variable
+        with:
+          root_module: ${ROOT_MODULE}
+      - task: preflight
+        with:
+          root_module: ${ROOT_MODULE}
       - task: deploy:terraform-backend-reconfigure-init
         with:
           env: ${ENV}
-          root_module: swf
+          root_module: ${ROOT_MODULE}
       - task: deploy:targeted-apply
         with:
           env: ${ENV}
-          root_module: swf
-          var_files: '["common.terraform.tfvars", "swf.terraform.tfvars"]'
+          root_module: ${ROOT_MODULE}
+          var_files: ${VAR_FILES}
           targets: ${TARGETS}
           # targets: '["module.artifactory_db", "module.confluence_db", "module.jira_db", "module.gitlab_db", "module.keycloak_db", "module.mattermost_db"]'
+
+  - name: ad-hoc-targeted-destroy
+    description: "Ad-hoc targeted destroy"
+    actions:
+      - task: deploy:check-targets
+        with:
+          targets: ${TARGETS}
+      - task: deploy:check-root-module
+        with:
+          root_module: ${ROOT_MODULE}
+      - task: set-root-module-variable
+        with:
+          root_module: ${ROOT_MODULE}
+      - task: preflight
+        with:
+          root_module: ${ROOT_MODULE}
+      - task: deploy:terraform-backend-reconfigure-init
+        with:
+          env: ${ENV}
+          root_module: ${ROOT_MODULE}
+      - task: deploy:targeted-destroy
+        with:
+          env: ${ENV}
+          root_module: ${ROOT_MODULE}
+          var_files: ${VAR_FILES}
+          targets: ${TARGETS}
+
+  - name: echo-debug
+    inputs:
+      debug:
+        description: "Debug"
+        required: true
+    actions:
+      - cmd: |
+          echo "Debug: ${INPUT_DEBUG}"
