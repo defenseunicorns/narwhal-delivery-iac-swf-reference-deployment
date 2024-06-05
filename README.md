@@ -13,7 +13,7 @@ At a high level the IaC will deploy the following resources:
 ## pre-requisites
 
 1. UDS cli
-2. Terraform  v1.5.7
+2. OpenTofu
 3. AWS cli
 4. Kubectl
 

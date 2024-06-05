@@ -87,8 +87,7 @@ tasks:
         cmd: |
           set -exo pipefail
           cd ./iac/bootstrap
-          tofu init --reconfigure --force-copy --backend-config=../env/${INPUT_ENV}/backends/bootstrap-backend.tfconfig && \
-            mv terraform.tfstate "terraform-tfstate.${INPUT_ENV}-local-backend-backup"
+          tofu init --reconfigure --force-copy --backend-config=../env/${INPUT_ENV}/backends/bootstrap-backend.tfconfig
         shell:
           linux: bash
           darwin: bash
@@ -167,7 +166,7 @@ tasks:
       - cmd: |
           set -exo pipefail
           cd ./iac/${INPUT_ROOT_MODULE}
-          tofu init --reconfigure --backend-config=../env/${INPUT_ENV}/backends/${INPUT_ROOT_MODULE}-backend.tfconfig
+          tofu init --reconfigure --force-copy --backend-config=../env/${INPUT_ENV}/backends/${INPUT_ROOT_MODULE}-backend.tfconfig
         shell:
           linux: bash
           darwin: bash
