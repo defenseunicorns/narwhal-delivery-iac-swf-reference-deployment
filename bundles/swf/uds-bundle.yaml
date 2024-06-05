@@ -19,9 +19,17 @@ packages:
 
   - name: aws-load-balancer-controller
     repository: ghcr.io/defenseunicorns/packages/narwhal-delivery-zarf-package-eks-addons/aws-load-balancer-controller
-    ref: v2.8.1
+    ref: v2.8.1-registry1
     optionalComponents:
       - fetch-staged-aws-ssm-vars
+    overrides:
+      aws-load-balancer-controller:
+        aws-load-balancer-controller:
+          values:
+            - path: securityContext.runAsUser
+              value: 997
+            - path: securityContext.fsGroup
+              value: 997
 
   - name: core
     repository: ghcr.io/defenseunicorns/packages/uds/core
