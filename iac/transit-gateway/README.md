@@ -1,5 +1,24 @@
 # transit-gateway
 
+This module is used to create the resources required for environments needing to use an existing transit gateway or creating a new transit gateway and update existing VPC route tables. It creates the transit gateway, transit gateway route table, transit gateway route, transit gateway attachment, and transit gateway route table associations required for ingress and egress traffic from nodes in an existing VPC to the transit gateway.
+
+## Pre-requisites
+
+- [bootstrap](../bootstrap/README.md)
+- [swf](../swf/README.md)
+
+## Usage
+
+example uds runner usage:
+
+```bash
+# from the root of the repo
+# The bootstrap and swf module should be run first, and backend files staged before running this module.
+export ENV=dev
+# apply-transit-gateway will also run init
+uds run apply-transit-gateway --set ENV=$ENV
+```
+
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 

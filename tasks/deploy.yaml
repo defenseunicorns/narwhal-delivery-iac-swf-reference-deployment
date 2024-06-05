@@ -124,6 +124,19 @@ tasks:
           root_module: bootstrap
           var_files: '["common.terraform.tfvars", "bootstrap.terraform.tfvars"]'
 
+  - name: remove-backend-configuration-files
+    actions:
+      - description: "Remove the backend configuration"
+        cmd: |
+          set -exo pipefail
+          cd iac
+          # Remove the backend configuration files
+          find . -type f \( -name "backend.tf" -o -name "terraform.tfstate" -o -name "terraform.tfstate.backup" -o -name "terraform.tfvars" \) -exec rm -f {} + \
+            -o -type d -name ".terraform" -exec rm -rf {} +
+        shell:
+          linux: bash
+          darwin: bash
+
   - name: terraform-init
     inputs:
       root_module:

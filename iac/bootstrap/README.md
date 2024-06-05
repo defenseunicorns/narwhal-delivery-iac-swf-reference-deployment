@@ -2,7 +2,7 @@
 
 This module is used to bootstrap s3 and dynamodb for state backend, template partial backend and tfvar files in this repository for each environment under iac/env.
 
-This module templates out a `backend.tf` file and a `$root-module-backend.tfconfig` file that are used to configure terraform to utilize an s3 backend. Each environment (dev, staging, prod) has its own backend-config file that is used to configure the backend. This pattern is known as [terraform partial backend configuration](https://developer.hashicorp.com/terraform/language/settings/backends/configuration#partial-configuration).
+This module templates out a `backend.tf` file and a `${root-module}-backend.tfconfig` file that are used to configure terraform to utilize an s3 backend. Each environment (dev, staging, prod, etc) will have its own backend-config file that is utilize different backend settings. This pattern is known as [terraform partial backend configuration](https://developer.hashicorp.com/terraform/language/settings/backends/configuration#partial-configuration).
 
 Steps to use this module:
 
@@ -11,26 +11,27 @@ Steps to use this module:
 3. Re-init backend to use the newly created backend
 
 > [!WARNING]
-When bootstrapping multiple environments and the same root module, you'll need to remove your local `.terraform` directory and `backend.tf` file before re-initializing the backend since it will need to create the s3 bucket and dynamodb table for each environment as well as the `$root-module-backend.tfconfig` files. Once this has been completed, the same `backend.tf` can be used across all environments as long as the contents of the `backend.tf` file are the same.
+When bootstrapping multiple environments and the same root module, you'll need to remove your local `.terraform` directory and `backend.tf` file before re-initializing the backend since it will need to create the s3 bucket and dynamodb table for each environment as well as the `${root-module}-backend.tfconfig` files. Once this has been completed, the same `backend.tf` can be used across all environments as long as the contents of the `backend.tf` file are the same.
 
 ## Usage
 
-example uds runner usage (preferred):
+example uds runner usage:
 
 ``` bash
 # from the root of the repo
 
 export ENV=dev
 #initial runs
-uds run one-time-bootstrap-per-env --set ENV=$ENV
+uds run one-time-bootstrap-env --set ENV=$ENV
 
 #subsequent runs for $ENV
 uds run apply-bootstrap --set ENV=$ENV
 
 # re-init to use a different ENV and also s3 backend
 export ENV=stg
-uds run init-reconfigure-backend-bootstrap -set ENV=$ENV
-
+uds run remove-backend-configuration-files
+uds run one-time-bootstrap-env --set ENV=$ENV
+uds run apply-bootstrap --set ENV=$ENV
 ```
 
 example terraform usage:
@@ -77,7 +78,7 @@ terraform init --reconfigure --backend-config=../env/${env}/backends/${root_modu
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_tfstate_backend"></a> [tfstate\_backend](#module\_tfstate\_backend) | git::<https://github.com/cloudposse/terraform-aws-tfstate-backend.git> | tags/1.4.0 |
+| <a name="module_tfstate_backend"></a> [tfstate\_backend](#module\_tfstate\_backend) | git::https://github.com/cloudposse/terraform-aws-tfstate-backend.git | tags/1.4.0 |
 
 ## Resources
 

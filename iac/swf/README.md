@@ -1,4 +1,7 @@
-# SWF
+# swf
+
+Software factory module for uds-core + uds-swf.
+Deploys EKS cluster, VPC, Bastion, and other resources required for UDS SWF.
 
 ## Pre-requisites
 
@@ -6,22 +9,14 @@
 
 ## Usage
 
-example uds runner usage (preferred):
+example uds runner usage:
 
 ```bash
 # from the root of the repo
-# bootstrap module should be run first and backend files staged
-
+# bootstrap module should be run first and backend files staged before running this module
 export ENV=dev
-# initial runs
-uds run init-swf --set ENV=$ENV
-
-# Apply
+# apply-swf will also run init
 uds run apply-swf --set ENV=$ENV
-
-# re-init to use a different ENV and also s3 backend
-export ENV=stg
-uds run init-reconfigure-backend-swf  --set ENV=$ENV
 ```
 
 example terraform usage:

@@ -19,7 +19,7 @@ tasks:
 
   - name: one-time-bootstrap-env
     description: |
-      One time bootstrapping of a terraform environment for both the bootstrap and swf modules using the bootstrap root module
+      One time bootstrapping of a terraform environment for all root modules using the bootstrap root module
       This sets up the backend resources in AWS and templates out the backend.tf file in each root module and generates the ${root_module}-backend.tfconfig files in the ./iac/env/${env}/backends directory.
       example: uds run one-time-bootstrap-env --set ENV=$ENV
     actions:
@@ -31,7 +31,7 @@ tasks:
 
   - name: bootstrap-env-dryrun
     description: |-
-      Dryrun the one time bootstrapping of a terraform environment for both the bootstrap and swf modules using the bootstrap root module
+      Dryrun the one time bootstrapping of a terraform environment for all modules using the bootstrap root module
       example: uds run bootstrap-env-dryrun --set ENV=$ENV
     actions:
       - description: "Get the current environment"
@@ -293,6 +293,13 @@ tasks:
           root_module: transit-gateway
           var_files: '["common.terraform.tfvars", "context.tfvars", "swf-backend.tfconfig", "transit-gateway.terraform.tfvars"]'
 
+  - name: remove-backend-configuration-files
+    description: |
+      Remove the backend configuration from each module locally. Use this before bootstrapping a new environment to prepare the file structure for the bootstrap module.
+    actions:
+      - description: "Remove the backend configuration files"
+        task: deploy:remove-backend-configuration-files
+
   - name: destroy-transit-gateway
     description: |
       Terraform destroy AWS SWF IaC transit-gateway module
@@ -317,59 +324,6 @@ tasks:
           env: ${ENV}
           root_module: transit-gateway
           var_files: '["common.terraform.tfvars", "context.tfvars", "swf-backend.tfconfig", "transit-gateway.terraform.tfvars"]'
-
-  - name: get-bastion-instance-id
-    description: |
-      Get the bastion instance id
-      Use this when you need to get the bastion instance id for the environment you're working in.
-      example: uds run get-bastion-instance-id --set ENV=$ENV
-    actions:
-      - description: "Get the current environment"
-        task: deploy:get-env
-      - task: deploy:terraform-backend-reconfigure-init
-        with:
-          env: ${ENV}
-          root_module: swf
-      - description: "Get the bastion instance id"
-        task: deploy:get-bastion-instance-id
-        with:
-          env: ${ENV}
-
-  - name: bundle-all
-    description: "Creates the zarf package, then builds and deploys the bundle"
-    actions:
-      - description: "Get the current environment"
-        task: deploy:get-env
-      - task: swf:zarf-create
-      - task: swf:bundle-create
-      - task: swf:bundle-deploy
-
-  - name: zarf-create
-    actions:
-      - description: "Create the zarf package"
-        task: swf:zarf-create
-
-  - name: bundle-create
-    actions:
-      - description: "Create the zarf package"
-        task: swf:zarf-create
-      - description: "Create the swf bundle"
-        task: swf:bundle-create
-
-  - name: bundle-deploy
-    actions:
-      - description: "Get the current environment"
-        task: deploy:get-env
-      - description: "Deploy the swf bundle"
-        task: swf:bundle-deploy
-
-  - name: echo
-    actions:
-      - description: "Just echo"
-        task: deploy:just-echo
-        with:
-          list: '["hello", "world"]'
-          env: ${ENV}
 
   - name: set-env
     actions:
@@ -400,7 +354,7 @@ tasks:
           - name: ROOT_MODULE
 
   - name: set-var-files-arrays
-    description: "Set the var files arrays for each root module"
+    description: "Set the var files arrays for each root module - used for ad-hoc targeted apply/destroy task"
     actions:
       - cmd: |
           # set bootstrap var files
@@ -419,7 +373,7 @@ tasks:
           - name: TRANSIT_GATEWAY_VAR_FILES
 
   - name: set-root-module-vars
-    description: "Debug the UDS config file for the current environment locally"
+    description: "Will select the correct TF vars files based on root module"
     inputs:
       root_module:
         description: "The root module to run the task in"
@@ -465,7 +419,7 @@ tasks:
         with:
           env: ${ENV}
           root_module: swf
-          var_files: '["common.terraform.tfvars", "swf.terraform.tfvars"]'
+          var_files: '["common.terraform.tfvars", "swf.terraform.tfvars", "context.tfvars"]'
 
   - name: ad-hoc-targeted-apply
     description: "Ad-hoc targeted apply"
@@ -492,10 +446,10 @@ tasks:
           root_module: ${ROOT_MODULE}
           var_files: ${VAR_FILES}
           targets: ${TARGETS}
-          # targets: '["module.artifactory_db", "module.confluence_db", "module.jira_db", "module.gitlab_db", "module.keycloak_db", "module.mattermost_db"]'
+          # ex: targets: '["module.artifactory_db", "module.confluence_db", "module.jira_db", "module.gitlab_db", "module.keycloak_db", "module.mattermost_db"]'
 
   - name: ad-hoc-targeted-destroy
-    description: "Ad-hoc targeted destroy"
+    description: "Ad-hoc targeted destroy - requires targets and root module to be set"
     actions:
       - task: deploy:check-targets
         with:
@@ -520,11 +474,47 @@ tasks:
           var_files: ${VAR_FILES}
           targets: ${TARGETS}
 
-  - name: echo-debug
-    inputs:
-      debug:
-        description: "Debug"
-        required: true
+  - name: get-bastion-instance-id
+    description: |
+      Get the bastion instance id
+      Use this when you need to get the bastion instance id for the environment you're working in.
+      example: uds run get-bastion-instance-id --set ENV=$ENV
     actions:
-      - cmd: |
-          echo "Debug: ${INPUT_DEBUG}"
+      - description: "Get the current environment"
+        task: deploy:get-env
+      - task: deploy:terraform-backend-reconfigure-init
+        with:
+          env: ${ENV}
+          root_module: swf
+      - description: "Get the bastion instance id"
+        task: deploy:get-bastion-instance-id
+        with:
+          env: ${ENV}
+
+  - name: bundle-all
+    description: "Creates the zarf package, then builds and deploys the bundle"
+    actions:
+      - description: "Get the current environment"
+        task: deploy:get-env
+      - task: swf:zarf-create
+      - task: swf:bundle-create
+      - task: swf:bundle-deploy
+
+  - name: zarf-create
+    actions:
+      - description: "Create the zarf package"
+        task: swf:zarf-create
+
+  - name: bundle-create
+    actions:
+      - description: "Create the zarf package"
+        task: swf:zarf-create
+      - description: "Create the swf bundle"
+        task: swf:bundle-create
+
+  - name: bundle-deploy
+    actions:
+      - description: "Get the current environment"
+        task: deploy:get-env
+      - description: "Deploy the swf bundle"
+        task: swf:bundle-deploy

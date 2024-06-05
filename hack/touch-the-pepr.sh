@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# this script will remove the status in an attempt to force pepr reconciliation
+
 PKGS=$(kubectl get pkg -A | awk '{print $1 "," $2}' | tail -n +2)
 
 for PKG in $PKGS; do
