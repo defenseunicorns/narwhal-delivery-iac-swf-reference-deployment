@@ -293,13 +293,6 @@ tasks:
           root_module: transit-gateway
           var_files: '["common.terraform.tfvars", "context.tfvars", "swf-backend.tfconfig", "transit-gateway.terraform.tfvars"]'
 
-  - name: remove-backend-configuration-files
-    description: |
-      Remove the backend configuration from each module locally. Use this before bootstrapping a new environment to prepare the file structure for the bootstrap module.
-    actions:
-      - description: "Remove the backend configuration files"
-        task: deploy:remove-backend-configuration-files
-
   - name: destroy-transit-gateway
     description: |
       Terraform destroy AWS SWF IaC transit-gateway module
@@ -324,6 +317,13 @@ tasks:
           env: ${ENV}
           root_module: transit-gateway
           var_files: '["common.terraform.tfvars", "context.tfvars", "swf-backend.tfconfig", "transit-gateway.terraform.tfvars"]'
+
+  - name: remove-backend-configuration-files
+    description: |
+      Remove the backend configuration from each module locally. Use this before bootstrapping a new environment to prepare the file structure for the bootstrap module.
+    actions:
+      - description: "Remove the backend configuration files"
+        task: deploy:remove-backend-configuration-files
 
   - name: set-env
     actions:
@@ -422,7 +422,9 @@ tasks:
           var_files: '["common.terraform.tfvars", "swf.terraform.tfvars", "context.tfvars"]'
 
   - name: ad-hoc-targeted-apply
-    description: "Ad-hoc targeted apply"
+    description: |
+      Ad-hoc targeted apply
+      example: uds run ad-hoc-targeted-apply --set ENV=$ENV --set TARGETS='["module.gitlab_db", "module.keycloak_db", "module.mattermost_db"]' --set ROOT_MODULE=swf
     actions:
       - task: deploy:check-targets
         with:
@@ -449,7 +451,9 @@ tasks:
           # ex: targets: '["module.artifactory_db", "module.confluence_db", "module.jira_db", "module.gitlab_db", "module.keycloak_db", "module.mattermost_db"]'
 
   - name: ad-hoc-targeted-destroy
-    description: "Ad-hoc targeted destroy - requires targets and root module to be set"
+    description: |
+      Ad-hoc targeted destroy - requires targets and root module to be set
+      example: uds run ad-hoc-targeted-destroy --set ENV=$ENV --set TARGETS='["module.gitlab_db", "module.keycloak_db", "module.mattermost_db"]' --set ROOT_MODULE=swf
     actions:
       - task: deploy:check-targets
         with:
@@ -491,8 +495,10 @@ tasks:
         with:
           env: ${ENV}
 
-  - name: bundle-all
-    description: "Creates the zarf package, then builds and deploys the bundle"
+  - name: bundle-and-deploy-all
+    description: |
+      Creates the zarf package, then builds and deploys the bundle
+      uds run bundle-and-deploy-all --set ENV=$ENV
     actions:
       - description: "Get the current environment"
         task: deploy:get-env
@@ -501,20 +507,59 @@ tasks:
       - task: swf:bundle-deploy
 
   - name: zarf-create
+    description: |
+      Creates the swf zarf package
+      example: uds run zarf-create --set ENV=$ENV
     actions:
       - description: "Create the zarf package"
         task: swf:zarf-create
 
   - name: bundle-create
+    description: |
+      Creates the swf bundle
+      example: uds run bundle-create --set ENV=$ENV
     actions:
-      - description: "Create the zarf package"
-        task: swf:zarf-create
       - description: "Create the swf bundle"
         task: swf:bundle-create
 
   - name: bundle-deploy
+    description: |
+      Deploys the swf bundle
+      example: uds run bundle-deploy --set ENV=$ENV
     actions:
       - description: "Get the current environment"
         task: deploy:get-env
       - description: "Deploy the swf bundle"
         task: swf:bundle-deploy
+
+  - name: bundle-remove
+    description: |
+      Removes the swf bundle
+      example: uds run bundle-remove --set ENV=$ENV
+    actions:
+      - description: "Get the current environment"
+        task: deploy:get-env
+      - description: "Remove the swf bundle"
+        task: swf:bundle-remove
+
+  - name: bundle-deploy-specific-packages
+    description: |
+      Deploys specific packages from the bundle
+      example: uds run bundle-deploy-specific-packages --set ENV=$ENV --set PACKAGES='package1,package2,package3'
+    actions:
+      - description: "Get the current environment"
+        task: deploy:get-env
+      - task: swf:bundle-deploy-specific-packages
+        with:
+          packages: ${PACKAGES}
+
+  - name: bundle-remove-specific-packages
+    description: |
+      Removes specific packages from the bundle
+      example: uds run bundle-remove-specific-packages --set ENV=$ENV --set PACKAGES='package1,package2,package3'
+    actions:
+      - description: "Get the current environment"
+        task: deploy:get-env
+      - task: swf:bundle-remove-specific-packages
+        with:
+          packages: ${PACKAGES}

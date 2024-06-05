@@ -19,3 +19,44 @@ tasks:
         shell:
           linux: bash
           darwin: bash
+
+  - name: bundle-deploy-specific-packages
+    description: "Deploys specific packages from the bundle"
+    inputs:
+      packages:
+        required: true
+        description: "Comma delimited list of packages to deploy, example format: package1,package2,package3 "
+    actions:
+      - cmd: |
+          set -x
+          export UDS_CONFIG="./iac/env/${ENV}/uds/uds-config.yaml"
+          ./uds deploy $(ls -tr bundles/swf/uds-bundle-swf*.tar.zst | tail -1) -a amd64 --confirm --no-progress -p "${INPUT_PACKAGES}"
+        shell:
+          linux: bash
+          darwin: bash
+
+  - name: bundle-remove
+    description: "Removes the swf bundle"
+    actions:
+      - cmd: |
+          set -x
+          export UDS_CONFIG="./iac/env/${ENV}/uds/uds-config.yaml"
+          ./uds remove $(ls -tr bundles/swf/uds-bundle-swf*.tar.zst | tail -1) -a amd64 --confirm --no-progress
+        shell:
+          linux: bash
+          darwin: bash
+
+  - name: bundle-remove-specific-packages
+    description: "Removes specific packages from the bundle"
+    inputs:
+      packages:
+        required: true
+        description: "Comma delimited list of packages to remove, example format: package1,package2,package3 "
+    actions:
+      - cmd: |
+          set -x
+          export UDS_CONFIG="./iac/env/${ENV}/uds/uds-config.yaml"
+          ./uds remove $(ls -tr bundles/swf/uds-bundle-swf*.tar.zst | tail -1) -a amd64 --confirm --no-progress -p "${INPUT_PACKAGES}"
+        shell:
+          linux: bash
+          darwin: bash
