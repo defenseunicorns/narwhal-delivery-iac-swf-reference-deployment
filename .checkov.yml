@@ -1,3 +1,4 @@
+# Not sure anything needs to change for OpenTofu support. See https://github.com/bridgecrewio/checkov/issues/5501
 directory:
   - modules/
   - examples/

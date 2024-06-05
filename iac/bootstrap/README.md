@@ -1,6 +1,6 @@
 # bootstrap
 
-This module is used to bootstrap s3 and dynamodb backend, template partial backend and tfvar files in this repository for each environment under iac/env.
+This module is used to bootstrap s3 and dynamodb for state backend, template partial backend and tfvar files in this repository for each environment under iac/env.
 
 This module templates out a `backend.tf` file and a `$root-module-backend.tfconfig` file that are used to configure terraform to utilize an s3 backend. Each environment (dev, staging, prod) has its own backend-config file that is used to configure the backend. This pattern is known as [terraform partial backend configuration](https://developer.hashicorp.com/terraform/language/settings/backends/configuration#partial-configuration).
 

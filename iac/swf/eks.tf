@@ -518,7 +518,7 @@ module "vpc_cni_ipv4_irsa_role" {
 }
 
 resource "aws_iam_policy" "vpc_cni_logging" {
-  name        = "${local.prefix}-vpc-cni-logging"
+  name        = join("-", compact([local.prefix, "vpc-cni-logging", local.suffix]))
   description = "Additional test policy"
 
   policy = jsonencode(

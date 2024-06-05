@@ -30,7 +30,7 @@ repos:
           - "--verbose"
           - "--allow-parallel-runners"
   - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.89.0
+    rev: v1.90.0 # https://github.com/antonbabenko/pre-commit-terraform/releases/tag/v1.90.0
     hooks:
       - id: terraform_fmt
       - id: terraform_docs

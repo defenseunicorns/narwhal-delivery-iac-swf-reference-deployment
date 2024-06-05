@@ -16,25 +16,44 @@ tasks:
         shell:
           linux: bash
           darwin: bash
-  # - name: check-var-files
-  #   inputs:
-  #     var_files:
-  #       required: true
-  #       description: "The var files to check"
-  #   actions:
-  #     - description: "Check if var files exist"
-  #       cmd: |
-  #         printenv
-  #         set -exo pipefail
-  #         # check if VAR_FILES input variable has been templated in bash, if not, bail
-  #         if [ -z "${VAR_FILES}" ]; then
-  #           echo "VAR_FILES input is empty. Please set it with --set VAR_FILES=<var_files>"
-  #           exit 1
-  #         fi
-  #       shell:
-  #         linux: bash
-  #         darwin: bash
-  - name: terraform-one-time-bootstrap-per-env
+
+  - name: check-root-module
+    inputs:
+      root_module:
+        required: true
+        description: "the root module variable"
+    actions:
+      - description: "Check if root module exists"
+        cmd: |
+          # check if ROOT_MODULE input variable has been templated in bash, if not, bail
+          set +x
+          if [ -z "${ROOT_MODULE}" ]; then
+            echo "ROOT_MODULE input is empty. Please set it with --set ROOT_MODULE=<root_module>"
+            exit 1
+          fi
+        shell:
+          linux: bash
+          darwin: bash
+
+  - name: check-targets
+    inputs:
+      targets:
+        required: true
+        description: "the targets variable"
+    actions:
+      - description: "Check if targets exists"
+        cmd: |
+          # check if TARGETS input variable has been templated in bash, if not, bail
+          set +x
+          if [ -z "${TARGETS}" ]; then
+            echo "TARGETS input is empty. Please set it with --set TARGETS=<targets>"
+            exit 1
+          fi
+        shell:
+          linux: bash
+          darwin: bash
+
+  - name: tofu-one-time-bootstrap-per-env
     inputs:
       env:
         required: true
@@ -48,18 +67,18 @@ tasks:
           set -exo pipefail
           # check if ./iac/env/${INPUT_ENV}/backends/bootstrap-backend.tfconfig exists
           if [ -f ./iac/env/${INPUT_ENV}/backends/bootstrap-backend.tfconfig ]; then
-            echo "terraform s3 backend environment files for ${INPUT_ENV} already exists"
+            echo "tofu s3 backend environment files for ${INPUT_ENV} already exists"
             exit 1
           fi
         shell:
           linux: bash
           darwin: bash
       - description: "Init the bootstrap module"
-        task: terraform-init
+        task: tofu-init
         with:
           root_module: bootstrap
       - description: "Apply the bootstrap module in the specified environment"
-        task: terraform-apply
+        task: tofu-apply
         with:
           env: ${ENV}
           root_module: bootstrap
@@ -68,13 +87,13 @@ tasks:
         cmd: |
           set -exo pipefail
           cd ./iac/bootstrap
-          terraform init --reconfigure --force-copy --backend-config=../env/${INPUT_ENV}/backends/bootstrap-backend.tfconfig && \
+          tofu init --reconfigure --force-copy --backend-config=../env/${INPUT_ENV}/backends/bootstrap-backend.tfconfig && \
             mv terraform.tfstate "terraform-tfstate.${INPUT_ENV}-local-backend-backup"
         shell:
           linux: bash
           darwin: bash
 
-  - name: dryrun-terraform-one-time-bootstrap-per-env
+  - name: dryrun-tofu-one-time-bootstrap-per-env
     inputs:
       env:
         required: true
@@ -88,24 +107,24 @@ tasks:
           set -exo pipefail
           # check if ./iac/env/${INPUT_ENV}/backends/bootstrap-backend.tfconfig exists
           if [ -f ./iac/env/${INPUT_ENV}/backends/bootstrap-backend.tfconfig ]; then
-            echo "terraform s3 backend environment files for ${INPUT_ENV} already exists"
+            echo "tofu s3 backend environment files for ${INPUT_ENV} already exists"
             exit 1
           fi
         shell:
           linux: bash
           darwin: bash
       - description: "Init the bootstrap module"
-        task: terraform-init
+        task: tofu-init
         with:
           root_module: bootstrap
       - description: "Apply the bootstrap module in the specified environment"
-        task: terraform-plan
+        task: tofu-plan
         with:
           env: ${ENV}
           root_module: bootstrap
           var_files: '["common.terraform.tfvars", "bootstrap.terraform.tfvars"]'
 
-  - name: terraform-init
+  - name: tofu-init
     inputs:
       root_module:
         required: true
@@ -114,12 +133,12 @@ tasks:
       - cmd: |
           set -exo pipefail
           cd ./iac/${INPUT_ROOT_MODULE}
-          terraform init
+          tofu init
         shell:
           linux: bash
           darwin: bash
 
-  - name: terraform-backend-reconfigure-init
+  - name: tofu-backend-reconfigure-init
     description: "Reconfigure the backend using partial backend configuration patterns and init the root module"
     inputs:
       env:
@@ -135,12 +154,12 @@ tasks:
       - cmd: |
           set -exo pipefail
           cd ./iac/${INPUT_ROOT_MODULE}
-          terraform init --reconfigure --backend-config=../env/${INPUT_ENV}/backends/${INPUT_ROOT_MODULE}-backend.tfconfig
+          tofu init --reconfigure --backend-config=../env/${INPUT_ENV}/backends/${INPUT_ROOT_MODULE}-backend.tfconfig
         shell:
           linux: bash
           darwin: bash
 
-  - name: terraform-plan
+  - name: tofu-plan
     inputs:
       env:
         required: true
@@ -155,7 +174,7 @@ tasks:
       - task: check-env
         with:
           env: ${ENV}
-      - description: "Terraform plan"
+      - description: "tofu plan"
         cmd: |
           set -exo pipefail
           cd ./iac/${INPUT_ROOT_MODULE}
@@ -181,19 +200,19 @@ tasks:
 
           mkdir -p ignore
 
-          terraform plan $var_files_options -no-color 2>&1 | tee ignore/terraform-plan.out
+          tofu plan $var_files_options -no-color 2>&1 | tee ignore/tofu-plan.out
 
-          cat ignore/terraform-plan.out \
+          cat ignore/tofu-plan.out \
             | grep -v "Refreshing state" \
             | grep -v "Reading..." \
             | grep -v "Read complete" \
-            | perl -0777pe 's/  #.*will be read[\s\S]*?    }\n\n//mg' > ignore/terraform-plan-filtered.tf \
+            | perl -0777pe 's/  #.*will be read[\s\S]*?    }\n\n//mg' > ignore/tofu-plan-filtered.tf \
             || true
         shell:
           linux: bash
           darwin: bash
 
-  - name: terraform-apply
+  - name: tofu-apply
     inputs:
       env:
         required: true
@@ -208,7 +227,7 @@ tasks:
       - task: check-env
         with:
           env: ${ENV}
-      - description: "Terraform apply"
+      - description: "tofu apply"
         cmd: |
           set -exo pipefail
           cd ./iac/${INPUT_ROOT_MODULE}
@@ -232,12 +251,12 @@ tasks:
             fi
           done < <(echo ${INPUT_VAR_FILES} | yq e '.[]' -)
 
-          terraform apply $var_files_options --auto-approve
+          tofu apply $var_files_options --auto-approve
         shell:
           linux: bash
           darwin: bash
 
-  - name: terraform-destroy
+  - name: tofu-destroy
     inputs:
       env:
         required: true
@@ -252,7 +271,7 @@ tasks:
       - task: check-env
         with:
           env: ${ENV}
-      - description: "Terraform destroy"
+      - description: "tofu destroy"
         cmd: |
           set -exo pipefail
           cd ./iac/${INPUT_ROOT_MODULE}
@@ -276,12 +295,12 @@ tasks:
             fi
           done < <(echo ${INPUT_VAR_FILES} | yq e '.[]' -)
 
-          terraform destroy $var_files_options --auto-approve
+          tofu destroy $var_files_options --auto-approve
         shell:
           linux: bash
           darwin: bash
 
-  - name: terraform-console
+  - name: tofu-console
     inputs:
       env:
         required: true
@@ -296,7 +315,7 @@ tasks:
       - task: check-env
         with:
           env: ${ENV}
-      - description: "Terraform apply"
+      - description: "tofu apply"
         cmd: |
           set -exo pipefail
           cd ./iac/${INPUT_ROOT_MODULE}
@@ -320,7 +339,7 @@ tasks:
             fi
           done < <(echo ${INPUT_VAR_FILES} | yq e '.[]' -)
 
-          terraform console $var_files_options <<EOF
+          tofu console $var_files_options <<EOF
           jsondecode(local.gitlab_policies_concat)
           EOF
 
@@ -346,7 +365,7 @@ tasks:
       - cmd: |
           set -exo pipefail
           cd ./iac/swf
-          terraform init --reconfigure --backend-config=../env/${INPUT_ENV}/backends/swf-backend.tfconfig
+          tofu init --reconfigure --backend-config=../env/${INPUT_ENV}/backends/swf-backend.tfconfig
         shell:
           linux: bash
           darwin: bash
@@ -374,9 +393,132 @@ tasks:
             fi
           done < <(echo ${INPUT_VAR_FILES} | yq e '.[]' -)
 
-          terraform apply $var_files_options \
+          tofu apply $var_files_options \
           --target local_sensitive_file.uds_config \
           --auto-approve
+        shell:
+          linux: bash
+          darwin: bash
+
+  - name: targeted-apply
+    inputs:
+      env:
+        required: true
+        description: "The environment to update"
+      root_module:
+        required: true
+        description: "The root module"
+      var_files:
+        required: true
+        description: "The var files to use"
+      targets:
+        required: true
+        description: "The targets to apply"
+    actions:
+      - task: check-env
+        with:
+          env: ${ENV}
+      - cmd: |
+          set -exo pipefail
+          cd ./iac/${INPUT_ROOT_MODULE}
+          tofu init --reconfigure --backend-config=../env/${INPUT_ENV}/backends/${INPUT_ROOT_MODULE}-backend.tfconfig
+        shell:
+          linux: bash
+          darwin: bash
+      - description: "Targeted Apply"
+        cmd: |
+          set -exo pipefail
+          cd ./iac/${INPUT_ROOT_MODULE}
+
+          # Initialize an empty string to hold all --var-file options
+          var_files_options=""
+
+          # Use process substitution to avoid creating a subshell
+          while IFS= read -r item; do
+
+          # Construct the search path relative to root module directory to find the var files provided
+          search_path="../env/${INPUT_ENV}"
+
+            # Find the file matching the pattern and read the first matching file
+            matching_file=$(find $search_path -type f -name "$item" | head -n 1)
+
+            if [[ -n "$matching_file" ]]; then
+              var_files_options+="--var-file $matching_file "
+            else
+              echo "No matching file found for $item"
+            fi
+          done < <(echo ${INPUT_VAR_FILES} | yq e '.[]' -)
+
+          # Use process substitution to avoid creating a subshell for targets
+          while IFS= read -r target; do
+            targets_options+="--target $target "
+          done < <(echo ${INPUT_TARGETS} | yq e '.[]' -)
+
+          tofu apply $var_files_options $targets_options --auto-approve
+
+        shell:
+          linux: bash
+          darwin: bash
+
+  - name: targeted-destroy
+    inputs:
+      env:
+        required: true
+        description: "The environment to update"
+      root_module:
+        required: true
+        description: "The root module"
+      var_files:
+        required: true
+        description: "The var files to use"
+      targets:
+        required: true
+        description: "The targets to apply"
+    actions:
+      - task: check-env
+        with:
+          env: ${ENV}
+      - cmd: |
+          set -exo pipefail
+          cd ./iac/${INPUT_ROOT_MODULE}
+          tofu init --reconfigure --backend-config=../env/${INPUT_ENV}/backends/${INPUT_ROOT_MODULE}-backend.tfconfig
+        shell:
+          linux: bash
+          darwin: bash
+      - description: "Targeted Destroy"
+        cmd: |
+          set -exo pipefail
+          cd ./iac/${INPUT_ROOT_MODULE}
+
+          # Initialize an empty string to hold all --var-file options
+          var_files_options=""
+
+          # Use process substitution to avoid creating a subshell
+          while IFS= read -r item; do
+
+          # Construct the search path relative to root module directory to find the var files provided
+          search_path="../env/${INPUT_ENV}"
+
+            # Find the file matching the pattern and read the first matching file
+            matching_file=$(find $search_path -type f -name "$item" | head -n 1)
+
+            if [[ -n "$matching_file" ]]; then
+              var_files_options+="--var-file $matching_file "
+            else
+              echo "No matching file found for $item"
+            fi
+          done < <(echo ${INPUT_VAR_FILES} | yq e '.[]' -)
+
+          # Use process substitution to avoid creating a subshell for targets
+          while IFS= read -r target; do
+            targets_options+="--target $target "
+          done < <(echo ${INPUT_TARGETS} | yq e '.[]' -)
+
+          echo $var_files_options
+          echo $targets_options
+
+          # tofu destroy $var_files_options $targets_options --auto-approve
+
         shell:
           linux: bash
           darwin: bash
@@ -410,7 +552,7 @@ tasks:
         cmd: |
           set -exo pipefail
           cd ./iac/swf > /dev/null
-          terraform output -json bastion | jq -r .instance_id
+          tofu output -json bastion | jq -r .instance_id
         setVariables:
           - name: BASTION_INSTANCE_ID
         shell:
@@ -443,3 +585,23 @@ tasks:
           fi
         setVariables:
           - name: ENV
+
+  - name: get-root-module
+    actions:
+      - description: "Get the root module from var or file"
+        shell:
+          linux: bash
+          darwin: bash
+        cmd: |
+          if [ ! -z "${ROOT_MODULE}" ]; then
+            printf "${ROOT_MODULE}"
+          else
+            if [ -f .current-root-module ]; then
+              cat .current-root-module
+            else
+              echo "No root module set"
+              exit 1
+            fi
+          fi
+        setVariables:
+          - name: ROOT_MODULE
