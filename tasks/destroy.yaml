@@ -38,7 +38,35 @@ tasks:
             fi
           done < <(echo ${INPUT_VAR_FILES} | yq e '.[]' -)
 
-          tofu destroy $var_files_options --auto-approve
+          # Function to create a temporary file with fallback
+          create_temp_file() {
+            if command -v mktemp > /dev/null; then
+              mktemp
+            else
+              tempfile=$(mktemp 2>/dev/null || printf '/tmp/tempfile.%s' $$)
+              touch "$tempfile"
+              echo "$tempfile"
+            fi
+          }
+
+          # Add check to allow failure for bootstrap module
+          if [ "$(basename "$PWD")" == "bootstrap" ]; then
+            output=$(create_temp_file)
+            echo $output
+            set +o pipefail
+            tofu destroy $var_files_options --auto-approve -no-color 2>&1 | tee "$output"
+            set -o pipefail
+            if grep -q "Failed to save state" $output && grep -q "Error saving state: failed to upload state: operation error S3: PutObject" $output; then
+              echo "Detected 'Failed to save state' and 'S3: PutObject' errors, treating it as a success."
+              rm "$output"
+              exit 0
+            else
+              rm "$output"
+              exit 1
+            fi
+          else
+            tofu destroy $var_files_options --auto-approve
+          fi
         shell:
           linux: bash
           darwin: bash

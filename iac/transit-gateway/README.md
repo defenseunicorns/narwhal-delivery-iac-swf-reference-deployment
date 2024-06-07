@@ -15,8 +15,11 @@ example uds runner usage:
 # from the root of the repo
 # The bootstrap and swf module should be run first, and backend files staged before running this module.
 export ENV=dev
+#or run
+uds run set-env --set ENV=dev
 # apply-transit-gateway will also run init
-uds run apply-transit-gateway --set ENV=$ENV
+# do not need to set ENV if 'uds run set-env' was run previously
+uds run main:apply-transit-gateway --set ENV=$ENV
 ```
 
 <!-- BEGINNING OF PRE-COMMIT-OPENTOFU DOCS HOOK -->
@@ -39,8 +42,8 @@ uds run apply-transit-gateway --set ENV=$ENV
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_transit_gateway"></a> [transit\_gateway](#module\_transit\_gateway) | git::https://github.com/defenseunicorns/terraform-aws-transit-gateway.git | v0.0.3 |
-| <a name="module_transit_gateway_attachment"></a> [transit\_gateway\_attachment](#module\_transit\_gateway\_attachment) | git::https://github.com/defenseunicorns/terraform-aws-transit-gateway.git | v0.0.3 |
+| <a name="module_transit_gateway"></a> [transit\_gateway](#module\_transit\_gateway) | git::<https://github.com/defenseunicorns/terraform-aws-transit-gateway.git> | v0.0.3 |
+| <a name="module_transit_gateway_attachment"></a> [transit\_gateway\_attachment](#module\_transit\_gateway\_attachment) | git::<https://github.com/defenseunicorns/terraform-aws-transit-gateway.git> | v0.0.3 |
 
 ## Resources
 

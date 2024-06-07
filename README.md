@@ -10,6 +10,17 @@ At a high level the IaC will deploy the following resources:
 3. EKS Cluster
    1. Kubernetes related cloud resources are staged via this module through <https://github.com/aws-ia/terraform-aws-eks-blueprints-addons>, usage of these resources is done through zarf packages that are included in the UDS bundle in this repository.
 
+#### tl;dr: -
+
+```bash
+# Deploy AWS EKS cluster + zarf + uds-core + swf
+uds run set-env --set ENV=dev
+uds run all-up
+
+# Destroy in reverse order
+uds run all-down
+```
+
 ## pre-requisites
 
 1. UDS cli
@@ -22,7 +33,7 @@ At a high level the IaC will deploy the following resources:
 UDS tasks are used in this project.
 run `uds run --list-all` to see available tasks from `./tasks.yaml`
 
-### Terraform
+### Tofu/Terraform
 
 Order of root module deployment:
 

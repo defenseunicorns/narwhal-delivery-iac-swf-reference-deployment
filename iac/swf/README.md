@@ -15,8 +15,13 @@ example uds runner usage:
 # from the root of the repo
 # bootstrap module should be run first and backend files staged before running this module
 export ENV=dev
+#or run
+uds run set-env --set ENV=dev
 # apply-swf will also run init
-uds run apply-swf --set ENV=$ENV
+# do not need to set ENV if 'uds run set-env' was run previously
+uds run main:apply-swf --set ENV=$ENV
+# or
+uds run main:apply-swf
 ```
 
 example terraform usage:
@@ -67,17 +72,17 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="module_artifactory_db"></a> [artifactory\_db](#module\_artifactory\_db) | terraform-aws-modules/rds/aws | 6.5.4 |
 | <a name="module_artifactory_irsa_s3"></a> [artifactory\_irsa\_s3](#module\_artifactory\_irsa\_s3) | ./modules/irsa-s3 | n/a |
 | <a name="module_artifactory_kms_key"></a> [artifactory\_kms\_key](#module\_artifactory\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.3 |
-| <a name="module_artifactory_s3_bucket"></a> [artifactory\_s3\_bucket](#module\_artifactory\_s3\_bucket) | git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git | v4.1.2 |
+| <a name="module_artifactory_s3_bucket"></a> [artifactory\_s3\_bucket](#module\_artifactory\_s3\_bucket) | git::<https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git> | v4.1.2 |
 | <a name="module_artifactory_volume_snapshots"></a> [artifactory\_volume\_snapshots](#module\_artifactory\_volume\_snapshots) | ./modules/volume-snapshot | n/a |
-| <a name="module_bastion"></a> [bastion](#module\_bastion) | git::https://github.com/defenseunicorns/terraform-aws-bastion.git | v0.0.16 |
+| <a name="module_bastion"></a> [bastion](#module\_bastion) | git::<https://github.com/defenseunicorns/terraform-aws-bastion.git> | v0.0.16 |
 | <a name="module_confluence_db"></a> [confluence\_db](#module\_confluence\_db) | terraform-aws-modules/rds/aws | 6.5.4 |
 | <a name="module_confluence_kms_key"></a> [confluence\_kms\_key](#module\_confluence\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.3 |
 | <a name="module_ebs_kms_key"></a> [ebs\_kms\_key](#module\_ebs\_kms\_key) | terraform-aws-modules/kms/aws | ~> 2.0 |
-| <a name="module_eks"></a> [eks](#module\_eks) | git::https://github.com/defenseunicorns/terraform-aws-eks.git | v0.0.19 |
+| <a name="module_eks"></a> [eks](#module\_eks) | git::<https://github.com/defenseunicorns/terraform-aws-eks.git> | v0.0.19 |
 | <a name="module_gitlab_db"></a> [gitlab\_db](#module\_gitlab\_db) | terraform-aws-modules/rds/aws | 6.5.4 |
 | <a name="module_gitlab_irsa_s3"></a> [gitlab\_irsa\_s3](#module\_gitlab\_irsa\_s3) | ./modules/irsa-s3 | n/a |
 | <a name="module_gitlab_kms_key"></a> [gitlab\_kms\_key](#module\_gitlab\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.3 |
-| <a name="module_gitlab_s3_bucket"></a> [gitlab\_s3\_bucket](#module\_gitlab\_s3\_bucket) | git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git | v4.1.2 |
+| <a name="module_gitlab_s3_bucket"></a> [gitlab\_s3\_bucket](#module\_gitlab\_s3\_bucket) | git::<https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git> | v4.1.2 |
 | <a name="module_gitlab_volume_snapshots"></a> [gitlab\_volume\_snapshots](#module\_gitlab\_volume\_snapshots) | ./modules/volume-snapshot | n/a |
 | <a name="module_jenkins_volume_snapshots"></a> [jenkins\_volume\_snapshots](#module\_jenkins\_volume\_snapshots) | ./modules/volume-snapshot | n/a |
 | <a name="module_jira_db"></a> [jira\_db](#module\_jira\_db) | terraform-aws-modules/rds/aws | 6.5.4 |
@@ -87,21 +92,21 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="module_keycloak_kms_key"></a> [keycloak\_kms\_key](#module\_keycloak\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.3 |
 | <a name="module_loki_irsa_s3"></a> [loki\_irsa\_s3](#module\_loki\_irsa\_s3) | ./modules/irsa-s3 | n/a |
 | <a name="module_loki_kms_key"></a> [loki\_kms\_key](#module\_loki\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.3 |
-| <a name="module_loki_s3_bucket"></a> [loki\_s3\_bucket](#module\_loki\_s3\_bucket) | git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git | v4.1.2 |
+| <a name="module_loki_s3_bucket"></a> [loki\_s3\_bucket](#module\_loki\_s3\_bucket) | git::<https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git> | v4.1.2 |
 | <a name="module_loki_volume_snapshots"></a> [loki\_volume\_snapshots](#module\_loki\_volume\_snapshots) | ./modules/volume-snapshot | n/a |
 | <a name="module_mattermost_db"></a> [mattermost\_db](#module\_mattermost\_db) | terraform-aws-modules/rds/aws | 6.5.4 |
 | <a name="module_mattermost_irsa_s3"></a> [mattermost\_irsa\_s3](#module\_mattermost\_irsa\_s3) | ./modules/irsa-s3 | n/a |
 | <a name="module_mattermost_kms_key"></a> [mattermost\_kms\_key](#module\_mattermost\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.3 |
-| <a name="module_mattermost_s3_bucket"></a> [mattermost\_s3\_bucket](#module\_mattermost\_s3\_bucket) | git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git | v4.1.2 |
-| <a name="module_password_lambda"></a> [password\_lambda](#module\_password\_lambda) | git::https://github.com/defenseunicorns/terraform-aws-lambda.git//modules/password-rotation | v0.0.5 |
-| <a name="module_self_managed_node_group_keypair"></a> [self\_managed\_node\_group\_keypair](#module\_self\_managed\_node\_group\_keypair) | git::https://github.com/terraform-aws-modules/terraform-aws-key-pair | v2.0.3 |
-| <a name="module_self_managed_node_group_secret_key_secrets_manager_secret"></a> [self\_managed\_node\_group\_secret\_key\_secrets\_manager\_secret](#module\_self\_managed\_node\_group\_secret\_key\_secrets\_manager\_secret) | git::https://github.com/terraform-aws-modules/terraform-aws-secrets-manager.git | v1.1.2 |
+| <a name="module_mattermost_s3_bucket"></a> [mattermost\_s3\_bucket](#module\_mattermost\_s3\_bucket) | git::<https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git> | v4.1.2 |
+| <a name="module_password_lambda"></a> [password\_lambda](#module\_password\_lambda) | git::<https://github.com/defenseunicorns/terraform-aws-lambda.git//modules/password-rotation> | v0.0.5 |
+| <a name="module_self_managed_node_group_keypair"></a> [self\_managed\_node\_group\_keypair](#module\_self\_managed\_node\_group\_keypair) | git::<https://github.com/terraform-aws-modules/terraform-aws-key-pair> | v2.0.3 |
+| <a name="module_self_managed_node_group_secret_key_secrets_manager_secret"></a> [self\_managed\_node\_group\_secret\_key\_secrets\_manager\_secret](#module\_self\_managed\_node\_group\_secret\_key\_secrets\_manager\_secret) | git::<https://github.com/terraform-aws-modules/terraform-aws-secrets-manager.git> | v1.1.2 |
 | <a name="module_ssm_kms_key"></a> [ssm\_kms\_key](#module\_ssm\_kms\_key) | terraform-aws-modules/kms/aws | ~> 2.0 |
-| <a name="module_subnet_addrs"></a> [subnet\_addrs](#module\_subnet\_addrs) | git::https://github.com/hashicorp/terraform-cidr-subnets | v1.0.0 |
+| <a name="module_subnet_addrs"></a> [subnet\_addrs](#module\_subnet\_addrs) | git::<https://github.com/hashicorp/terraform-cidr-subnets> | v1.0.0 |
 | <a name="module_velero_irsa_s3"></a> [velero\_irsa\_s3](#module\_velero\_irsa\_s3) | ./modules/irsa-s3 | n/a |
 | <a name="module_velero_kms_key"></a> [velero\_kms\_key](#module\_velero\_kms\_key) | github.com/defenseunicorns/terraform-aws-uds-kms | v0.0.3 |
-| <a name="module_velero_s3_bucket"></a> [velero\_s3\_bucket](#module\_velero\_s3\_bucket) | git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git | v4.1.2 |
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | git::https://github.com/defenseunicorns/terraform-aws-vpc.git | v0.1.7 |
+| <a name="module_velero_s3_bucket"></a> [velero\_s3\_bucket](#module\_velero\_s3\_bucket) | git::<https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git> | v4.1.2 |
+| <a name="module_vpc"></a> [vpc](#module\_vpc) | git::<https://github.com/defenseunicorns/terraform-aws-vpc.git> | v0.1.7 |
 | <a name="module_vpc_cni_ipv4_irsa_role"></a> [vpc\_cni\_ipv4\_irsa\_role](#module\_vpc\_cni\_ipv4\_irsa\_role) | terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks | ~> 5.39 |
 | <a name="module_zarf"></a> [zarf](#module\_zarf) | ./modules/zarf | n/a |
 
@@ -194,7 +199,7 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="input_bastion_instance_type"></a> [bastion\_instance\_type](#input\_bastion\_instance\_type) | value for the instance type of the EKS worker nodes | `string` | `"m5.xlarge"` | no |
 | <a name="input_bastion_ssh_user"></a> [bastion\_ssh\_user](#input\_bastion\_ssh\_user) | The SSH user to use for the bastion | `string` | `"ec2-user"` | no |
 | <a name="input_bastion_tenancy"></a> [bastion\_tenancy](#input\_bastion\_tenancy) | The tenancy of the bastion | `string` | `"dedicated"` | no |
-| <a name="input_cluster_addons"></a> [cluster\_addons](#input\_cluster\_addons) | Nested of eks native add-ons and their associated parameters.<br>See https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_add-on for supported values.<br>See https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/examples/complete/main.tf#L44-L60 for upstream example.<br><br>to see available eks marketplace addons available for your cluster's version run:<br>aws eks describe-addon-versions --kubernetes-version $k8s\_cluster\_version --query 'addons[].{MarketplaceProductUrl: marketplaceInformation.productUrl, Name: addonName, Owner: owner Publisher: publisher, Type: type}' --output table | `any` | `{}` | no |
+| <a name="input_cluster_addons"></a> [cluster\_addons](#input\_cluster\_addons) | Nested of eks native add-ons and their associated parameters.<br>See <https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_add-on> for supported values.<br>See <https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/examples/complete/main.tf#L44-L60> for upstream example.<br><br>to see available eks marketplace addons available for your cluster's version run:<br>aws eks describe-addon-versions --kubernetes-version $k8s\_cluster\_version --query 'addons[].{MarketplaceProductUrl: marketplaceInformation.productUrl, Name: addonName, Owner: owner Publisher: publisher, Type: type}' --output table | `any` | `{}` | no |
 | <a name="input_cluster_autoscaler"></a> [cluster\_autoscaler](#input\_cluster\_autoscaler) | Cluster Autoscaler Helm Chart config | `any` | `{}` | no |
 | <a name="input_cluster_endpoint_public_access"></a> [cluster\_endpoint\_public\_access](#input\_cluster\_endpoint\_public\_access) | Whether to enable public access to the EKS cluster | `bool` | `false` | no |
 | <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | Kubernetes version to use for EKS cluster | `string` | `"1.29"` | no |
@@ -298,7 +303,7 @@ terraform apply -var-file ../env/${env}/tfvars/common.terraform.tfvars -var-file
 | <a name="input_velero_s3_bucket_force_destroy"></a> [velero\_s3\_bucket\_force\_destroy](#input\_velero\_s3\_bucket\_force\_destroy) | A boolean that indicates all objects should be deleted from the bucket so that the bucket can be destroyed without error. These objects are not recoverable. | `bool` | `false` | no |
 | <a name="input_velero_service_account_names"></a> [velero\_service\_account\_names](#input\_velero\_service\_account\_names) | List of service accounts to create for Velero | `list(string)` | <pre>[<br>  "velero-server"<br>]</pre> | no |
 | <a name="input_vpc_cidr"></a> [vpc\_cidr](#input\_vpc\_cidr) | The CIDR block for the VPC | `string` | n/a | yes |
-| <a name="input_vpc_subnets"></a> [vpc\_subnets](#input\_vpc\_subnets) | A list of subnet objects to do subnet math things on - see https://github.com/hashicorp/terraform-cidr-subnets | `list(map(any))` | <pre>[<br>  {}<br>]</pre> | no |
+| <a name="input_vpc_subnets"></a> [vpc\_subnets](#input\_vpc\_subnets) | A list of subnet objects to do subnet math things on - see <https://github.com/hashicorp/terraform-cidr-subnets> | `list(map(any))` | <pre>[<br>  {}<br>]</pre> | no |
 | <a name="input_zarf_s3_bucket_force_destroy"></a> [zarf\_s3\_bucket\_force\_destroy](#input\_zarf\_s3\_bucket\_force\_destroy) | A boolean that indicates all objects should be deleted from the bucket so that the bucket can be destroyed without error. These objects are not recoverable. | `bool` | `false` | no |
 | <a name="input_zarf_version"></a> [zarf\_version](#input\_zarf\_version) | The version of Zarf to use | `string` | `""` | no |
 

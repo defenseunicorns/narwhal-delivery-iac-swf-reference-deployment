@@ -21,17 +21,20 @@ example uds runner usage:
 # from the root of the repo
 
 export ENV=dev
+# or
+# uds run set-env lets you set a persistent ENV variable so you don't have to keep setting it, however --set still overrides
+uds run set-env --set ENV=dev
 #initial runs
-uds run one-time-bootstrap-env --set ENV=$ENV
+uds run main:one-time-bootstrap-env --set ENV=$ENV
 
 #subsequent runs for $ENV
-uds run apply-bootstrap --set ENV=$ENV
+uds run main:apply-bootstrap --set ENV=$ENV
 
 # re-init to use a different ENV and also s3 backend
 export ENV=stg
-uds run remove-backend-configuration-files
-uds run one-time-bootstrap-env --set ENV=$ENV
-uds run apply-bootstrap --set ENV=$ENV
+uds run main:remove-backend-configuration-files
+uds run main:one-time-bootstrap-env --set ENV=$ENV
+uds run main:apply-bootstrap --set ENV=$ENV
 ```
 
 example terraform usage:
@@ -78,7 +81,7 @@ terraform init --reconfigure --backend-config=../env/${env}/backends/${root_modu
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_tfstate_backend"></a> [tfstate\_backend](#module\_tfstate\_backend) | git::https://github.com/cloudposse/terraform-aws-tfstate-backend.git | tags/1.4.0 |
+| <a name="module_tfstate_backend"></a> [tfstate\_backend](#module\_tfstate\_backend) | git::<https://github.com/cloudposse/terraform-aws-tfstate-backend.git> | tags/1.4.0 |
 
 ## Resources
 
