@@ -79,11 +79,11 @@ locals {
           destination_cidr_block              = data.terraform_remote_state.swf_state.outputs.vpc.vpc_cidr_block
           route_transit_gateway_attachment_id = null # null means it will default to THIS VPC's attachment id
         },
-        {
-          blackhole                           = false
-          destination_cidr_block              = "0.0.0.0/0"
-          route_transit_gateway_attachment_id = "tgw-attach-0dc32c85d99cfe7c1" # an ID here means it will use the specified attachment id to send traffic out of, this would be where you'd put a peering connection's attachment id
-        },
+        # {
+        #   blackhole                           = false
+        #   destination_cidr_block              = "0.0.0.0/0"
+        #   route_transit_gateway_attachment_id = "tgw-attach-0dc32c85d99cfe7c1" # an ID here means it will use the specified attachment id to send traffic out of, this would be where you'd put a peering connection's attachment id
+        # },
       ]
     }
   }

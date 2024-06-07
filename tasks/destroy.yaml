@@ -1,82 +1,12 @@
 tasks:
-  - name: terraform-one-time-bootstrap-per-env
+  - name: terraform-destroy
     inputs:
       env:
         required: true
-        description: "The environment to bootstrap"
-    actions:
-      - task: utility:check-env
-        with:
-          env: ${ENV}
-      - description: "Check if bootstrap for '$env' is clean"
-        cmd: |
-          set -exo pipefail
-          # check if ./iac/env/${INPUT_ENV}/backends/bootstrap-backend.tfconfig exists
-          if [ -f ./iac/env/${INPUT_ENV}/backends/bootstrap-backend.tfconfig ]; then
-            echo "terraform s3 backend environment files for ${INPUT_ENV} already exists"
-            exit 1
-          fi
-        shell:
-          linux: bash
-          darwin: bash
-      - description: "Init the bootstrap module"
-        task: utility:terraform-init
-        with:
-          root_module: bootstrap
-      - description: "Apply the bootstrap module in the specified environment"
-        task: terraform-apply
-        with:
-          env: ${ENV}
-          root_module: bootstrap
-          var_files: '["common.terraform.tfvars", "bootstrap.terraform.tfvars"]'
-      - description: "Migrate local backend to s3"
-        cmd: |
-          set -exo pipefail
-          cd ./iac/bootstrap
-          tofu init --reconfigure --force-copy --backend-config=../env/${INPUT_ENV}/backends/bootstrap-backend.tfconfig
-        shell:
-          linux: bash
-          darwin: bash
-
-  - name: dryrun-terraform-one-time-bootstrap-per-env
-    inputs:
-      env:
-        required: true
-        description: "The environment to bootstrap"
-    actions:
-      - task: utility:check-env
-        with:
-          env: ${ENV}
-      - description: "Check if bootstrap for '$env' is clean"
-        cmd: |
-          set -exo pipefail
-          # check if ./iac/env/${INPUT_ENV}/backends/bootstrap-backend.tfconfig exists
-          if [ -f ./iac/env/${INPUT_ENV}/backends/bootstrap-backend.tfconfig ]; then
-            echo "terraform s3 backend environment files for ${INPUT_ENV} already exists"
-            exit 1
-          fi
-        shell:
-          linux: bash
-          darwin: bash
-      - description: "Init the bootstrap module"
-        task: utility:terraform-init
-        with:
-          root_module: bootstrap
-      - description: "Apply the bootstrap module in the specified environment"
-        task: utility:terraform-plan
-        with:
-          env: ${ENV}
-          root_module: bootstrap
-          var_files: '["common.terraform.tfvars", "bootstrap.terraform.tfvars"]'
-
-  - name: terraform-apply
-    inputs:
-      env:
-        required: true
-        description: "The environment to apply"
+        description: "The environment to destroy"
       root_module:
         required: true
-        description: "The root module to apply"
+        description: "The root module to destroy"
       var_files:
         required: true
         description: "The var files to use for the plan"
@@ -84,7 +14,7 @@ tasks:
       - task: utility:check-env
         with:
           env: ${ENV}
-      - description: "Terraform apply"
+      - description: "Terraform destroy"
         cmd: |
           set -exo pipefail
           cd ./iac/${INPUT_ROOT_MODULE}
@@ -108,12 +38,40 @@ tasks:
             fi
           done < <(echo ${INPUT_VAR_FILES} | yq e '.[]' -)
 
-          tofu apply $var_files_options --auto-approve
+          # Function to create a temporary file with fallback
+          create_temp_file() {
+            if command -v mktemp > /dev/null; then
+              mktemp
+            else
+              tempfile=$(mktemp 2>/dev/null || printf '/tmp/tempfile.%s' $$)
+              touch "$tempfile"
+              echo "$tempfile"
+            fi
+          }
+
+          # Add check to allow failure for bootstrap module
+          if [ "$(basename "$PWD")" == "bootstrap" ]; then
+            output=$(create_temp_file)
+            echo $output
+            set +o pipefail
+            tofu destroy $var_files_options --auto-approve -no-color 2>&1 | tee "$output"
+            set -o pipefail
+            if grep -q "Failed to save state" $output && grep -q "Error saving state: failed to upload state: operation error S3: PutObject" $output; then
+              echo "Detected 'Failed to save state' and 'S3: PutObject' errors, treating it as a success."
+              rm "$output"
+              exit 0
+            else
+              rm "$output"
+              exit 1
+            fi
+          else
+            tofu destroy $var_files_options --auto-approve
+          fi
         shell:
           linux: bash
           darwin: bash
 
-  - name: targeted-apply
+  - name: targeted-destroy
     inputs:
       env:
         required: true
@@ -138,7 +96,7 @@ tasks:
         shell:
           linux: bash
           darwin: bash
-      - description: "Targeted Apply"
+      - description: "Targeted Destroy"
         cmd: |
           set -exo pipefail
           cd ./iac/${INPUT_ROOT_MODULE}
@@ -167,7 +125,10 @@ tasks:
             targets_options+="--target $target "
           done < <(echo ${INPUT_TARGETS} | yq e '.[]' -)
 
-          tofu apply $var_files_options $targets_options --auto-approve
+          echo $var_files_options
+          echo $targets_options
+
+          tofu destroy $var_files_options $targets_options --auto-approve
 
         shell:
           linux: bash

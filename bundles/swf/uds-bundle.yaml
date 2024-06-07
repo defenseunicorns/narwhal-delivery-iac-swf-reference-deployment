@@ -33,7 +33,7 @@ packages:
 
   - name: core
     repository: ghcr.io/defenseunicorns/packages/uds/core
-    ref: 0.22.0-registry1
+    ref: 0.22.1-registry1
     overrides:
       istio-controlplane:
         istiod:
@@ -158,8 +158,8 @@ packages:
           values:
             - path: snapshotsEnabled # This is required for EBS
               value: true
-            # - path: deployNodeAgent # This is required for EFS
-            #   value: true
+            - path: deployNodeAgent # This is required for EFS
+              value: true
             - path: credentials
               value: {}
             - path: schedules.udsbackup.disabled

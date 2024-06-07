@@ -1,0 +1,525 @@
+includes:
+  - deploy: ./deploy.yaml
+  - destroy: ./destroy.yaml
+  - utility: ./utility.yaml
+  - swf: ./swf.yaml
+
+tasks:
+  ##############################################################################
+  # Wrapper tasks
+  ###############################################################################
+  - name: iac-up
+    actions:
+      - task: one-time-bootstrap-env
+      - task: apply-swf
+      - task: apply-transit-gateway
+
+  - name: iac-down
+    actions:
+      - task: destroy-transit-gateway
+      - task: destroy-swf
+      - task: destroy-bootstrap
+      - task: remove-backend-configuration-files
+
+  - name: swf-up
+    actions:
+      - task: bundle-and-deploy-all
+
+  - name: swf-down
+    actions:
+      - task: bundle-remove
+
+  ##############################################################################
+  # IaC tasks
+  ###############################################################################
+  - name: one-time-bootstrap-env
+    description: |
+      One time bootstrapping of a terraform environment for all root modules using the bootstrap root module
+      This sets up the backend resources in AWS and templates out the backend.tf file in each root module and generates the ${root_module}-backend.tfconfig files in the ./iac/env/${env}/backends directory.
+      example: uds run one-time-bootstrap-env --set ENV=$ENV
+    actions:
+      - description: "Get the current environment"
+        task: utility:get-env
+      - task: deploy:terraform-one-time-bootstrap-per-env
+        with:
+          env: ${ENV}
+
+  - name: bootstrap-env-dryrun
+    description: |-
+      Dryrun the one time bootstrapping of a terraform environment for all modules using the bootstrap root module
+      example: uds run bootstrap-env-dryrun --set ENV=$ENV
+    actions:
+      - description: "Get the current environment"
+        task: utility:get-env
+      - task: deploy:dryrun-terraform-one-time-bootstrap-per-env
+        with:
+          env: ${ENV}
+
+  - name: init-bootstrap
+    description: |
+      terraform init AWS SWF IaC Bootstrap module
+      example: uds run init-bootstrap --set ENV=$ENV
+    actions:
+      - description: "Get the current environment"
+        task: utility:get-env
+      - description: "terraform init AWS SWF IaC Bootstrap module"
+        task: utility:terraform-init
+        with:
+          root_module: bootstrap
+
+  - name: init-reconfigure-backend-bootstrap
+    description: |
+      Reconfigure the backend for the bootstrap module
+      Use this when locally you need to change the environment you're working on, for example going from stg to prd.
+      example: uds run init-reconfigure-backend-bootstrap --set ENV=$ENV
+    actions:
+      - description: "Get the current environment"
+        task: utility:get-env
+      - description: "Reconfigure the backend for the bootstrap module"
+        task: utility:terraform-backend-reconfigure-init
+        with:
+          env: ${ENV}
+          root_module: bootstrap
+
+  - name: plan-bootstrap
+    description: |
+      Terraform plan AWS SWF IaC Bootstrap module
+      example: uds run plan-bootstrap --set ENV=$ENV
+    actions:
+      - description: "Get the current environment"
+        task: utility:get-env
+      - task: utility:terraform-backend-reconfigure-init
+        with:
+          env: ${ENV}
+          root_module: bootstrap
+      - description: "Terraform plan AWS SWF IaC Bootstrap module"
+        task: utility:terraform-plan
+        with:
+          env: ${ENV}
+          root_module: bootstrap
+          var_files: '["common.terraform.tfvars", "bootstrap.terraform.tfvars"]'
+
+  - name: apply-bootstrap
+    description: |
+      Terraform apply AWS SWF IaC Bootstrap module
+      example: uds run apply-bootstrap --set ENV=$ENV
+    actions:
+      - description: "Get the current environment"
+        task: utility:get-env
+      - task: utility:terraform-backend-reconfigure-init
+        with:
+          env: ${ENV}
+          root_module: bootstrap
+      - description: "Terraform apply AWS SWF IaC Bootstrap module"
+        task: deploy:terraform-apply
+        with:
+          env: ${ENV}
+          root_module: bootstrap
+          var_files: '["common.terraform.tfvars", "bootstrap.terraform.tfvars"]'
+
+  - name: destroy-bootstrap
+    description: |
+      Terraform destroy AWS SWF IaC Bootstrap module
+      example: uds run destroy-bootstrap --set ENV=$ENV
+    actions:
+      - description: "Get the current environment"
+        task: utility:get-env
+      - task: utility:terraform-backend-reconfigure-init
+        with:
+          env: ${ENV}
+          root_module: bootstrap
+      - description: "Terraform destroy AWS SWF IaC Bootstrap module"
+        task: destroy:terraform-destroy
+        with:
+          env: ${ENV}
+          root_module: bootstrap
+          var_files: '["common.terraform.tfvars", "bootstrap.terraform.tfvars"]'
+
+  - name: init-swf
+    description: |
+      terraform init AWS SWF IaC swf module
+      example: uds run init-swf --set ENV=$ENV
+    actions:
+      - description: "Get the current environment"
+        task: utility:get-env
+      - description: "AWS SWF IaC"
+        task: utility:terraform-init
+        with:
+          root_module: swf
+
+  - name: init-reconfigure-backend-swf
+    description: |
+      Reconfigure the backend for the swf module
+      Use this when locally you need to change the environment you're working on, for example going from stg to prd.
+      example: uds run init-reconfigure-backend-swf --set ENV=$ENV
+    actions:
+      - description: "Get the current environment"
+        task: utility:get-env
+      - description: "Reconfigure the backend for the swf module"
+        task: utility:terraform-backend-reconfigure-init
+        with:
+          env: ${ENV}
+          root_module: swf
+
+  - name: plan-swf
+    description: |
+      Terraform plan AWS SWF IaC swf module
+      example: uds run plan-swf --set ENV=$ENV
+    actions:
+      - description: "Get the current environment"
+        task: utility:get-env
+      - task: utility:terraform-backend-reconfigure-init
+        with:
+          env: ${ENV}
+          root_module: swf
+      - description: "Terraform plan AWS SWF IaC clea`swf module"
+        task: utility:terraform-plan
+        with:
+          env: ${ENV}
+          root_module: swf
+          var_files: '["common.terraform.tfvars", "swf.terraform.tfvars", "context.tfvars",]'
+
+  - name: apply-swf
+    description: |
+      Terraform apply AWS SWF IaC swf module
+      example: uds run apply-swf --set ENV=$ENV
+    actions:
+      - description: "Get the current environment"
+        task: utility:get-env
+      - task: utility:terraform-backend-reconfigure-init
+        with:
+          env: ${ENV}
+          root_module: swf
+      - description: "Terraform apply AWS SWF IaC swf module"
+        task: deploy:terraform-apply
+        with:
+          env: ${ENV}
+          root_module: swf
+          var_files: '["common.terraform.tfvars", "swf.terraform.tfvars", "context.tfvars",]'
+
+  - name: destroy-swf
+    description: |
+      Terraform destroy AWS SWF IaC swf module
+      example: uds run destroy-swf --set ENV=$ENV
+    actions:
+      - description: "Get the current environment"
+        task: utility:get-env
+      - task: utility:terraform-backend-reconfigure-init
+        with:
+          env: ${ENV}
+          root_module: swf
+      - description: "Terraform destroy AWS SWF IaC swf module"
+        task: destroy:terraform-destroy
+        with:
+          env: ${ENV}
+          root_module: swf
+          var_files: '["common.terraform.tfvars", "swf.terraform.tfvars", "context.tfvars",]'
+
+  - name: console-swf
+    description: |
+      Terraform console AWS SWF IaC swf module
+      example: uds run console-swf --set ENV=$ENV
+    actions:
+      - description: "Get the current environment"
+        task: utility:get-env
+      - description: "Terraform console AWS SWF IaC swf module"
+        task: utility:terraform-console
+        with:
+          env: ${ENV}
+          root_module: swf
+          var_files: '["common.terraform.tfvars", "swf.terraform.tfvars", "context.tfvars",]'
+
+  - name: init-transit-gateway
+    description: |
+      terraform init AWS SWF IaC transit-gateway module
+      example: uds run init-transit-gateway --set ENV=$ENV
+    actions:
+      - description: "Get the current environment"
+        task: utility:get-env
+      - description: "Terraform init AWS SWF IaC transit-gateway module"
+        task: utility:terraform-init
+        with:
+          root_module: transit-gateway
+
+  - name: init-reconfigure-backend-transit-gateway
+    description: |
+      Reconfigure the backend for the transit-gateway module.
+      Use this when locally you need to change the environment you're working on, for example going from stg to prd.
+      example: uds run init-reconfigure-backend-transit-gateway --set ENV=$ENV
+    actions:
+      - description: "Get the current environment"
+        task: utility:get-env
+      - description: "Reconfigure the backend for the transit-gateway module"
+        task: utility:terraform-backend-reconfigure-init
+        with:
+          env: ${ENV}
+          root_module: transit-gateway
+
+  # Ideally, we would like to ensure that the swf module is applied and state reconciled before the transit-gateway module
+  - name: plan-transit-gateway
+    description: |
+      Terraform plan AWS SWF IaC transit-gateway module
+      This task references and reads the remote backend of the swf module to get information from the VPC. It uses the swf-backend.tfconfig file to get the environment variables to know which state to read.
+      NOTE: This task should be run after the swf module has been applied. It relies on reading the remote backend of the swf module to get information from the VPC.
+      example: uds run plan-transit-gateway --set ENV=$ENV
+    actions:
+      # - description: "Terraform apply AWS SWF IaC swf module"
+      #   task: deploy:terraform-apply
+      #   with:
+      #     env: ${ENV}
+      #     root_module: swf
+      #     var_files: '["common.terraform.tfvars", "swf.terraform.tfvars"]'
+      - description: "Get the current environment"
+        task: utility:get-env
+      - task: utility:terraform-backend-reconfigure-init
+        with:
+          env: ${ENV}
+          root_module: transit-gateway
+      - description: "Terraform plan AWS SWF IaC transit-gateway module"
+        task: utility:terraform-plan
+        with:
+          env: ${ENV}
+          root_module: transit-gateway
+          var_files: '["common.terraform.tfvars", "context.tfvars", "swf-backend.tfconfig", "transit-gateway.terraform.tfvars"]'
+
+  - name: apply-transit-gateway
+    description: |
+      Terraform apply AWS SWF IaC transit-gateway module
+      This task references and reads the remote backend of the swf module to get information from the VPC. It uses the swf-backend.tfconfig file to get the environment variables to know which state to read.
+      NOTE: This task should be run after the swf module has been applied. It relies on reading the remote backend of the swf module to get information from the VPC.
+      example: uds run apply-transit-gateway --set ENV=$ENV
+    actions:
+      # - description: "Terraform apply AWS SWF IaC swf module"
+      #   task: deploy:terraform-apply
+      #   with:
+      #     env: ${ENV}
+      #     root_module: swf
+      #     var_files: '["common.terraform.tfvars", "swf.terraform.tfvars"]'
+      - description: "Get the current environment"
+        task: utility:get-env
+      - task: utility:terraform-backend-reconfigure-init
+        with:
+          env: ${ENV}
+          root_module: transit-gateway
+      - description: "Terraform apply AWS SWF IaC transit-gateway module"
+        task: deploy:terraform-apply
+        with:
+          env: ${ENV}
+          root_module: transit-gateway
+          var_files: '["common.terraform.tfvars", "context.tfvars", "swf-backend.tfconfig", "transit-gateway.terraform.tfvars"]'
+
+  - name: destroy-transit-gateway
+    description: |
+      Terraform destroy AWS SWF IaC transit-gateway module
+      NOTE: This task should be run after the swf module has been applied. It relies on reading the remote backend of the swf module to get information from the VPC.
+      example: uds run destroy-transit-gateway --set ENV=$ENV
+    actions:
+      # - description: "Terraform apply AWS SWF IaC swf module"
+      #   task: deploy:terraform-apply
+      #   with:
+      #     env: ${ENV}
+      #     root_module: swf
+      #     var_files: '["common.terraform.tfvars", "swf.terraform.tfvars"]'
+      - description: "Get the current environment"
+        task: utility:get-env
+      - task: utility:terraform-backend-reconfigure-init
+        with:
+          env: ${ENV}
+          root_module: transit-gateway
+      - description: "Terraform destroy AWS SWF IaC transit-gateway module"
+        task: destroy:terraform-destroy
+        with:
+          env: ${ENV}
+          root_module: transit-gateway
+          var_files: '["common.terraform.tfvars", "context.tfvars", "swf-backend.tfconfig", "transit-gateway.terraform.tfvars"]'
+
+  - name: remove-backend-configuration-files
+    description: |
+      Remove the backend configuration from each module locally. Use this before bootstrapping a new environment to prepare the file structure for the bootstrap module.
+    actions:
+      - description: "Remove the backend configuration files"
+        task: utility:remove-backend-configuration-files
+
+  - name: read-env
+    actions:
+      - task: utility:get-env
+      - description: "Read the environment"
+        cmd: 'echo "Current Environment: ${ENV}"'
+
+  - name: update-uds-config
+    description: "Update the UDS config file for the current environment locally"
+    actions:
+      - task: utility:get-env
+      - task: utility:terraform-backend-reconfigure-init
+        with:
+          env: ${ENV}
+          root_module: swf
+      - task: utility:update-uds-config
+        with:
+          env: ${ENV}
+          root_module: swf
+          var_files: '["common.terraform.tfvars", "swf.terraform.tfvars", "context.tfvars"]'
+
+  - name: ad-hoc-targeted-apply
+    description: |
+      Ad-hoc targeted apply
+      example: uds run ad-hoc-targeted-apply --set ENV=$ENV --set TARGETS='["module.gitlab_db", "module.keycloak_db", "module.mattermost_db"]' --set ROOT_MODULE=swf
+    actions:
+      - task: utility:check-targets
+        with:
+          targets: ${TARGETS}
+      - task: utility:check-root-module
+        with:
+          root_module: ${ROOT_MODULE}
+      - task: utility:preflight
+        with:
+          root_module: ${ROOT_MODULE}
+      - task: utility:terraform-backend-reconfigure-init
+        with:
+          env: ${ENV}
+          root_module: ${ROOT_MODULE}
+      - cmd: |
+          cat <<EOF
+          Starting targeted apply with the following parameters:
+          Environment: ${ENV}
+          Root Module: ${ROOT_MODULE}
+          Var Files: ${VAR_FILES}
+          Targets: ${TARGETS}
+          EOF
+      - task: deploy:targeted-apply
+        with:
+          env: ${ENV}
+          root_module: ${ROOT_MODULE}
+          var_files: ${VAR_FILES}
+          targets: ${TARGETS}
+      # ex: targets: '["module.artifactory_db", "module.confluence_db", "module.jira_db", "module.gitlab_db", "module.keycloak_db", "module.mattermost_db"]'
+
+  - name: ad-hoc-targeted-destroy
+    description: |
+      Ad-hoc targeted destroy - requires targets and root module to be set
+      example: uds run ad-hoc-targeted-destroy --set ENV=$ENV --set TARGETS='["module.gitlab_db", "module.keycloak_db", "module.mattermost_db"]' --set ROOT_MODULE=swf
+    actions:
+      - task: utility:check-targets
+        with:
+          targets: ${TARGETS}
+      - task: utility:check-root-module
+        with:
+          root_module: ${ROOT_MODULE}
+      - task: utility:preflight
+        with:
+          root_module: ${ROOT_MODULE}
+      - task: utility:terraform-backend-reconfigure-init
+        with:
+          env: ${ENV}
+          root_module: ${ROOT_MODULE}
+      - cmd: |
+          cat <<EOF
+          Starting targeted destroy with the following parameters:
+          Environment: ${ENV}
+          Root Module: ${ROOT_MODULE}
+          Var Files: ${VAR_FILES}
+          Targets: ${TARGETS}
+          EOF
+      - task: destroy:targeted-destroy
+        with:
+          env: ${ENV}
+          root_module: ${ROOT_MODULE}
+          var_files: ${VAR_FILES}
+          targets: ${TARGETS}
+
+  - name: get-bastion-instance-id
+    description: |
+      Get the bastion instance id
+      Use this when you need to get the bastion instance id for the environment you're working in.
+      example: uds run get-bastion-instance-id --set ENV=$ENV
+    actions:
+      - description: "Get the current environment"
+        task: utility:get-env
+      - task: utility:terraform-backend-reconfigure-init
+        with:
+          env: ${ENV}
+          root_module: swf
+      - description: "Get the bastion instance id"
+        task: utility:get-bastion-instance-id
+        with:
+          env: ${ENV}
+
+  - name: update-kubeconfig
+    description: |
+      Updates the kubeconfig file with the EKS cluster information
+      example: uds run update-kubeconfig
+    actions:
+      - description: "Get the current environment"
+        task: utility:get-env
+      - task: utility:update-kubeconfig
+        with:
+          env: ${ENV}
+
+  - name: bundle-and-deploy-all
+    description: |
+      Creates the zarf package, then builds and deploys the bundle
+      uds run bundle-and-deploy-all --set ENV=$ENV
+    actions:
+      - description: "Get the current environment"
+        task: utility:get-env
+      - task: swf:zarf-create
+      - task: swf:bundle-create
+      - task: swf:bundle-deploy
+
+  - name: zarf-create
+    description: |
+      Creates the swf zarf package
+      example: uds run zarf-create --set ENV=$ENV
+    actions:
+      - description: "Create the zarf package"
+        task: swf:zarf-create
+
+  - name: bundle-create
+    description: |
+      Creates the swf bundle
+      example: uds run bundle-create --set ENV=$ENV
+    actions:
+      - description: "Create the swf bundle"
+        task: swf:bundle-create
+
+  - name: bundle-deploy
+    description: |
+      Deploys the swf bundle
+      example: uds run bundle-deploy --set ENV=$ENV
+    actions:
+      - description: "Get the current environment"
+        task: utility:get-env
+      - description: "Deploy the swf bundle"
+        task: swf:bundle-deploy
+
+  - name: bundle-remove
+    description: |
+      Removes the swf bundle
+      example: uds run bundle-remove --set ENV=$ENV
+    actions:
+      - description: "Get the current environment"
+        task: utility:get-env
+      - description: "Remove the swf bundle"
+        task: swf:bundle-remove
+
+  - name: bundle-deploy-specific-packages
+    description: |
+      Deploys specific packages from the bundle
+      example: uds run bundle-deploy-specific-packages --set ENV=$ENV --set PACKAGES='package1,package2,package3'
+    actions:
+      - description: "Get the current environment"
+        task: utility:get-env
+      - task: swf:bundle-deploy-specific-packages
+        with:
+          packages: ${PACKAGES}
+
+  - name: bundle-remove-specific-packages
+    description: |
+      Removes specific packages from the bundle
+      example: uds run bundle-remove-specific-packages --set ENV=$ENV --set PACKAGES='package1,package2,package3'
+    actions:
+      - description: "Get the current environment"
+        task: utility:get-env
+      - task: swf:bundle-remove-specific-packages
+        with:
+          packages: ${PACKAGES}

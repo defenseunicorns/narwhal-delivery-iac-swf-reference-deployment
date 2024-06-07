@@ -15,8 +15,13 @@ example uds runner usage:
 # from the root of the repo
 # bootstrap module should be run first and backend files staged before running this module
 export ENV=dev
+#or run
+uds run set-env --set ENV=dev
 # apply-swf will also run init
-uds run apply-swf --set ENV=$ENV
+# do not need to set ENV if 'uds run set-env' was run previously
+uds run main:apply-swf --set ENV=$ENV
+# or
+uds run main:apply-swf
 ```
 
 example terraform usage:
