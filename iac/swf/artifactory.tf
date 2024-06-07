@@ -129,7 +129,7 @@ resource "aws_secretsmanager_secret" "artifactory_db_secret" {
 
 module "artifactory_db" {
   source  = "terraform-aws-modules/rds/aws"
-  version = "6.5.4"
+  version = "6.6.0"
   tags    = local.tags
 
   identifier                     = var.artifactory_db_idenitfier_prefix
