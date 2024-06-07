@@ -227,7 +227,7 @@ locals {
 
 module "ssm_kms_key" {
   source  = "terraform-aws-modules/kms/aws"
-  version = "~> 2.0"
+  version = "~> 3.0"
 
   create = var.create_ssm_parameters
 
@@ -370,7 +370,7 @@ locals {
 }
 
 module "eks" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-eks.git?ref=v0.0.19"
+  source = "git::https://github.com/defenseunicorns/terraform-aws-eks.git?ref=v0.0.20"
 
   name                                    = local.cluster_name
   aws_region                              = var.region
@@ -466,7 +466,7 @@ module "key_pair" {
 
 module "ebs_kms_key" {
   source  = "terraform-aws-modules/kms/aws"
-  version = "~> 2.0"
+  version = "~> 3.0"
 
   count = var.keycloak_enabled ? 1 : 0
 

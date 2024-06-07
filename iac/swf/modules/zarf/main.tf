@@ -149,7 +149,7 @@ locals {
 module "zarf_irsa_policy" {
   count = var.create_irsa_role ? 1 : 0
 
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-iam.git//modules/iam-policy?ref=v5.39.0"
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-iam.git//modules/iam-policy?ref=v5.39.1"
 
   name        = local.zarf_irsa_policy_name
   path        = "/"
@@ -185,7 +185,7 @@ module "zarf_irsa_policy" {
 module "zarf_irsa_role" {
   count = var.create_irsa_role ? 1 : 0
 
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-iam.git//modules/iam-role-for-service-accounts-eks?ref=v5.39.0"
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-iam.git//modules/iam-role-for-service-accounts-eks?ref=v5.39.1"
 
   role_name = local.zarf_irsa_role_name
 
