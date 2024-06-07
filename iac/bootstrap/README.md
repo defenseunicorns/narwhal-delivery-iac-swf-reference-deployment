@@ -78,7 +78,7 @@ terraform init --reconfigure --backend-config=../env/${env}/backends/${root_modu
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_tfstate_backend"></a> [tfstate\_backend](#module\_tfstate\_backend) | git::<https://github.com/cloudposse/terraform-aws-tfstate-backend.git> | tags/1.4.0 |
+| <a name="module_tfstate_backend"></a> [tfstate\_backend](#module\_tfstate\_backend) | git::https://github.com/cloudposse/terraform-aws-tfstate-backend.git | tags/1.4.0 |
 
 ## Resources
 

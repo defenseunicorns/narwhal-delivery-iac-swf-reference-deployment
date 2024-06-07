@@ -1,0 +1,107 @@
+tasks:
+  - name: terraform-destroy
+    inputs:
+      env:
+        required: true
+        description: "The environment to destroy"
+      root_module:
+        required: true
+        description: "The root module to destroy"
+      var_files:
+        required: true
+        description: "The var files to use for the plan"
+    actions:
+      - task: utility:check-env
+        with:
+          env: ${ENV}
+      - description: "Terraform destroy"
+        cmd: |
+          set -exo pipefail
+          cd ./iac/${INPUT_ROOT_MODULE}
+
+          # Initialize an empty string to hold all --var-file options
+          var_files_options=""
+
+          # Use process substitution to avoid creating a subshell
+          while IFS= read -r item; do
+
+          # Construct the search path relative to root module directory to find the var files provided
+          search_path="../env/${INPUT_ENV}"
+
+            # Find the file matching the pattern and read the first matching file
+            matching_file=$(find $search_path -type f -name "$item" | head -n 1)
+
+            if [[ -n "$matching_file" ]]; then
+              var_files_options+="--var-file $matching_file "
+            else
+              echo "No matching file found for $item"
+            fi
+          done < <(echo ${INPUT_VAR_FILES} | yq e '.[]' -)
+
+          tofu destroy $var_files_options --auto-approve
+        shell:
+          linux: bash
+          darwin: bash
+
+  - name: targeted-destroy
+    inputs:
+      env:
+        required: true
+        description: "The environment to update"
+      root_module:
+        required: true
+        description: "The root module"
+      var_files:
+        required: true
+        description: "The var files to use"
+      targets:
+        required: true
+        description: "The targets to apply"
+    actions:
+      - task: utility:check-env
+        with:
+          env: ${ENV}
+      - cmd: |
+          set -exo pipefail
+          cd ./iac/${INPUT_ROOT_MODULE}
+          tofu init --reconfigure --backend-config=../env/${INPUT_ENV}/backends/${INPUT_ROOT_MODULE}-backend.tfconfig
+        shell:
+          linux: bash
+          darwin: bash
+      - description: "Targeted Destroy"
+        cmd: |
+          set -exo pipefail
+          cd ./iac/${INPUT_ROOT_MODULE}
+
+          # Initialize an empty string to hold all --var-file options
+          var_files_options=""
+
+          # Use process substitution to avoid creating a subshell
+          while IFS= read -r item; do
+
+          # Construct the search path relative to root module directory to find the var files provided
+          search_path="../env/${INPUT_ENV}"
+
+            # Find the file matching the pattern and read the first matching file
+            matching_file=$(find $search_path -type f -name "$item" | head -n 1)
+
+            if [[ -n "$matching_file" ]]; then
+              var_files_options+="--var-file $matching_file "
+            else
+              echo "No matching file found for $item"
+            fi
+          done < <(echo ${INPUT_VAR_FILES} | yq e '.[]' -)
+
+          # Use process substitution to avoid creating a subshell for targets
+          while IFS= read -r target; do
+            targets_options+="--target $target "
+          done < <(echo ${INPUT_TARGETS} | yq e '.[]' -)
+
+          echo $var_files_options
+          echo $targets_options
+
+          tofu destroy $var_files_options $targets_options --auto-approve
+
+        shell:
+          linux: bash
+          darwin: bash
