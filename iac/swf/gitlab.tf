@@ -262,7 +262,7 @@ resource "aws_secretsmanager_secret" "gitlab_db_secret" {
 
 module "gitlab_db" {
   source  = "terraform-aws-modules/rds/aws"
-  version = "6.6.0"
+  version = "6.7.0"
   tags    = local.tags
 
   identifier                     = var.gitlab_db_idenitfier_prefix

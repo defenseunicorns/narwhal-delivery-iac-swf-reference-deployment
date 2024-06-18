@@ -70,7 +70,7 @@ locals {
   uds_swf_self_mg_node_group = {
     uds_ng = {
       name          = local.uds_swf_ng_name
-      platform      = "bottlerocket"
+      ami_type      = "BOTTLEROCKET_x86_64"
       ami_id        = data.aws_ami.eks_default_bottlerocket.id
       instance_type = null # conflicts with instance_requirements settings
       subnet_ids    = module.vpc.private_subnets
@@ -122,7 +122,7 @@ locals {
 
   keycloak_self_mg_node_group = {
     keycloak_ng_sso = {
-      platform      = "bottlerocket"
+      ami_type      = "BOTTLEROCKET_x86_64"
       ami_id        = data.aws_ami.eks_default_bottlerocket.id
       instance_type = null # conflicts with instance_requirements settings
       min_size      = 2
@@ -160,7 +160,7 @@ locals {
   gitaly_self_mg_node_group = {
     gitaly_ng = {
       name          = local.gitaly_ng_name
-      platform      = "bottlerocket"
+      ami_type      = "BOTTLEROCKET_x86_64"
       ami_id        = data.aws_ami.eks_default_bottlerocket.id
       instance_type = null # conflicts with instance_requirements settings
       min_size      = 1
@@ -370,7 +370,7 @@ locals {
 }
 
 module "eks" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-eks.git?ref=v0.0.20"
+  source = "git::https://github.com/defenseunicorns/terraform-aws-eks.git?ref=v0.0.22"
 
   name                                    = local.cluster_name
   aws_region                              = var.region

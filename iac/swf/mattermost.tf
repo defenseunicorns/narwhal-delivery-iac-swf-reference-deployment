@@ -88,7 +88,7 @@ resource "aws_secretsmanager_secret" "mattermost_db_secret" {
 
 module "mattermost_db" {
   source  = "terraform-aws-modules/rds/aws"
-  version = "6.6.0"
+  version = "6.7.0"
   tags    = local.tags
 
   identifier                     = var.mattermost_db_idenitfier_prefix
