@@ -22,7 +22,7 @@ Module for creating S3 buckets and providing the IAM Roles for Services Accounts
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_irsa_role"></a> [irsa\_role](#module\_irsa\_role) | git::<https://github.com/terraform-aws-modules/terraform-aws-iam.git//modules/iam-role-for-service-accounts-eks> | v5.39.0 |
+| <a name="module_irsa_role"></a> [irsa\_role](#module\_irsa\_role) | git::https://github.com/terraform-aws-modules/terraform-aws-iam.git//modules/iam-role-for-service-accounts-eks | v5.39.1 |
 
 ## Resources
 

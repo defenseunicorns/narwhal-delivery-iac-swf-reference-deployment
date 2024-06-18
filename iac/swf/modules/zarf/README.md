@@ -23,9 +23,9 @@
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_s3_bucket"></a> [s3\_bucket](#module\_s3\_bucket) | git::<https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git> | v4.1.2 |
-| <a name="module_zarf_irsa_policy"></a> [zarf\_irsa\_policy](#module\_zarf\_irsa\_policy) | git::<https://github.com/terraform-aws-modules/terraform-aws-iam.git//modules/iam-policy> | v5.39.0 |
-| <a name="module_zarf_irsa_role"></a> [zarf\_irsa\_role](#module\_zarf\_irsa\_role) | git::<https://github.com/terraform-aws-modules/terraform-aws-iam.git//modules/iam-role-for-service-accounts-eks> | v5.39.0 |
+| <a name="module_s3_bucket"></a> [s3\_bucket](#module\_s3\_bucket) | git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git | v4.1.2 |
+| <a name="module_zarf_irsa_policy"></a> [zarf\_irsa\_policy](#module\_zarf\_irsa\_policy) | git::https://github.com/terraform-aws-modules/terraform-aws-iam.git//modules/iam-policy | v5.39.1 |
+| <a name="module_zarf_irsa_role"></a> [zarf\_irsa\_role](#module\_zarf\_irsa\_role) | git::https://github.com/terraform-aws-modules/terraform-aws-iam.git//modules/iam-role-for-service-accounts-eks | v5.39.1 |
 
 ## Resources
 
