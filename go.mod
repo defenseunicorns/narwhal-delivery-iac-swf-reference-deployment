@@ -3,13 +3,13 @@ module github.com/defenseunicorns/narwhal-delivery-iac-swf-reference-deployment
 go 1.22.2
 
 require (
-	github.com/aws/aws-sdk-go v1.53.19
+	github.com/aws/aws-sdk-go v1.54.3
 	github.com/defenseunicorns/delivery_aws_iac_utils v0.0.6
 	github.com/gruntwork-io/terratest v0.46.15
 	github.com/stretchr/testify v1.9.0
-	k8s.io/api v0.30.1
-	k8s.io/apimachinery v0.30.1
-	k8s.io/client-go v0.30.1
+	k8s.io/api v0.30.2
+	k8s.io/apimachinery v0.30.2
+	k8s.io/client-go v0.30.2
 	sigs.k8s.io/aws-iam-authenticator v0.6.20
 )
 
