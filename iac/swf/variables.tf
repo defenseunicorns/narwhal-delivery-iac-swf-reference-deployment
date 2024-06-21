@@ -194,7 +194,7 @@ variable "cluster_version" {
   description = "Kubernetes version to use for EKS cluster"
   type        = string
   # renovate: datasource=endoflife-date depName=amazon-eks versioning=loose extractVersion=^(?<version>.*)-eks.+$
-  default = "1.29"
+  default = "1.30"
 }
 
 variable "cluster_endpoint_public_access" {
@@ -393,6 +393,18 @@ variable "bastion_instance_type" {
   default     = "m5.xlarge"
 }
 
+variable "bastion_log_group_name" {
+  description = "The name of the CloudWatch Log Group for the bastion instance"
+  type        = string
+  default     = "bastion-logs"
+}
+
+variable "bastion_cloudwatch_log_retention_days" {
+  description = "The number of days to retain the logs for the bastion instance"
+  type        = number
+  default     = 30
+}
+
 variable "bastion_ssh_user" {
   description = "The SSH user to use for the bastion"
   type        = string
@@ -435,6 +447,79 @@ variable "notification_webhook_secret_id" {
   default     = ""
 }
 
+############################################################################
+################## UDS core config #########################
+variable "istio_admin_gateway_aws_load_balancer_type" {
+  description = "The type of AWS Load Balancer to use for the Istio Admin Gateway"
+  type        = string
+  default     = "external"
+}
+
+variable "istio_admin_gateway_aws_load_balancer_scheme" {
+  description = "The scheme of the AWS Load Balancer to use for the Istio Admin Gateway"
+  type        = string
+  default     = "internal"
+}
+
+variable "istio_admin_gateway_aws_load_balancer_nlb_target_type" {
+  description = "The target type of the AWS Load Balancer to use for the Istio Admin Gateway"
+  type        = string
+  default     = "instance"
+}
+
+variable "istio_admin_gateway_aws_load_balancer_attributes" {
+  description = "The attributes of the AWS Load Balancer to use for the Istio Admin Gateway"
+  type        = string
+  default     = "load_balancing.cross_zone.enabled=true"
+}
+
+variable "istio_tenant_gateway_aws_load_balancer_type" {
+  description = "The type of AWS Load Balancer to use for the Istio Tenant Gateway"
+  type        = string
+  default     = "external"
+}
+
+variable "istio_tenant_gateway_aws_load_balancer_scheme" {
+  description = "The scheme of the AWS Load Balancer to use for the Istio Tenant Gateway"
+  type        = string
+  default     = "internal"
+}
+
+variable "istio_tenant_gateway_aws_load_balancer_nlb_target_type" {
+  description = "The target type of the AWS Load Balancer to use for the Istio Tenant Gateway"
+  type        = string
+  default     = "instance"
+}
+
+variable "istio_tenant_gateway_aws_load_balancer_attributes" {
+  description = "The attributes of the AWS Load Balancer to use for the Istio Tenant Gateway"
+  type        = string
+  default     = "load_balancing.cross_zone.enabled=true"
+}
+
+variable "istio_passthrough_gateway_aws_load_balancer_type" {
+  description = "The type of AWS Load Balancer to use for the Istio Passthrough Gateway"
+  type        = string
+  default     = "external"
+}
+
+variable "istio_passthrough_gateway_aws_load_balancer_scheme" {
+  description = "The scheme of the AWS Load Balancer to use for the Istio Passthrough Gateway"
+  type        = string
+  default     = "internal"
+}
+
+variable "istio_passthrough_gateway_aws_load_balancer_nlb_target_type" {
+  description = "The target type of the AWS Load Balancer to use for the Istio Passthrough Gateway"
+  type        = string
+  default     = "instance"
+}
+
+variable "istio_passthrough_gateway_aws_load_balancer_attributes" {
+  description = "The attributes of the AWS Load Balancer to use for the Istio Passthrough Gateway"
+  type        = string
+  default     = "load_balancing.cross_zone.enabled=true"
+}
 
 ############################################################################
 ################## Zarf Init AWS Dependencies #########################

@@ -70,7 +70,7 @@ zarf_version = "v0.32.4"
 ###########################################################
 #################### EKS Config ###########################
 # renovate: datasource=endoflife-date depName=amazon-eks versioning=loose extractVersion=^(?<version>.*)-eks.+$
-cluster_version                = "1.29"
+cluster_version                = "1.30"
 cluster_endpoint_public_access = true
 
 ###########################################################

@@ -16,6 +16,21 @@ variables:
   core:
     ISTIOD_AUTOSCALE_MIN: "${local.min_node_count}"
     ISTIOD_AUTOSCALE_MAX: "${local.min_node_count + 4}"
+    # admin gateway
+    ISTIO_ADMIN_GATEWAY_AWS_LOAD_BALANCER_TYPE: ${var.istio_admin_gateway_aws_load_balancer_type}
+    ISTIO_ADMIN_GATEWAY_AWS_LOAD_BALANCER_SCHEME: ${var.istio_admin_gateway_aws_load_balancer_scheme}
+    ISTIO_ADMIN_GATEWAY_AWS_LOAD_BALANCER_NLB_TARGET_TYPE: ${var.istio_admin_gateway_aws_load_balancer_nlb_target_type}
+    ISTIO_ADMIN_GATEWAY_AWS_LOAD_BALANCER_ATTRIBUTES: ${var.istio_admin_gateway_aws_load_balancer_attributes}
+    # tenant gateway
+    ISTIO_TENANT_GATEWAY_AWS_LOAD_BALANCER_TYPE: ${var.istio_tenant_gateway_aws_load_balancer_type}
+    ISTIO_TENANT_GATEWAY_AWS_LOAD_BALANCER_SCHEME: ${var.istio_tenant_gateway_aws_load_balancer_scheme}
+    ISTIO_TENANT_GATEWAY_AWS_LOAD_BALANCER_NLB_TARGET_TYPE: ${var.istio_tenant_gateway_aws_load_balancer_nlb_target_type}
+    ISTIO_TENANT_GATEWAY_AWS_LOAD_BALANCER_ATTRIBUTES: ${var.istio_tenant_gateway_aws_load_balancer_attributes}
+    # passthrough gateway
+    ISTIO_PASSTHROUGH_GATEWAY_AWS_LOAD_BALANCER_TYPE: ${var.istio_passthrough_gateway_aws_load_balancer_type}
+    ISTIO_PASSTHROUGH_GATEWAY_AWS_LOAD_BALANCER_SCHEME: ${var.istio_passthrough_gateway_aws_load_balancer_scheme}
+    ISTIO_PASSTHROUGH_GATEWAY_AWS_LOAD_BALANCER_NLB_TARGET_TYPE: ${var.istio_passthrough_gateway_aws_load_balancer_nlb_target_type}
+    ISTIO_PASSTHROUGH_GATEWAY_AWS_LOAD_BALANCER_ATTRIBUTES: ${var.istio_passthrough_gateway_aws_load_balancer_attributes}
     KC_DB_PASSWORD: "${random_password.keycloak_db_password.result}"
     KC_DB_HOST: "${element(split(":", module.keycloak_db.db_instance_endpoint), 0)}"
     VELERO_ROLE_ARN: "${module.velero_irsa_s3.irsa_role[var.velero_service_account_names[0]].iam_role_arn}"

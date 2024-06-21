@@ -15,7 +15,7 @@ tasks:
       - cmd: |
           set -x
           export UDS_CONFIG="./iac/env/${ENV}/uds/uds-config.yaml"
-          ./uds deploy $(ls -tr bundles/swf/uds-bundle-swf*.tar.zst | tail -1) -a amd64 --confirm --no-progress
+          ./uds deploy $(ls -tr bundles/swf/uds-bundle-swf*.tar.zst | tail -1) -a amd64 --confirm --no-progress --retries 15
         shell:
           linux: bash
           darwin: bash
@@ -30,7 +30,7 @@ tasks:
       - cmd: |
           set -x
           export UDS_CONFIG="./iac/env/${ENV}/uds/uds-config.yaml"
-          ./uds deploy $(ls -tr bundles/swf/uds-bundle-swf*.tar.zst | tail -1) -a amd64 --confirm --no-progress -p "${INPUT_PACKAGES}"
+          ./uds deploy $(ls -tr bundles/swf/uds-bundle-swf*.tar.zst | tail -1) -a amd64 --confirm --no-progress -p "${INPUT_PACKAGES}" --retries 15 --log-level trace
         shell:
           linux: bash
           darwin: bash

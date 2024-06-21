@@ -148,7 +148,7 @@ tasks:
           set -exo pipefail
           cd iac
           # Remove the backend configuration files
-          find . -type f \( -name "backend.tf" -o -name "terraform.tfstate" -o -name "terraform.tfstate.backup" -o -name "terraform.tfvars" \) -exec rm -f {} + \
+          find . -type f \( -name "backend.tf" -o -name "terraform.tfstate" -o -name "terraform.tfstate.backup" -o -name "terraform.tfvars" -o -name ".terraform.lock.hcl" \) -exec rm -f {} + \
             -o -type d -name ".terraform" -exec rm -rf {} +
         shell:
           linux: bash

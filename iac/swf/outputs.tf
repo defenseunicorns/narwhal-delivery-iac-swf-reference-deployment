@@ -4,6 +4,12 @@ output "vpc" {
   sensitive   = true
 }
 
+output "subnet_addrs" {
+  description = "Subnet Addrs module output data"
+  value       = module.subnet_addrs
+  sensitive   = true
+}
+
 output "eks" {
   description = "EKS module output data"
   value       = module.eks
