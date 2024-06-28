@@ -33,7 +33,7 @@ packages:
 
   - name: core
     repository: ghcr.io/defenseunicorns/packages/uds/core
-    ref: 0.22.1-registry1
+    ref: 0.22.2-registry1
     overrides:
       istio-controlplane:
         istiod:
@@ -219,7 +219,7 @@ packages:
 
   - name: gitlab
     repository: ghcr.io/defenseunicorns/packages/uds/gitlab
-    ref: 17.0.1-uds.0-registry1
+    ref: 17.1.1-uds.0-registry1
     overrides:
       gitlab:
         uds-gitlab-config:
@@ -344,7 +344,7 @@ packages:
 
   - name: mattermost
     repository: ghcr.io/defenseunicorns/packages/uds/mattermost
-    ref: 9.8.1-uds.0-registry1
+    ref: 9.9.0-uds.0-registry1
     overrides:
       mattermost:
         uds-mattermost-config:
@@ -394,7 +394,7 @@ packages:
 
   - name: jira
     repository: ghcr.io/defenseunicorns/packages/uds/jira
-    ref: 1.19.0-uds.0-registry1
+    ref: 1.20.0-uds.0-registry1
     overrides:
       jira:
         jira:
@@ -434,7 +434,7 @@ packages:
 
   - name: artifactory
     repository: ghcr.io/defenseunicorns/packages/uds/artifactory
-    ref: 107.77.12-uds.0-registry1
+    ref: 107.78.0-uds.0-registry1
     overrides:
       artifactory:
         artifactory:
