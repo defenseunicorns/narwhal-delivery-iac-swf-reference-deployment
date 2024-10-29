@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sonarqube-pvc
+  namespace: sonarqube
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeName: sonarqube-restored-volume
+  resources:
+    requests:
+      storage: MATCH PV VOLUME SIZE HERE

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: confluence-local-home-pvc
+  namespace: confluence
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeName: confluence-restored-local-volume
+  resources:
+    requests:
+      storage: MATCH PV VOLUME SIZE HERE

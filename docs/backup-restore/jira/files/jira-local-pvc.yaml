@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jira-local-home-pvc
+  namespace: jira
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeName: jira-restored-local-volume
+  resources:
+    requests:
+      storage: MATCH PV VOLUME SIZE HERE
