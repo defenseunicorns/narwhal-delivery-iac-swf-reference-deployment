@@ -7,7 +7,7 @@ metadata:
 packages:
   - name: zarf-init-s3-backend
     repository: ghcr.io/defenseunicorns/delivery-zarf-init/init
-    ref: v0.49.0-registry1
+    ref: v0.55.6-registry1
 
   - name: storageclass
     repository: ghcr.io/defenseunicorns/packages/narwhal-delivery-zarf-package-eks-addons/storageclass
@@ -33,7 +33,7 @@ packages:
 
   - name: core
     repository: ghcr.io/defenseunicorns/packages/uds/core
-    ref: 0.37.0-registry1
+    ref: 0.43.0-registry1
     overrides:
       istio-controlplane:
         istiod:
@@ -219,7 +219,7 @@ packages:
 
   - name: gitlab
     repository: ghcr.io/defenseunicorns/packages/uds/gitlab
-    ref: 17.9.1-uds.0-registry1
+    ref: 18.0.1-uds.0-registry1
     overrides:
       gitlab:
         uds-gitlab-config:
@@ -328,7 +328,7 @@ packages:
 
   - name: gitlab-runner
     repository: ghcr.io/defenseunicorns/packages/uds/gitlab-runner
-    ref: 17.8.0-uds.0-registry1
+    ref: 18.0.2-uds.0-registry1
     overrides:
       gitlab-runner:
         gitlab-runner:
@@ -344,7 +344,7 @@ packages:
 
   - name: mattermost
     repository: ghcr.io/defenseunicorns/packages/uds/mattermost
-    ref: 10.5.1-uds.0-registry1
+    ref: 10.8.1-uds.0-registry1
     overrides:
       mattermost:
         uds-mattermost-config:
@@ -394,7 +394,7 @@ packages:
 
   - name: jira
     repository: ghcr.io/defenseunicorns/packages/uds/jira
-    ref: 10.4.1-uds.0-registry1
+    ref: 10.6.1-uds.0-registry1
     overrides:
       jira:
         jira:
@@ -414,7 +414,7 @@ packages:
 
   - name: confluence
     repository: ghcr.io/defenseunicorns/packages/uds/confluence
-    ref: 9.3.1-uds.0-registry1
+    ref: 9.4.1-uds.0-registry1
     overrides:
       confluence:
         confluence:
