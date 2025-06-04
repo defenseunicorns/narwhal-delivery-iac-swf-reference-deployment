@@ -27,7 +27,7 @@ resource "aws_secretsmanager_secret" "jira_db_secret" {
 
 module "jira_db" {
   source  = "terraform-aws-modules/rds/aws"
-  version = "6.10.0"
+  version = "6.12.0"
   tags    = local.tags
 
   identifier                     = var.jira_db_idenitfier_prefix

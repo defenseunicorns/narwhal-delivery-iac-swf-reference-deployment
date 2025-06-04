@@ -6,7 +6,7 @@ locals {
 module "mattermost_s3_bucket" {
   for_each = toset(var.mattermost_bucket_names)
 
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v4.6.0"
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v4.10.1"
 
   bucket        = join("-", compact([local.prefix, each.key, local.suffix]))
   force_destroy = var.mattermost_s3_bucket_force_destroy
@@ -88,7 +88,7 @@ resource "aws_secretsmanager_secret" "mattermost_db_secret" {
 
 module "mattermost_db" {
   source  = "terraform-aws-modules/rds/aws"
-  version = "6.10.0"
+  version = "6.12.0"
   tags    = local.tags
 
   identifier                     = var.mattermost_db_idenitfier_prefix
