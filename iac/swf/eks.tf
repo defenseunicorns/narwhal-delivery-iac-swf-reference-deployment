@@ -547,7 +547,7 @@ resource "aws_iam_policy" "vpc_cni_logging" {
 # EKS Self Managed Node Group Dependencies
 ######################################################
 module "self_managed_node_group_keypair" {
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-key-pair?ref=v2.0.3"
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-key-pair?ref=v2.1.0"
 
   key_name_prefix    = "${local.cluster_name}-uds-swf-"
   create_private_key = true

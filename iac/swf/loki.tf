@@ -6,7 +6,7 @@ locals {
 module "loki_s3_bucket" {
   for_each = toset(var.loki_bucket_names)
 
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v4.6.0"
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v4.10.1"
 
   bucket        = join("-", compact([local.prefix, each.key, local.suffix]))
   tags          = local.tags
