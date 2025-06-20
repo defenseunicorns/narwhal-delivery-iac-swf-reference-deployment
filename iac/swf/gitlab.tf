@@ -7,7 +7,7 @@ locals {
 module "gitlab_s3_bucket" {
   for_each = toset(var.gitlab_bucket_names)
 
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v4.10.1"
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v4.11.0"
 
   bucket        = join("-", compact([local.prefix, each.key, local.suffix]))
   tags          = local.tags

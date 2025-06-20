@@ -15,7 +15,7 @@ module "artifactory_kms_key" {
 module "artifactory_s3_bucket" {
   for_each = toset(var.artifactory_bucket_names)
 
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v4.10.1"
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v4.11.0"
 
   bucket        = join("-", compact([local.prefix, each.key, local.suffix]))
   force_destroy = var.artifactory_s3_bucket_force_destroy
