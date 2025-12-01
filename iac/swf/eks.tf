@@ -227,7 +227,7 @@ locals {
 
 module "ssm_kms_key" {
   source  = "terraform-aws-modules/kms/aws"
-  version = "~> 3.0"
+  version = "~> 4.0"
 
   create = var.create_ssm_parameters
 
@@ -370,7 +370,7 @@ locals {
 }
 
 module "eks" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-eks.git?ref=v0.0.26"
+  source = "git::https://github.com/defenseunicorns/terraform-aws-eks.git?ref=v0.0.27"
 
   name                                    = local.cluster_name
   aws_region                              = var.region
@@ -466,7 +466,7 @@ module "key_pair" {
 
 module "ebs_kms_key" {
   source  = "terraform-aws-modules/kms/aws"
-  version = "~> 3.0"
+  version = "~> 4.0"
 
   count = var.keycloak_enabled ? 1 : 0
 
@@ -496,7 +496,7 @@ module "ebs_kms_key" {
 ######################################################
 module "vpc_cni_ipv4_irsa_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "~> 5.39"
+  version = "~> 6.0"
 
   role_name_prefix      = "${module.eks.cluster_name}-vpc-cni-"
   attach_vpc_cni_policy = true
@@ -547,7 +547,7 @@ resource "aws_iam_policy" "vpc_cni_logging" {
 # EKS Self Managed Node Group Dependencies
 ######################################################
 module "self_managed_node_group_keypair" {
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-key-pair?ref=v2.1.0"
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-key-pair?ref=v2.1.1"
 
   key_name_prefix    = "${local.cluster_name}-uds-swf-"
   create_private_key = true
@@ -556,7 +556,7 @@ module "self_managed_node_group_keypair" {
 }
 
 module "self_managed_node_group_secret_key_secrets_manager_secret" {
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-secrets-manager.git?ref=v1.3.1"
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-secrets-manager.git?ref=v2.0.1"
 
   name                    = module.self_managed_node_group_keypair.key_pair_name
   description             = "Secret key for the uds-swf self managed node group keypair"
